@@ -13,7 +13,7 @@ This package only works on julia 0.5- and newer. First, clone this package:
 ````julia
 Pkg.clone("https://github.com/davidanthoff/LINQ.jl.git")
 ````
-You then need to be on master or other branches for various branches:
+You then need to be on master or other branches for various packages:
 ````julia
 Pkg.checkout("DataFrames", "nl/nullable")
 Pkg.checkout("DataStreams")
