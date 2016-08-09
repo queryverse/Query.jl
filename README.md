@@ -1,6 +1,9 @@
 # LINQ
 
 [![Build Status](https://travis-ci.org/davidanthoff/LINQ.jl.svg?branch=master)](https://travis-ci.org/davidanthoff/LINQ.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/0jys47jov7m7hb8j/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/linq-jl/branch/master)
+[![codecov](https://codecov.io/gh/davidanthoff/LINQ.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/davidanthoff/LINQ.jl)
+[![Coverage Status](https://coveralls.io/repos/github/davidanthoff/LINQ.jl/badge.svg?branch=master)](https://coveralls.io/github/davidanthoff/LINQ.jl?branch=master)
 
 The code is at best a sketch of an idea, certainly not ready to be used for anything. The main purpose is to try out various things and see whether it is worth pursuing them.
 
