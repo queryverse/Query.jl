@@ -14,8 +14,8 @@ import Base.eltype
 
 export @from, query
 
-include("Enumerable.jl")
-include("Queryable.jl")
+include("enumerable.jl")
+include("queryable.jl")
 
 include("sources/source_array.jl")
 include("sources/source_iterable.jl")
