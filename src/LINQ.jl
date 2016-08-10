@@ -11,6 +11,7 @@ import Base.done
 import Base.collect
 import Base.length
 import Base.eltype
+import Base.join
 
 export @from, query
 
@@ -44,21 +45,39 @@ macro from(range::Expr, body::Expr, final_call=nothing)
 		result_expression = :(LINQ.query($(esc(source))))
 	end
 
-	for clause in body.args
-		if clause.head==:line
-		elseif clause.head==:macrocall
+	body.args = filter(i->i.head!=:line,body.args)
+
+	i = 1
+	while i<=length(body.args)
+		clause = body.args[i]
+		if clause.head==:macrocall
 			if clause.args[1]==Symbol("@select")
 				func_call = Expr(:->, range_var, clause.args[2])
 				result_expression = :(LINQ.@select($result_expression, $(esc(func_call))))
 			elseif clause.args[1]==Symbol("@where")
 				func_call = Expr(:->, range_var, clause.args[2])
 				result_expression = :(LINQ.@where($result_expression, $(esc(func_call))))
+			elseif clause.args[1]==Symbol("@join")
+				inner_range_var = clause.args[2].args[2]
+				inner_source = :(LINQ.query($(esc(clause.args[2].args[3]))))
+
+				outerkey_func_call = Expr(:->, range_var, clause.args[4])
+				innerkey_func_call = Expr(:->, inner_range_var, clause.args[6])
+
+				if i<length(body.args) && body.args[i+1].head==:macrocall && body.args[i+1].args[1]==Symbol("@select")
+					result_func_call = Expr(:->, Expr(:tuple,range_var,inner_range_var), body.args[i+1].args[2])
+					i=i+1
+				else
+					error("Not yet supported")
+				end
+				result_expression = :(LINQ.@join($result_expression, $inner_source, $(esc(outerkey_func_call)), $(esc(innerkey_func_call)), $(esc(result_func_call))))
 			else
 				error()
 			end
 		else
 			error()
 		end
+		i=i+1
 	end
 
 	if final_call!=nothing
@@ -81,6 +100,16 @@ macro select(source, f)
     quote
         select($(esc(source)), $(esc(q)))
     end
+end
+
+macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
+	q_outerKeySelector = Expr(:quote, outerKeySelector)
+	q_innerKeySelector = Expr(:quote, innerKeySelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	quote
+		join($(esc(outer)), $(esc(inner)), $(esc(q_outerKeySelector)),$(esc(q_innerKeySelector)),$(esc(q_resultSelector)))
+	end
 end
 
 end # module
