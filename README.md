@@ -16,13 +16,12 @@ Pkg.clone("https://github.com/davidanthoff/LINQ.jl.git")
 You then need to be on master or other branches for various packages:
 ````julia
 Pkg.checkout("DataFrames", "nl/nullable")
-# I'm not sure the following line works, you might have to manually
-# checkout that commit with git...
-Pkg.checkout("DataStreams", "c46a5a1bb207a38d604be5bf8a8ab43474de04c8")
 Pkg.checkout("WeakRefStrings")
 Pkg.checkout("TypedTables")
 Pkg.checkout("SQLite")
 ````
+You have to manually checkout commit c46a5a1bb207a38d604be5bf8a8ab43474de04c8 for the DataStreams package.
+
 Finally, you need to clone the [FunctionWrappers.jl](https://github.com/yuyichao/FunctionWrappers.jl) package:
 ````julia
 Pkg.clone("https://github.com/yuyichao/FunctionWrappers.jl.git")
