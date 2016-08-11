@@ -9,7 +9,11 @@ notifications:
   email: false
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone("https://github.com/yuyichao/FunctionWrappers.jl.git")'
+  - julia -e 'Pkg.checkout("DataFrames", "nl/nullable")'
+  - julia -e 'Pkg.checkout("DataStreams", "c46a5a1bb207a38d604be5bf8a8ab43474de04c8")'
+  - julia -e 'Pkg.checkout("WeakRefStrings")'
+  - julia -e 'Pkg.checkout("TypedTables")'
+  - julia -e 'Pkg.checkout("SQLite")'
   - julia -e 'Pkg.clone(pwd()); Pkg.build("LINQ"); Pkg.test("LINQ"; coverage=true)'
 after_success:
   - julia -e 'cd(Pkg.dir("LINQ")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
