@@ -1,4 +1,4 @@
-using DataFrames, LINQ, Lazy, NamedTuples
+using DataFrames, LINQ, NamedTuples
 
 include("prep_data.jl")
 

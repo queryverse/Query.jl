@@ -2,7 +2,6 @@ using SQLite
 using LINQ
 using DataFrames
 using NamedTuples
-using Lazy
 
 db = SQLite.DB(joinpath(Pkg.dir("SQLite"), "test", "Chinook_Sqlite.sqlite"))
 
