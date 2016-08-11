@@ -31,9 +31,7 @@ build_script:
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"WeakRefStrings\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"TypedTables\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"SQLite\")"
-  - ps: >-
-      sl ~\.julia\v0.5\DataStreams
-      git checkout c46a5a1bb207a38d604be5bf8a8ab43474de04c8
+  - cd ~\.julia\v0.5\DataStreams & git checkout c46a5a1bb207a38d604be5bf8a8ab43474de04c8
   - C:\projects\julia\bin\julia -e "versioninfo(); Pkg.build(\"LINQ\")"
 
 test_script:
