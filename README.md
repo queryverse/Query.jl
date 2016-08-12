@@ -2,7 +2,7 @@
 
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Build Status](https://travis-ci.org/davidanthoff/Query.jl.svg?branch=master)](https://travis-ci.org/davidanthoff/Query.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/0jys47jov7m7hb8j/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/Query-jl/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/9xdm60oa50uw5eru/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/query-jl/branch/master)
 [![codecov](https://codecov.io/gh/davidanthoff/Query.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/davidanthoff/Query.jl)
 [![Coverage Status](https://coveralls.io/repos/github/davidanthoff/Query.jl/badge.svg?branch=master)](https://coveralls.io/github/davidanthoff/Query.jl?branch=master)
 
