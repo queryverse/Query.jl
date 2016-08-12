@@ -27,7 +27,6 @@ build_script:
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "Pkg.clone(\"https://github.com/yuyichao/FunctionWrappers.jl.git\")"
   - C:\projects\julia\bin\julia -e "Pkg.clone(pwd(), \"Query\")"
-  - C:\projects\julia\bin\julia -e "Pkg.checkout(\"DataFrames\", \"nl/nullable\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"TypedTables\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"SQLite\")"
   - C:\projects\julia\bin\julia -e "versioninfo(); Pkg.build(\"Query\")"
