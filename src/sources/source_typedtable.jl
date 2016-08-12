@@ -15,11 +15,11 @@ function query(df::TypedTables.Table)
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
 
-    t2 = :(LINQ.EnumerableTypedTable{Float64,Float64})
+    t2 = :(Query.EnumerableTypedTable{Float64,Float64})
     t2.args[2] = t_expr
     t2.args[3] = df_columns_tuple_type
 
-    eval(NamedTuples, :(import LINQ))
+    eval(NamedTuples, :(import Query))
     t = eval(NamedTuples, t2)
 
     e_df = t(df, df.data)

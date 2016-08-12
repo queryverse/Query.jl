@@ -1,13 +1,13 @@
-using DataFrames, LINQ, NamedTuples
+using DataFrames, Query, NamedTuples
 
 include("prep_data.jl")
 
 function foo_a(df)
-    return LINQ.collect(LINQ.@select(LINQ.@where(LINQ.query(df),i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)), DataFrame)
+    return Query.collect(Query.@select(Query.@where(Query.query(df),i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)), DataFrame)
 end
 
 function foo_b(df)
-    return LINQ.collect(LINQ.@select(LINQ.@where(LINQ.query(df),i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)))
+    return Query.collect(Query.@select(Query.@where(Query.query(df),i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)))
 end
 
 immutable Mydata

@@ -16,7 +16,7 @@ script:
   - julia -e 'Pkg.checkout("TypedTables")'
   - julia -e 'Pkg.checkout("SQLite")'
   - cd ~/.julia/v0.5/DataStreams; git checkout c46a5a1bb207a38d604be5bf8a8ab43474de04c8
-  - julia -e 'Pkg.build("LINQ"); Pkg.test("LINQ"; coverage=true)'
+  - julia -e 'Pkg.build("Query"); Pkg.test("Query"; coverage=true)'
 after_success:
-  - julia -e 'cd(Pkg.dir("LINQ")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-  - julia -e 'cd(Pkg.dir("LINQ")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
+  - julia -e 'cd(Pkg.dir("Query")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+  - julia -e 'cd(Pkg.dir("Query")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'

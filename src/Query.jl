@@ -1,4 +1,4 @@
-module LINQ
+module Query
 
 using DataFrames
 using TypedTables
@@ -42,7 +42,7 @@ macro from(range::Expr, body::Expr, final_call=nothing)
 	if isa(source, Expr) && source.head==:call && source.args[1]==:query
 		result_expression = :($(esc(source)))
 	else
-		result_expression = :(LINQ.query($(esc(source))))
+		result_expression = :(Query.query($(esc(source))))
 	end
 
 	body.args = filter(i->i.head!=:line,body.args)
@@ -53,13 +53,13 @@ macro from(range::Expr, body::Expr, final_call=nothing)
 		if clause.head==:macrocall
 			if clause.args[1]==Symbol("@select")
 				func_call = Expr(:->, range_var, clause.args[2])
-				result_expression = :(LINQ.@select($result_expression, $(esc(func_call))))
+				result_expression = :(Query.@select($result_expression, $(esc(func_call))))
 			elseif clause.args[1]==Symbol("@where")
 				func_call = Expr(:->, range_var, clause.args[2])
-				result_expression = :(LINQ.@where($result_expression, $(esc(func_call))))
+				result_expression = :(Query.@where($result_expression, $(esc(func_call))))
 			elseif clause.args[1]==Symbol("@join")
 				inner_range_var = clause.args[2].args[2]
-				inner_source = :(LINQ.query($(esc(clause.args[2].args[3]))))
+				inner_source = :(Query.query($(esc(clause.args[2].args[3]))))
 
 				outerkey_func_call = Expr(:->, range_var, clause.args[4])
 				innerkey_func_call = Expr(:->, inner_range_var, clause.args[6])
@@ -70,7 +70,7 @@ macro from(range::Expr, body::Expr, final_call=nothing)
 				else
 					error("Not yet supported")
 				end
-				result_expression = :(LINQ.@join($result_expression, $inner_source, $(esc(outerkey_func_call)), $(esc(innerkey_func_call)), $(esc(result_func_call))))
+				result_expression = :(Query.@join($result_expression, $inner_source, $(esc(outerkey_func_call)), $(esc(innerkey_func_call)), $(esc(result_func_call))))
 			else
 				error()
 			end

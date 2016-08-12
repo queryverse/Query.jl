@@ -1,4 +1,4 @@
-using LINQ
+using Query
 using DataFrames
 using NamedTuples
 using TypedTables

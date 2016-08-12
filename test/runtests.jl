@@ -1,4 +1,4 @@
-using LINQ
+using Query
 using Base.Test
 
 # For now just make sure all the examples run without errors

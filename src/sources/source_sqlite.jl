@@ -25,10 +25,10 @@ function query(db::SQLite.DB, tablename::AbstractString)
     t_expr = NamedTuples.make_tuple(col_expressions)
     #t_expr.args[1] = t_expr.args[1].args[1]
 
-    t2 = :(LINQ.QueryableSQLite{Float64,LINQ.QueryProviderSQLite})
+    t2 = :(Query.QueryableSQLite{Float64,Query.QueryProviderSQLite})
     t2.args[2] = t_expr
 
-    eval(NamedTuples, :(import LINQ))
+    eval(NamedTuples, :(import Query))
     t = eval(NamedTuples, t2)
 
     q = t(db, tablename)
