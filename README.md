@@ -10,19 +10,15 @@ The code is at best a sketch of an idea, certainly not ready to be used for anyt
 
 ## Installation
 
-This package only works on julia 0.5- and newer. First, clone this package:
+This package only works on julia 0.5- and newer. First, clone these packages:
 ````julia
 Pkg.clone("https://github.com/davidanthoff/Query.jl.git")
+Pkg.clone("https://github.com/yuyichao/FunctionWrappers.jl.git")
 ````
-You then need to be on master or other branches for various packages:
+You then need to be on master for these packages:
 ````julia
-Pkg.checkout("DataFrames", "nl/nullable")
 Pkg.checkout("TypedTables")
 Pkg.checkout("SQLite")
-````
-Finally, you need to clone the [FunctionWrappers.jl](https://github.com/yuyichao/FunctionWrappers.jl) package:
-````julia
-Pkg.clone("https://github.com/yuyichao/FunctionWrappers.jl.git")
 ````
 
 ## Getting started

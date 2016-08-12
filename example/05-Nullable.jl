@@ -1,8 +1,8 @@
 using Query
-using DataFrames
+using TypedTables
 using NamedTuples
 
-df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
+df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int64}[3,5,2])
 
 # The generaly philosophy here is to not offer anything beyond standard julia
 # Nullables

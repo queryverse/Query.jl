@@ -1,6 +1,5 @@
 julia 0.5-
 DataFrames
 NamedTuples 1.0.0
-NullableArrays
 SQLite
 TypedTables
