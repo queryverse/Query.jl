@@ -6,6 +6,7 @@ df2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])
 x = @from i in df1 begin
     @join j in df2 on i.a equals convert(Int,j.c)
     @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>"Name: $(j.d)")
-end collect(DataFrame)
+    @collect DataFrame
+end
 
 println(x)

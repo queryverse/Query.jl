@@ -26,90 +26,130 @@ include("sources/source_typedtable.jl")
 
 include("collect.jl")
 
-macro from(range::Expr, body::Expr, final_call=nothing)
+function query_expression_translation_phase_A(qe)
+	i = 1
+	while i<=length(qe)
+		clause = qe[i]
+		if clause.head==:macrocall && clause.args[1]==Symbol("@from")
+			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
+			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+		end
+		i+=1
+	end
+end
+
+function query_expression_translation_phase_4(qe)
+	i = 1
+	while i<=length(qe)
+		clause = qe[i]
+		if clause.head==:macrocall && clause.args[1]==Symbol("@where")
+			from_clause = qe[i-1]
+			if from_clause.head!=:macrocall || from_clause.args[1]!=Symbol("@from")
+				error("Error in phase 4")
+			end
+			range_var = from_clause.args[2].args[2]
+			func_call = Expr(:->, range_var, clause.args[2])
+			from_clause.args[2].args[3] = :( Query.@where_internal($(from_clause.args[2].args[3]), $(esc(func_call))) )
+			deleteat!(qe,i)
+		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join") && qe[i+1].head==:macrocall && qe[i+1].args[1]==Symbol("@select") && qe[i-1].head==:macrocall && qe[i-1].args[1]==Symbol("@from")
+			outer = qe[i-1].args[2].args[3]
+			inner = clause.args[2].args[3]
+			outer_range_var = qe[i-1].args[2].args[2]
+			inner_range_var = clause.args[2].args[2]
+			f_outer_key = Expr(:->, outer_range_var, clause.args[4])
+			f_inner_key = Expr(:->, inner_range_var, clause.args[6])
+			f_result = Expr(:->, Expr(:tuple,outer_range_var,inner_range_var), qe[i+1].args[2])
+			qe[i-1] = :(
+				Query.@join_internal($outer, $inner, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
+				)
+			deleteat!(qe,i+1)
+			deleteat!(qe,i)
+		else
+			i+=1
+		end
+	end
+end
+
+function query_expression_translation_phase_5(qe)
+	i = 1
+	while i<=length(qe)
+		clause = qe[i]
+		if clause.head==:macrocall && clause.args[1]==Symbol("@select")
+			from_clause = qe[i-1]
+			if from_clause.head!=:macrocall || from_clause.args[1]!=Symbol("@from")
+				error("Error in phase 5")
+			end
+			range_var = from_clause.args[2].args[2]
+			source = from_clause.args[2].args[3]
+			if clause.args[2]==range_var
+				qe[i-1] = source
+			else
+				func_call = Expr(:->, range_var, clause.args[2])
+				qe[i-1] = :( Query.@select_internal($source, $(esc(func_call))) )
+			end
+			deleteat!(qe,i)
+		else
+			i+=1
+		end
+	end
+end
+
+function query_expression_translation_phase_B(qe)
+	i = 1
+	while i<=length(qe)
+		clause = qe[i]
+		if clause.head==:macrocall && clause.args[1]==Symbol("@collect")
+			previous_clause = qe[i-1]
+			if length(clause.args)==1
+				qe[i-1] = :( collect($previous_clause) )
+			else
+				qe[i-1] = :( collect($previous_clause, $(esc(clause.args[2]))) )
+			end
+			deleteat!(qe,i)
+		else
+			i+=1
+		end
+	end
+end
+
+macro from(range::Expr, body::Expr)
 	if range.head!=:call || range.args[1]!=:in
 		error()
 	end
-	range_var = range.args[2]
-	source = range.args[3]
 
 	if body.head!=:block
 		error()
 	end
 
-	local result_expression::Expr
-
-	if isa(source, Expr) && source.head==:call && source.args[1]==:query
-		result_expression = :($(esc(source)))
-	else
-		result_expression = :(Query.query($(esc(source))))
-	end
-
 	body.args = filter(i->i.head!=:line,body.args)
 
-	i = 1
-	while i<=length(body.args)
-		clause = body.args[i]
-		if clause.head==:macrocall
-			if clause.args[1]==Symbol("@select")
-				func_call = Expr(:->, range_var, clause.args[2])
-				result_expression = :(Query.@select($result_expression, $(esc(func_call))))
-			elseif clause.args[1]==Symbol("@where")
-				func_call = Expr(:->, range_var, clause.args[2])
-				result_expression = :(Query.@where($result_expression, $(esc(func_call))))
-			elseif clause.args[1]==Symbol("@join")
-				inner_range_var = clause.args[2].args[2]
-				inner_source = :(Query.query($(esc(clause.args[2].args[3]))))
+	insert!(body.args,1,:( @from $(range.args[2]) in $(range.args[3]) ))
 
-				outerkey_func_call = Expr(:->, range_var, clause.args[4])
-				innerkey_func_call = Expr(:->, inner_range_var, clause.args[6])
+	query_expression_translation_phase_A(body.args)
+	query_expression_translation_phase_4(body.args)
+	query_expression_translation_phase_5(body.args)
+	query_expression_translation_phase_B(body.args)
 
-				if i<length(body.args) && body.args[i+1].head==:macrocall && body.args[i+1].args[1]==Symbol("@select")
-					result_func_call = Expr(:->, Expr(:tuple,range_var,inner_range_var), body.args[i+1].args[2])
-					i=i+1
-				else
-					error("Not yet supported")
-				end
-				result_expression = :(Query.@join($result_expression, $inner_source, $(esc(outerkey_func_call)), $(esc(innerkey_func_call)), $(esc(result_func_call))))
-			else
-				error()
-			end
-		else
-			error()
-		end
-		i=i+1
-	end
-
-	if final_call!=nothing
-		insert!(final_call.args, 2, result_expression)
-		result_expression = final_call
-	end
-
-	return result_expression
+	return body.args[1]
 end
 
-macro where(source, f)
+macro where_internal(source, f)
 	q = Expr(:quote, f)
-    quote
-        where($(esc(source)), $(esc(q)))
-    end
+    :(where($(esc(source)), $(esc(q))))
 end
 
-macro select(source, f)
+macro select_internal(source, f)
 	q = Expr(:quote, f)
-    quote
-        select($(esc(source)), $(esc(q)))
-    end
+    :(select($(esc(source)), $(esc(q))))
 end
 
-macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
+macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
 	q_outerKeySelector = Expr(:quote, outerKeySelector)
 	q_innerKeySelector = Expr(:quote, innerKeySelector)
 	q_resultSelector = Expr(:quote, resultSelector)
 
-	quote
-		join($(esc(outer)), $(esc(inner)), $(esc(q_outerKeySelector)),$(esc(q_innerKeySelector)),$(esc(q_resultSelector)))
-	end
+	:(join($(esc(outer)), $(esc(inner)), $(esc(q_outerKeySelector)),$(esc(q_innerKeySelector)),$(esc(q_resultSelector))))
 end
 
 end # module

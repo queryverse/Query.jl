@@ -13,6 +13,7 @@ df = DataFrame(columns, [:name, :age, :children])
 x = @from i in df begin
     @where i.age>30. && i.children > 2
     @select @NT(Name=>lowercase(i.name))
-end collect(DataFrame)
+    @collect DataFrame
+end
 
 println(x)

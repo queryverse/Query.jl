@@ -14,13 +14,15 @@ push!(source, Person("Sally", ["Don", "Martin"]))
 result = @from i in source begin
          @where length(i.Friends) > 2
          @select @NT( Name=>i.Name, Friendcount=>length(i.Friends))
-end collect()
+         @collect
+end
 
 println(result)
 
 result = @from i in source begin
          @where length(i.Friends) > 2
          @select @NT( Name=>i.Name, Friendcount=>length(i.Friends))
-end collect(DataFrame)
+         @collect DataFrame
+end
 
 println(result)

@@ -1,6 +1,7 @@
 using Query
 using TypedTables
 using NamedTuples
+using DataFrames
 
 df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int64}[3,5,2])
 
@@ -9,6 +10,7 @@ df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64
 x = @from i in df begin
     @where get(i.age)>30. && get(i.children) >2
     @select @NT(Name=>lowercase(get(i.name)))
-end collect(DataFrame)
+    @collect DataFrame
+end
 
 println(x)
