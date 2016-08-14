@@ -12,7 +12,6 @@ The code is at best a sketch of an idea, certainly not ready to be used for anyt
 This package only works on julia 0.5- and newer. First, clone these packages:
 ````julia
 Pkg.clone("https://github.com/davidanthoff/Query.jl.git")
-Pkg.clone("https://github.com/yuyichao/FunctionWrappers.jl.git")
 ````
 You then need to be on master for these packages:
 ````julia

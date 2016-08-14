@@ -9,7 +9,6 @@ notifications:
   email: false
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone("https://github.com/yuyichao/FunctionWrappers.jl.git")'
   - julia -e 'Pkg.clone(pwd())'
   - julia -e 'Pkg.checkout("TypedTables")'
   - julia -e 'Pkg.checkout("SQLite")'

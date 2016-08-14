@@ -25,7 +25,6 @@ install:
 build_script:
 # Need to convert from shallow to complete for Pkg.clone to work
   - IF EXIST .git\shallow (git fetch --unshallow)
-  - C:\projects\julia\bin\julia -e "Pkg.clone(\"https://github.com/yuyichao/FunctionWrappers.jl.git\")"
   - C:\projects\julia\bin\julia -e "Pkg.clone(pwd(), \"Query\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"TypedTables\")"
   - C:\projects\julia\bin\julia -e "Pkg.checkout(\"SQLite\")"

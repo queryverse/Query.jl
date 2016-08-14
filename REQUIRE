@@ -3,3 +3,4 @@ DataFrames
 NamedTuples 1.0.0
 SQLite
 TypedTables
+FunctionWrappers
