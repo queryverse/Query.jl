@@ -9,7 +9,7 @@ The code is at best a sketch of an idea, certainly not ready to be used for anyt
 
 ## Installation
 
-This package only works on julia 0.5- and newer. First, clone these packages:
+This package only works on julia 0.5- and newer. First, clone the package:
 ````julia
 Pkg.clone("https://github.com/davidanthoff/Query.jl.git")
 ````
