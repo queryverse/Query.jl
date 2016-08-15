@@ -1,4 +1,4 @@
-using SQLite
+@require SQLite begin
 
 immutable QueryableSQLite{T,Provider} <: Queryable{T,Provider}
     db::SQLite.DB
@@ -92,4 +92,6 @@ function collect(::Type{QueryProviderSQLite}, source)
     df = SQLite.query(root.db, sql_query)
 
     collect(query(df))
+end
+
 end

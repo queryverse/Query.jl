@@ -1,3 +1,5 @@
+@require TypedTables begin
+
 immutable EnumerableTypedTable{T, TS} <: Enumerable{T}
     df::TypedTables.Table
     # This field hols a tuple with the columns of the DataFrame.
@@ -55,4 +57,6 @@ end
 
 function done{T,TS}(iter::EnumerableTypedTable{T,TS}, state)
     return state>size(iter.df,1)
+end
+
 end

@@ -1,14 +1,16 @@
+@require DataFrames begin
+
 # T is the type of the elements produced
 # TS is a tuple type that stores the columns of the DataFrame
 immutable EnumerableDF{T, TS} <: Enumerable{T}
-    df::DataFrame
+    df::DataFrames.DataFrame
     # This field hols a tuple with the columns of the DataFrame.
     # Having a tuple of the columns here allows the iterator
     # functions to access the columns in a type stable way.
     columns::TS
 end
 
-function query(df::DataFrame)
+function query(df::DataFrames.DataFrame)
     col_expressions = Array{Expr,1}()
     df_columns_tuple_type = Expr(:curly, :Tuple)
     for i in 1:length(df.columns)
@@ -57,4 +59,6 @@ end
 
 function done{T,TS}(iter::EnumerableDF{T,TS}, state)
     return state>size(iter.df,1)
+end
+
 end

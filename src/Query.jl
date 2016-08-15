@@ -1,7 +1,6 @@
 module Query
 
-using DataFrames
-using TypedTables
+using Requires
 using NamedTuples
 using DataStructures
 import FunctionWrappers: FunctionWrapper
@@ -25,7 +24,8 @@ include("sources/source_dataframe.jl")
 include("sources/source_sqlite.jl")
 include("sources/source_typedtable.jl")
 
-include("collect.jl")
+include("sinks/sink_array.jl")
+include("sinks/sink_dataframe.jl")
 
 function query_expression_translation_phase_A(qe)
 	i = 1
