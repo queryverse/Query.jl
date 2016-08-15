@@ -189,6 +189,7 @@ function query_expression_translation_phase_B(qe)
 end
 
 macro from(range::Expr, body::Expr)
+	debug_output = true
 	if range.head!=:call || range.args[1]!=:in
 		error()
 	end
@@ -201,13 +202,28 @@ macro from(range::Expr, body::Expr)
 
 	insert!(body.args,1,:( @from $(range.args[2]) in $(range.args[3]) ))
 
+	debug_output && println("AT START")
+	debug_output && println(body)
+
 	query_expression_translation_phase_A(body.args)
+	debug_output && println("AFTER A")
+	debug_output && println(body)
+
 	query_expression_translation_phase_4(body.args)
+	debug_output && println("AFTER 4")
+	debug_output && println(body)
+
 	query_expression_translation_phase_5(body.args)
+	debug_output && println("AFTER 5")
+	debug_output && println(body)
 
 	query_expression_translation_phase_7(body.args)
+	debug_output && println("AFTER 7")
+	debug_output && println(body)
 
 	query_expression_translation_phase_B(body.args)
+	debug_output && println("AFTER B")
+	debug_output && println(body)
 
 	return body.args[1]
 end
