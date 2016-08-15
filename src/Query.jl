@@ -189,7 +189,7 @@ function query_expression_translation_phase_B(qe)
 end
 
 macro from(range::Expr, body::Expr)
-	debug_output = true
+	debug_output = false
 	if range.head!=:call || range.args[1]!=:in
 		error()
 	end
