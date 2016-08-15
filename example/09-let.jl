@@ -11,8 +11,8 @@ push!(columns, [3,5,2])
 df = DataFrame(columns, [:name, :age, :children])
 
 x = @from i in df begin
-	@let count = length(i.name)
-	@where count > 4
+    @let count = length(i.name)
+    @where count > 4
     @select @NT(Name=>i.name, Count=>count)
     @collect DataFrame
 end
