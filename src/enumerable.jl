@@ -12,11 +12,6 @@ immutable EnumerableWhereState{T,S}
     source_state::S
 end
 
-function where{T}(source::Enumerable{T}, filter::Function)
-    S = typeof(source)
-    return EnumerableWhere{T,S,FunctionWrapper{Bool,Tuple{T}}}(source, filter)
-end
-
 function where{T}(source::Enumerable{T}, filter_expr::Expr)
     filter = eval(filter_expr)
     S = typeof(source)
@@ -61,12 +56,6 @@ done{T,S,Q}(f::EnumerableWhere{T,S,Q}, state) = state.done
 immutable EnumerableSelect{T, S, Q} <: Enumerable{T}
     source::S
     f::Q
-end
-
-function select{TS}(source::Enumerable{TS}, f::Function)
-    T = Base.return_types(f, (TS,))[1]
-    S = typeof(source)
-    return EnumerableSelect{T,S,FunctionWrapper{T,Tuple{TS}}}(source, f)
 end
 
 function select{TS}(source::Enumerable{TS}, f_expr::Expr)
