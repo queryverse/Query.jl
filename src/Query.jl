@@ -3,6 +3,7 @@ module Query
 using DataFrames
 using TypedTables
 using NamedTuples
+using DataStructures
 import FunctionWrappers: FunctionWrapper
 
 import Base.start
@@ -115,6 +116,40 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, x1, x2)
 			qe[1].args[2].args[3] = :( Query.@join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
+		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@orderby")
+			e = qe[1].args[2].args[3]
+			x = qe[1].args[2].args[2]
+			ks = []
+			if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:tuple
+				error("Nested sorting not yet supported")
+			else
+				if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:call && qe[2].args[2].args[1]==:descending
+					k = qe[2].args[2].args[2]
+					direction = :descending
+				elseif isa(qe[2].args[2], Expr) && qe[2].args[2].head==:call && qe[2].args[2].args[1]==:ascending
+					k = qe[2].args[2].args[2]
+					direction = :ascending
+				else
+					k = qe[2].args[2]
+					direction = :ascending
+				end
+				push!(ks, (k, direction))
+			end
+
+			if length(ks)==1
+				f_condition = Expr(:->, x, ks[1][1])
+
+				if ks[1][2]==:ascending
+					qe[1].args[2].args[3] = :( Query.@orderby_internal($e,$(esc(f_condition))) )
+				elseif ks[1][2]==:descending
+					qe[1].args[2].args[3] = :( Query.@orderby_descending_internal($e,$(esc(f_condition))) )
+				else
+					error()
+				end
+				deleteat!(qe,2)
+			else
+				error()
+			end
 		else
 			done = true
 		end
@@ -248,6 +283,16 @@ end
 macro select_internal(source, f)
 	q = Expr(:quote, f)
     :(select($(esc(source)), $(esc(q))))
+end
+
+macro orderby_internal(source, f)
+	q = Expr(:quote, f)
+    :(orderby($(esc(source)), $(esc(q))))
+end
+
+macro orderby_descending_internal(source, f)
+	q = Expr(:quote, f)
+    :(orderby_descending($(esc(source)), $(esc(q))))
 end
 
 macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSelector)

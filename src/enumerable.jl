@@ -93,6 +93,43 @@ function done{T,S,Q}(iter::EnumerableSelect{T,S,Q}, state)
     return done(iter.source, state)
 end
 
+immutable EnumerableOrderby{T,S,KS,TKS} <: Enumerable{T}
+    source::S
+    keySelector::KS
+    descending::Bool
+end
+
+function orderby{T}(source::Enumerable{T}, f_expr::Expr)
+    f = eval(f_expr)
+    TKS = Base.return_types(f, (T,))[1]
+    return EnumerableOrderby{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, false)
+end
+
+function orderby_descending{T}(source::Enumerable{T}, f_expr::Expr)
+    f = eval(f_expr)
+    TKS = Base.return_types(f, (T,))[1]
+    return EnumerableOrderby{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, true)
+end
+
+
+# TODO This should be changed to a lazy implementation
+function start{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS})
+    dict = Dict{TKS,T}()
+    for i in iter.source
+        dict[iter.keySelector(i)] = i
+    end
+
+    sortedDict = SortedDict(dict, iter.descending ? Base.Reverse : Base.Forward)
+    return sortedDict, start(sortedDict)
+end
+
+function next{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}, state)
+    v, new_state = next(state[1], state[2])
+    return v[2], (state[1], new_state)
+end
+
+done{T,S,KS,TKS}(f::EnumerableOrderby{T,S,KS,TKS}, state) = done(state[1], state[2])
+
 immutable EnumerableJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable{T}
     outer::SO
     inner::SI
