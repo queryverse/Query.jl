@@ -55,6 +55,18 @@ function query_expression_translation_phase_4(qe)
 			qe[1] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,3)
 			deleteat!(qe,2)
+		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@from")
+			x1 = qe[1].args[2].args[2]
+			x2 = qe[2].args[2].args[2]
+			e1 = qe[1].args[2].args[3]
+			e2 = qe[2].args[2].args[3]
+
+			f_collection_selector = Expr(:->, x1, e2)
+			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=>$x1,$x2=>$x2)))
+
+			qe[1].args[2].args[2] = Expr(:transparentidentifier, x1, x2)
+			qe[1].args[2].args[3] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			deleteat!(qe,2)
 		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@let")
 			x = qe[1].args[2].args[2]
 			e = qe[1].args[2].args[3]
