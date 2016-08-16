@@ -28,7 +28,7 @@ println(x)
 
 # output
 
-1×1 DataFrames.DataFrame
+1×1 DataFrames.DataFrames
 │ Row │ Name    │
 ├─────┼─────────┤
 │ 1   │ "sally" │
