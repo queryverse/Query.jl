@@ -65,7 +65,7 @@ function query_expression_translation_phase_4(qe)
 			f_collection_selector = Expr(:->, x1, e2)
 			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=>$x1,$x2=>$x2)))
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, x1, x2)
+			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@let")
@@ -76,7 +76,7 @@ function query_expression_translation_phase_4(qe)
 
 			f_selector = Expr(:->, x, :(@NT($x=>$x,$y=>$f)))
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, x, y)
+			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
 			qe[1].args[2].args[3] = :( Query.@select_internal($e,$(esc(f_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@where")
@@ -113,7 +113,7 @@ function query_expression_translation_phase_4(qe)
 			f_inner_key = Expr(:->, x2, k2)
 			f_result = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=>$x1,$x2=>$x2)) )
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, x1, x2)
+			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@orderby")
@@ -182,27 +182,51 @@ end
 
 # Phase 7
 
-function replace_transparent_identifier_in_anonym_func(ex::Expr, identifier, children)
+function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in_scope)
 	for (i,child_ex) in enumerate(ex.args)
 		if isa(child_ex, Expr)
-			replace_transparent_identifier_in_anonym_func(child_ex, identifier, children)
-		elseif isa(child_ex, Symbol) && in(child_ex, children)
-			if !(ex.head==Symbol("=>") && i==1)
-				ex.args[i] = Expr(:., identifier, QuoteNode(child_ex))
+			replace_transparent_identifier_in_anonym_func(child_ex, names_to_put_in_scope)
+		elseif isa(child_ex, Symbol)
+			index_of_name = findfirst(j->child_ex==j[2], names_to_put_in_scope)
+			if index_of_name>0 && !(ex.head==Symbol("=>") && i==1)
+				ex.args[i] = Expr(:., names_to_put_in_scope[index_of_name][1], QuoteNode(child_ex))
 			end
 		end
 	end
 end
 
+function find_names_to_put_in_scope(ex::Expr)
+	names = []
+	for child_ex in ex.args[2:end]
+		if isa(child_ex,Expr) && child_ex.head==:transparentidentifier
+			child_names = find_names_to_put_in_scope(child_ex)
+			for child_name in child_names
+				push!(names, (Expr(:., ex.args[1], QuoteNode(child_name[1])), child_name[2]))
+			end
+		elseif isa(child_ex, Symbol)
+			push!(names,(ex.args[1],child_ex))
+		elseif isa(child_ex, Expr) && child_ex.head==:.
+			push!(names,(ex.args[1],child_ex.args[2].value))
+		else
+			error()
+		end
+	end
+	return names
+end
+
 function find_and_translate_transparent_identifier(ex::Expr)
+	# First expand any transparent identifiers in lambdas
 	if ex.head==:-> && isa(ex.args[1], Expr) && ex.args[1].head==:transparentidentifier
-		names_to_put_in_scope = ex.args[1].args
-		ex.args[1] = :x
-		replace_transparent_identifier_in_anonym_func(ex, :x, names_to_put_in_scope)
+		names_to_put_in_scope = find_names_to_put_in_scope(ex.args[1])
+		ex.args[1] = ex.args[1].args[1]
+		replace_transparent_identifier_in_anonym_func(ex, names_to_put_in_scope)
 	end
 
-	for child_ex in ex.args
-		if isa(child_ex, Expr)
+
+	for (i,child_ex) in enumerate(ex.args)
+		if isa(child_ex, Expr) && child_ex.head==:transparentidentifier
+			ex.args[i] = child_ex.args[1]
+		elseif isa(child_ex, Expr)
 			find_and_translate_transparent_identifier(child_ex)
 		end
 	end
