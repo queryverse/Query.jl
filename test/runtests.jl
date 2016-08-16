@@ -163,3 +163,7 @@ end
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
 end
+
+@testset "Doctests" begin
+    include("../docs/make.jl")
+end

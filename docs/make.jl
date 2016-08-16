@@ -1,5 +1,12 @@
 using Documenter, Query
 
+# Install dependencies and precompile everything
+Pkg.add("DataFrames")
+Pkg.add("TypedTables")
+using DataFrames
+using NamedTuples
+using TypedTables
+
 makedocs(
 	modules = [Query]
 )

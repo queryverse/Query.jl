@@ -1,16 +1,5 @@
 # Tutorial
 
-```@meta
-DocTestSetup = quote
-    Pkg.add("DataFrames")
-    Pkg.add("TypedTables")
-    using Query
-    using DataFrames
-    using NamedTuples
-    using TypedTables
-end
-```
-
 ## First steps
 
 You can use Query to filter and transform columns from a ``DataFrame`` and then create a new ``DataFrame`` for the output:
@@ -182,8 +171,4 @@ println(x)
 ├─────┼───┼─────┼─────┼─────────┼───────────────┤
 │ 1   │ 2 │ 2.0 │ 2.0 │ "John"  │ "Name: John"  │
 │ 2   │ 2 │ 2.0 │ 2.0 │ "Sally" │ "Name: Sally" │
-```
-
-```@meta
-DocTestSetup = nothing
 ```
