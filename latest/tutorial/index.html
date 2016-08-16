@@ -366,6 +366,7 @@ println(x)
 
 <p><a id='@join-statement-1'></a></p>
 <h2 id="join-statement">@join statement</h2>
+<p>The $@join$ statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a $DataFrame$ and a $TypedTable$ are joined and the results are collected into a $DataFrame$:</p>
 <pre><code class="julia">using DataFrames, Query, NamedTuples, TypedTables
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
