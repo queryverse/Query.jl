@@ -4,6 +4,16 @@
             "location": "/", 
             "text": "", 
             "title": "Home"
+        }, 
+        {
+            "location": "/introduction/", 
+            "text": "Introduction\n\n\nYou can use Query to filter and select from a $DataFrame$:\n\n\nusing Query\nusing DataFrames\nusing NamedTuples\n\ndf = DataFrame(name=[\nJohn\n, \nSally\n, \nKirk\n], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age\n30. \n i.children \n 2\n    @select @NT(Name=\nlowercase(i.name))\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3", 
+            "title": "Introduction"
+        }, 
+        {
+            "location": "/introduction/#introduction", 
+            "text": "You can use Query to filter and select from a $DataFrame$:  using Query\nusing DataFrames\nusing NamedTuples\n\ndf = DataFrame(name=[ John ,  Sally ,  Kirk ], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age 30.   i.children   2\n    @select @NT(Name= lowercase(i.name))\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3", 
+            "title": "Introduction"
         }
     ]
 }
