@@ -183,6 +183,28 @@
         
       
       
+        <ul>
+          
+            <li class="anchor">
+              <a title="First steps" href="#first-steps">
+                First steps
+              </a>
+            </li>
+          
+            <li class="anchor">
+              <a title="@let statement" href="#let-statement">
+                @let statement
+              </a>
+            </li>
+          
+            <li class="anchor">
+              <a title="@join statement" href="#join-statement">
+                @join statement
+              </a>
+            </li>
+          
+        </ul>
+      
     
   </li>
 
@@ -199,6 +221,8 @@
           
           <p><a id='Tutorial-1'></a></p>
 <h1 id="tutorial">Tutorial</h1>
+<p><a id='First-steps-1'></a></p>
+<h2 id="first-steps">First steps</h2>
 <p>You can use Query to filter and transform columns from a $DataFrame$ and then create a new $DataFrame$ for the output:</p>
 <pre><code class="julia">using Query, DataFrames, NamedTuples
 
@@ -269,7 +293,7 @@ println(result)
 │ 1   │ &quot;John&quot; │ 3           │
 </code></pre>
 
-<p>You also don't have to collect into a $DataFrame$, you can for example collect just one filted column into an $Array$:</p>
+<p>You also don't have to collect into a $DataFrame$, you can for example collect just one filtered column into an $Array$:</p>
 <pre><code class="julia">using Query, DataFrames, NamedTuples
 
 df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
@@ -304,6 +328,55 @@ end
 # output
 
 sally has 5 children.
+</code></pre>
+
+<p><a id='@let-statement-1'></a></p>
+<h2 id="let-statement">@let statement</h2>
+<p>The $@let$ statement allows you to define range variables inside your query:</p>
+<pre><code class="julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @let name_length = length(i.name)
+    @where name_length &lt;= 4
+    @select @NT(Name=&gt;lowercase(i.name), Length=&gt;name_length)
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+ 2×2 DataFrames.DataFrame
+│ Row │ Name   │ Length │
+├─────┼────────┼────────┤
+│ 1   │ &quot;john&quot; │ 4      │
+│ 2   │ &quot;kirk&quot; │ 4      │
+</code></pre>
+
+<p><a id='@join-statement-1'></a></p>
+<h2 id="join-statement">@join statement</h2>
+<pre><code class="julia">using DataFrames, Query, NamedTuples, TypedTables
+
+df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+df2 = @Table(c=[2.,4.,2.], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
+
+x = @from i in df1 begin
+    @join j in df2 on i.a equals convert(Int,j.c)
+    @select @NT(a=&gt;i.a,b=&gt;i.b,c=&gt;j.c,d=&gt;j.d,e=&gt;&quot;Name: $(j.d)&quot;)
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+2×5 DataFrames.DataFrame
+│ Row │ a │ b   │ c   │ d       │ e             │
+├─────┼───┼─────┼─────┼─────────┼───────────────┤
+│ 1   │ 2 │ 2.0 │ 2.0 │ &quot;John&quot;  │ &quot;Name: John&quot;  │
+│ 2   │ 2 │ 2.0 │ 2.0 │ &quot;Sally&quot; │ &quot;Name: Sally&quot; │
 </code></pre>
           <aside class="copyright" role="note">
             
