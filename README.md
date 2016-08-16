@@ -6,7 +6,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/9xdm60oa50uw5eru/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/query-jl/branch/master)
 [![codecov](https://codecov.io/gh/davidanthoff/Query.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/davidanthoff/Query.jl)
 
-The code is at best a sketch of an idea, certainly not ready to be used for anything. The main purpose is to try out various things and see whether it is worth pursuing them.
+Query is a packge for querying julia data sources. It can filter, project, join etc. data from any iterable data source.
 
 ## Installation
 
@@ -21,13 +21,4 @@ Pkg.checkout("SQLite")
 ````
 
 ## Getting started
-To get started, look at the code in the ``example`` folder.
-
-## Background
-This package is modeled closely after LINQ. If you are not familiar with LINQ, [this](https://msdn.microsoft.com/en-us/library/bb308959.aspx) is a great overview. It is especially recommended if you associate LINQ mainly with a query syntax in a language and don't know about the underlying language features and architecture, for example how anonymous types, lambdas and lots of other language features all play together. The query syntax is really just the tip of the iceberg.
-
-The core idea of this package right now is to iterate over ``NamedTuple``s. Starting with a ``DataFrame``, ``query`` will create an iterator that produces a ``NamedTuple`` that has a field for each column, and the ``collect`` method can turn a stream of ``NamedTuple``s back into a ``DataFrame``.
-
-If one starts with a queryable data source (like SQLite), the query will automatically be translated into SQL and executed in the database.
-
-The wording of methods and types currently follows LINQ, not julia conventions. This is mainly to prevent clashes while Query.jl is in development.
+To get started, work through the Tutorial in the [documentation](http://www.david-anthoff.com/Query.jl/latest/).

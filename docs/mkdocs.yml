@@ -28,3 +28,4 @@ docs_dir: 'build'
 pages:
   - Home: index.md
   - Tutorial: tutorial.md
+  - Internals: internals.md
