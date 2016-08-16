@@ -13,7 +13,7 @@ import Base.length
 import Base.eltype
 import Base.join
 
-export @from, query
+export @from
 
 include("enumerable.jl")
 include("queryable.jl")
