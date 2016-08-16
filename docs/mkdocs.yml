@@ -27,4 +27,4 @@ docs_dir: 'build'
 
 pages:
   - Home: index.md
-  - Introduction: introduction.md
+  - Tutorial: tutorial.md

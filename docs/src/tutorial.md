@@ -1,4 +1,4 @@
-# Introduction
+# Tutorial
 
 ```@meta
 DocTestSetup = quote
@@ -25,7 +25,10 @@ println(x)
 
 # output
 
-3
+1×1 DataFrames.DataFrame
+│ Row │ Name    │
+├─────┼─────────┤
+│ 1   │ "sally" │
 ```
 
 ```@meta
