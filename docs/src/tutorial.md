@@ -3,6 +3,9 @@
 ```@meta
 DocTestSetup = quote
     Pkg.add("DataFrames")
+    using Query
+    using DataFrames
+    using NamedTuples
 end
 ```
 
