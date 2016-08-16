@@ -12,8 +12,9 @@ df = DataFrame(columns, [:name, :age, :children])
 
 x = @from i in df begin
     @let count = length(i.name)
+    @let kids_per_year = i.children / i.age
     @where count > 4
-    @select @NT(Name=>i.name, Count=>count)
+    @select @NT(Name=>i.name, Count=>count, KidsPerYear=>kids_per_year)
     @collect DataFrame
 end
 
