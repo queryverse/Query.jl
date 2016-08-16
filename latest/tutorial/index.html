@@ -199,10 +199,8 @@
           
           <p><a id='Tutorial-1'></a></p>
 <h1 id="tutorial">Tutorial</h1>
-<p>You can use Query to filter and select from a $DataFrame$:</p>
-<pre><code class="julia">using Query
-using DataFrames
-using NamedTuples
+<p>You can use Query to filter and transform columns from a $DataFrame$ and then create a new $DataFrame$ for the output:</p>
+<pre><code class="julia">using Query, DataFrames, NamedTuples
 
 df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
 
@@ -220,6 +218,92 @@ println(x)
 │ Row │ Name    │
 ├─────┼─────────┤
 │ 1   │ &quot;sally&quot; │
+</code></pre>
+
+<p>You don't have to start with a $DataFrame$, you can also query a $Dict$ and then collect the results into a $DataFrame$:</p>
+<pre><code class="julia">using Query, DataFrames, NamedTuples
+
+source = Dict(&quot;John&quot;=&gt;34., &quot;Sally&quot;=&gt;56.)
+
+result = @from i in source begin
+         @where i.second&gt;36.
+         @select @NT(Name=&gt;lowercase(i.first))
+         @collect DataFrame
+end
+
+println(result)
+
+# output
+
+1×1 DataFrames.DataFrame
+│ Row │ Name    │
+├─────┼─────────┤
+│ 1   │ &quot;sally&quot; │
+</code></pre>
+
+<p>Or you can start with just an array that holds some self-defined type:</p>
+<pre><code class="julia">using Query, DataFrames, NamedTuples
+
+immutable Person
+    Name::String
+    Friends::Vector{String}
+end
+
+source = Array(Person,0)
+push!(source, Person(&quot;John&quot;, [&quot;Sally&quot;, &quot;Miles&quot;, &quot;Frank&quot;]))
+push!(source, Person(&quot;Sally&quot;, [&quot;Don&quot;, &quot;Martin&quot;]))
+
+result = @from i in source begin
+         @where length(i.Friends) &gt; 2
+         @select @NT( Name=&gt;i.Name, Friendcount=&gt;length(i.Friends))
+         @collect DataFrame
+end
+
+println(result)
+
+# output
+
+1×2 DataFrames.DataFrame
+│ Row │ Name   │ Friendcount │
+├─────┼────────┼─────────────┤
+│ 1   │ &quot;John&quot; │ 3           │
+</code></pre>
+
+<p>You also don't have to collect into a $DataFrame$, you can for example collect just one filted column into an $Array$:</p>
+<pre><code class="julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @where i.age&gt;30. &amp;&amp; i.children &gt; 2
+    @select lowercase(i.name)
+    @collect
+end
+
+println(x)
+
+# output
+
+String[&quot;sally&quot;]
+</code></pre>
+
+<p>You can also not collect at all and instead just iterate over the results of your query:</p>
+<pre><code class="julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @where i.age&gt;30. &amp;&amp; i.children &gt; 2
+    @select @NT(Name=&gt;lowercase(i.name), Kids=&gt;i.children)
+end
+
+for j in x
+    println(&quot;$(j.Name) has $(j.Kids) children.&quot;)
+end
+
+# output
+
+sally has 5 children.
 </code></pre>
           <aside class="copyright" role="note">
             
