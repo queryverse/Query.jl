@@ -9,10 +9,8 @@
     <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1">
     
       
-        <title>Query.jl - Query framework for julia</title>
+        <title>Internals - Query.jl</title>
       
-      
-        <meta name="description" content="Query framework for julia">
       
       
       
@@ -21,33 +19,33 @@
     
     <meta property="og:url" content="None">
     <meta property="og:title" content="Query.jl">
-    <meta property="og:image" content="None/./">
+    <meta property="og:image" content="None/../">
     <meta name="apple-mobile-web-app-title" content="Query.jl">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     
-    <link rel="shortcut icon" type="image/x-icon" href="./assets/images/favicon-e565ddfa3b.ico">
-    <link rel="icon" type="image/x-icon" href="./assets/images/favicon-e565ddfa3b.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/images/favicon-e565ddfa3b.ico">
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon-e565ddfa3b.ico">
     <style>
       @font-face {
       	font-family: 'Icon';
-      	src: url('./assets/fonts/icon.eot?52m981');
-      	src: url('./assets/fonts/icon.eot?#iefix52m981')
+      	src: url('../assets/fonts/icon.eot?52m981');
+      	src: url('../assets/fonts/icon.eot?#iefix52m981')
                format('embedded-opentype'),
-      		   url('./assets/fonts/icon.woff?52m981')
+      		   url('../assets/fonts/icon.woff?52m981')
                format('woff'),
-      		   url('./assets/fonts/icon.ttf?52m981')
+      		   url('../assets/fonts/icon.ttf?52m981')
                format('truetype'),
-      		   url('./assets/fonts/icon.svg?52m981#icon')
+      		   url('../assets/fonts/icon.svg?52m981#icon')
                format('svg');
       	font-weight: normal;
       	font-style: normal;
       }
     </style>
-    <link rel="stylesheet" href="./assets/stylesheets/application-a422ff04cc.css">
+    <link rel="stylesheet" href="../assets/stylesheets/application-a422ff04cc.css">
     
-      <link rel="stylesheet" href="./assets/stylesheets/palettes-05ab2406df.css">
+      <link rel="stylesheet" href="../assets/stylesheets/palettes-05ab2406df.css">
     
     
       
@@ -64,9 +62,9 @@
       </style>
     
     
-      <link rel="stylesheet" href="./assets/Documenter.css">
+      <link rel="stylesheet" href="../assets/Documenter.css">
     
-    <script src="./assets/javascripts/modernizr-4ab42b99fd.js"></script>
+    <script src="../assets/javascripts/modernizr-4ab42b99fd.js"></script>
     
   </head>
   
@@ -98,7 +96,7 @@
             
           </span>
         
-        Query.jl
+        Internals
       </div>
     </div>
     
@@ -168,37 +166,16 @@
           
             
   <li>
-    <a class="current" title="Home" href=".">
+    <a class="" title="Home" href="..">
       Home
     </a>
-    
-      
-        
-      
-      
-        <ul>
-          
-            <li class="anchor">
-              <a title="Overview" href="#overview">
-                Overview
-              </a>
-            </li>
-          
-            <li class="anchor">
-              <a title="Installation" href="#installation">
-                Installation
-              </a>
-            </li>
-          
-        </ul>
-      
     
   </li>
 
           
             
   <li>
-    <a class="" title="Tutorial" href="tutorial/">
+    <a class="" title="Tutorial" href="../tutorial/">
       Tutorial
     </a>
     
@@ -207,9 +184,14 @@
           
             
   <li>
-    <a class="" title="Internals" href="internals/">
+    <a class="current" title="Internals" href="./">
       Internals
     </a>
+    
+      
+        
+      
+      
     
   </li>
 
@@ -224,21 +206,12 @@
       <article class="article">
         <div class="wrapper">
           
-          <p><a id='Welcome-to-Query-1'></a></p>
-<h1 id="welcome-to-query">Welcome to Query</h1>
-<p><a id='Overview-1'></a></p>
-<h2 id="overview">Overview</h2>
-<p>Query allows you to execute queries against almost any julia data structure.</p>
-<p><a id='Installation-1'></a></p>
-<h2 id="installation">Installation</h2>
-<p>This package only works on julia 0.5- and newer. First, clone the package:</p>
-<pre><code class="julia">Pkg.clone(&quot;https://github.com/davidanthoff/Query.jl.git&quot;)
-</code></pre>
-
-<p>If you want to use the following packages with Query, you need to check out their $master$ branch first:</p>
-<pre><code class="julia">Pkg.checkout(&quot;TypedTables&quot;)
-Pkg.checkout(&quot;SQLite&quot;)
-</code></pre>
+          <p><a id='Internals-1'></a></p>
+<h1 id="internals">Internals</h1>
+<p>This package is modeled closely after LINQ. If you are not familiar with LINQ, <a href="https://msdn.microsoft.com/en-us/library/bb308959.aspx">this</a> is a great overview. It is especially recommended if you associate LINQ mainly with a query syntax in a language and don't know about the underlying language features and architecture, for example how anonymous types, lambdas and lots of other language features all play together. The query syntax is really just the tip of the iceberg.</p>
+<p>The core idea of this package right now is to iterate over $NamedTuple$s for table like data structures. Starting with a $DataFrame$, $query$ will create an iterator that produces a $NamedTuple$ that has a field for each column, and the $collect$ method can turn a stream of $NamedTuple$s back into a $DataFrame$.</p>
+<p>If one starts with a queryable data source (like SQLite), the query will automatically be translated into SQL and executed in the database.</p>
+<p>The wording of methods and types currently follows LINQ, not julia conventions. This is mainly to prevent clashes while Query.jl is in development.</p>
           <aside class="copyright" role="note">
             
             Documentation built with
@@ -255,24 +228,24 @@ Pkg.checkout(&quot;SQLite&quot;)
   <nav class="pagination" aria-label="Footer">
     <div class="previous">
       
-    </div>
-    <div class="next">
-      
-        <a href="tutorial/" title="Tutorial">
+        <a href="../tutorial/" title="Tutorial">
           <span class="direction">
-            Next
+            Previous
           </span>
           <div class="page">
+            <div class="button button-previous" role="button" aria-label="Previous">
+              <i class="icon icon-back"></i>
+            </div>
             <div class="stretch">
               <div class="title">
                 Tutorial
               </div>
             </div>
-            <div class="button button-next" role="button" aria-label="Next">
-              <i class="icon icon-forward"></i>
-            </div>
           </div>
         </a>
+      
+    </div>
+    <div class="next">
       
     </div>
   </nav>
@@ -291,14 +264,14 @@ Pkg.checkout(&quot;SQLite&quot;)
       </div>
     </main>
     <script>
-      var base_url = '.';
+      var base_url = '..';
       var repo_id  = 'davidanthoff/Query.jl';
     </script>
-    <script src="./assets/javascripts/application-997097ee0c.js"></script>
+    <script src="../assets/javascripts/application-997097ee0c.js"></script>
     
       <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
-      <script src="./assets/mathjaxhelper.js"></script>
+      <script src="../assets/mathjaxhelper.js"></script>
     
     
   </body>
