@@ -3,11 +3,15 @@
 ```@meta
 DocTestSetup = quote
     Pkg.add("DataFrames")
+    Pkg.add("TypedTables")
     using Query
     using DataFrames
     using NamedTuples
+    using TypedTables
 end
 ```
+
+## First steps
 
 You can use Query to filter and transform columns from a ``DataFrame`` and then create a new ``DataFrame`` for the output:
 
@@ -85,7 +89,7 @@ println(result)
 │ 1   │ "John" │ 3           │
 ```
 
-You also don't have to collect into a ``DataFrame``, you can for example collect just one filted column into an ``Array``:
+You also don't have to collect into a ``DataFrame``, you can for example collect just one filtered column into an ``Array``:
 
 ```jldoctest
 using Query, DataFrames, NamedTuples
@@ -124,6 +128,58 @@ end
 # output
 
 sally has 5 children.
+```
+
+## @let statement
+
+The ``@let`` statement allows you to define range variables inside your query:
+
+```jldoctest
+using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @let name_length = length(i.name)
+    @where name_length <= 4
+    @select @NT(Name=>lowercase(i.name), Length=>name_length)
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+ 2×2 DataFrames.DataFrame
+│ Row │ Name   │ Length │
+├─────┼────────┼────────┤
+│ 1   │ "john" │ 4      │
+│ 2   │ "kirk" │ 4      │
+```
+
+## @join statement
+
+```jldoctest
+using DataFrames, Query, NamedTuples, TypedTables
+
+df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+df2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])
+
+x = @from i in df1 begin
+    @join j in df2 on i.a equals convert(Int,j.c)
+    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>"Name: $(j.d)")
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+2×5 DataFrames.DataFrame
+│ Row │ a │ b   │ c   │ d       │ e             │
+├─────┼───┼─────┼─────┼─────────┼───────────────┤
+│ 1   │ 2 │ 2.0 │ 2.0 │ "John"  │ "Name: John"  │
+│ 2   │ 2 │ 2.0 │ 2.0 │ "Sally" │ "Name: Sally" │
 ```
 
 ```@meta
