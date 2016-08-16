@@ -159,6 +159,8 @@ println(x)
 
 ## @join statement
 
+The ``@join`` statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a ``DataFrame`` and a ``TypedTable`` are joined and the results are collected into a ``DataFrame``:
+
 ```jldoctest
 using DataFrames, Query, NamedTuples, TypedTables
 
