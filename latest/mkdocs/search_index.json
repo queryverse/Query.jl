@@ -2,18 +2,33 @@
     "docs": [
         {
             "location": "/", 
-            "text": "", 
+            "text": "Welcome to Query\n\n\n\n\nOverview\n\n\nQuery allows you to execute queries against almost any julia data structure.\n\n\n\n\nInstallation\n\n\nThis package only works on julia 0.5- and newer. First, clone the package:\n\n\nPkg.clone(\nhttps://github.com/davidanthoff/Query.jl.git\n)\n\n\n\n\nIf you want to use the following packages with Query, you need to check out their $master$ branch first:\n\n\nPkg.checkout(\nTypedTables\n)\nPkg.checkout(\nSQLite\n)", 
             "title": "Home"
         }, 
         {
-            "location": "/introduction/", 
-            "text": "Introduction\n\n\nYou can use Query to filter and select from a $DataFrame$:\n\n\nusing Query\nusing DataFrames\nusing NamedTuples\n\ndf = DataFrame(name=[\nJohn\n, \nSally\n, \nKirk\n], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age\n30. \n i.children \n 2\n    @select @NT(Name=\nlowercase(i.name))\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3", 
-            "title": "Introduction"
+            "location": "/#welcome-to-query", 
+            "text": "", 
+            "title": "Welcome to Query"
         }, 
         {
-            "location": "/introduction/#introduction", 
-            "text": "You can use Query to filter and select from a $DataFrame$:  using Query\nusing DataFrames\nusing NamedTuples\n\ndf = DataFrame(name=[ John ,  Sally ,  Kirk ], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age 30.   i.children   2\n    @select @NT(Name= lowercase(i.name))\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3", 
-            "title": "Introduction"
+            "location": "/#overview", 
+            "text": "Query allows you to execute queries against almost any julia data structure.", 
+            "title": "Overview"
+        }, 
+        {
+            "location": "/#installation", 
+            "text": "This package only works on julia 0.5- and newer. First, clone the package:  Pkg.clone( https://github.com/davidanthoff/Query.jl.git )  If you want to use the following packages with Query, you need to check out their $master$ branch first:  Pkg.checkout( TypedTables )\nPkg.checkout( SQLite )", 
+            "title": "Installation"
+        }, 
+        {
+            "location": "/tutorial/", 
+            "text": "Tutorial\n\n\nYou can use Query to filter and select from a $DataFrame$:\n\n\nusing Query\nusing DataFrames\nusing NamedTuples\n\ndf = DataFrame(name=[\nJohn\n, \nSally\n, \nKirk\n], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age\n30. \n i.children \n 2\n    @select @NT(Name=\nlowercase(i.name))\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1\u00d71 DataFrames.DataFrame\n\u2502 Row \u2502 Name    \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 1   \u2502 \nsally\n \u2502", 
+            "title": "Tutorial"
+        }, 
+        {
+            "location": "/tutorial/#tutorial", 
+            "text": "You can use Query to filter and select from a $DataFrame$:  using Query\nusing DataFrames\nusing NamedTuples\n\ndf = DataFrame(name=[ John ,  Sally ,  Kirk ], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age 30.   i.children   2\n    @select @NT(Name= lowercase(i.name))\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1\u00d71 DataFrames.DataFrame\n\u2502 Row \u2502 Name    \u2502\n\u251c\u2500\u2500\u2500\u2500\u2500\u253c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\n\u2502 1   \u2502  sally  \u2502", 
+            "title": "Tutorial"
         }
     ]
 }

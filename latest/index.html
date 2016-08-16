@@ -173,6 +173,24 @@
     </a>
     
       
+        
+      
+      
+        <ul>
+          
+            <li class="anchor">
+              <a title="Overview" href="#overview">
+                Overview
+              </a>
+            </li>
+          
+            <li class="anchor">
+              <a title="Installation" href="#installation">
+                Installation
+              </a>
+            </li>
+          
+        </ul>
       
     
   </li>
@@ -180,8 +198,8 @@
           
             
   <li>
-    <a class="" title="Introduction" href="introduction/">
-      Introduction
+    <a class="" title="Tutorial" href="tutorial/">
+      Tutorial
     </a>
     
   </li>
@@ -197,9 +215,21 @@
       <article class="article">
         <div class="wrapper">
           
-            <h1>Query.jl</h1>
-          
-          
+          <p><a id='Welcome-to-Query-1'></a></p>
+<h1 id="welcome-to-query">Welcome to Query</h1>
+<p><a id='Overview-1'></a></p>
+<h2 id="overview">Overview</h2>
+<p>Query allows you to execute queries against almost any julia data structure.</p>
+<p><a id='Installation-1'></a></p>
+<h2 id="installation">Installation</h2>
+<p>This package only works on julia 0.5- and newer. First, clone the package:</p>
+<pre><code class="julia">Pkg.clone(&quot;https://github.com/davidanthoff/Query.jl.git&quot;)
+</code></pre>
+
+<p>If you want to use the following packages with Query, you need to check out their $master$ branch first:</p>
+<pre><code class="julia">Pkg.checkout(&quot;TypedTables&quot;)
+Pkg.checkout(&quot;SQLite&quot;)
+</code></pre>
           <aside class="copyright" role="note">
             
             Documentation built with
@@ -219,14 +249,14 @@
     </div>
     <div class="next">
       
-        <a href="introduction/" title="Introduction">
+        <a href="tutorial/" title="Tutorial">
           <span class="direction">
             Next
           </span>
           <div class="page">
             <div class="stretch">
               <div class="title">
-                Introduction
+                Tutorial
               </div>
             </div>
             <div class="button button-next" role="button" aria-label="Next">
