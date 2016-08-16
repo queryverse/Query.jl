@@ -10,14 +10,9 @@ Query is a packge for querying julia data sources. It can filter, project, join 
 
 ## Installation
 
-This package only works on julia 0.5- and newer. First, clone the package:
+This package only works on julia 0.5- and newer. It is currently not registered, so you need to clone it:
 ````julia
 Pkg.clone("https://github.com/davidanthoff/Query.jl.git")
-````
-You then need to be on master for these packages:
-````julia
-Pkg.checkout("TypedTables")
-Pkg.checkout("SQLite")
 ````
 
 ## Getting started
