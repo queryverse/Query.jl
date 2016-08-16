@@ -3,3 +3,4 @@ NamedTuples 1.0.0
 FunctionWrappers
 DataStructures
 Requires 0.3.0
+Documenter 0.2.1
