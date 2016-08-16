@@ -1,8 +1,14 @@
 # Introduction
 
+```@meta
+DocTestSetup = quote
+    Pkg.add("DataFrames")
+end
+```
+
 You can use Query to filter and select from a ``DataFrame``:
 
-````jldoctest
+```jldoctest
 using Query
 using DataFrames
 using NamedTuples
@@ -20,4 +26,8 @@ println(x)
 # output
 
 3
-````
+```
+
+```@meta
+DocTestSetup = nothing
+```
