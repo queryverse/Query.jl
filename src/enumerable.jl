@@ -12,8 +12,7 @@ immutable EnumerableWhereState{T,S}
     source_state::S
 end
 
-function where{T}(source::Enumerable{T}, filter_expr::Expr)
-    filter = eval(filter_expr)
+function where{T}(source::Enumerable{T}, filter::Function, filter_expr::Expr)
     S = typeof(source)
     return EnumerableWhere{T,S,FunctionWrapper{Bool,Tuple{T}}}(source, filter)
 end
@@ -58,8 +57,7 @@ immutable EnumerableSelect{T, S, Q} <: Enumerable{T}
     f::Q
 end
 
-function select{TS}(source::Enumerable{TS}, f_expr::Expr)
-    f = eval(f_expr)
+function select{TS}(source::Enumerable{TS}, f::Function, f_expr::Expr)
     T = Base.return_types(f, (TS,))[1]
     S = typeof(source)
     return EnumerableSelect{T,S,FunctionWrapper{T,Tuple{TS}}}(source, f)
@@ -88,14 +86,12 @@ immutable EnumerableOrderby{T,S,KS,TKS} <: Enumerable{T}
     descending::Bool
 end
 
-function orderby{T}(source::Enumerable{T}, f_expr::Expr)
-    f = eval(f_expr)
+function orderby{T}(source::Enumerable{T}, f::Function, f_expr::Expr)
     TKS = Base.return_types(f, (T,))[1]
     return EnumerableOrderby{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, false)
 end
 
-function orderby_descending{T}(source::Enumerable{T}, f_expr::Expr)
-    f = eval(f_expr)
+function orderby_descending{T}(source::Enumerable{T}, f::Function, f_expr::Expr)
     TKS = Base.return_types(f, (T,))[1]
     return EnumerableOrderby{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, true)
 end
@@ -127,16 +123,12 @@ immutable EnumerableJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable{T}
     resultSelector::RS
 end
 
-function join{TO,TI}(outer::Enumerable{TO}, inner::Enumerable{TI}, outerKeySelector::Expr, innerKeySelector::Expr, resultSelector::Expr)
-    f_outerKeySelector = eval(outerKeySelector)
-    f_innerKeySelector = eval(innerKeySelector)
-    f_resultSelector = eval(resultSelector)
-
+function join{TO,TI}(outer::Enumerable{TO}, inner::Enumerable{TI}, f_outerKeySelector::Function, outerKeySelector::Expr, f_innerKeySelector::Function, innerKeySelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     TKeyOuter = Base.return_types(f_outerKeySelector, (TO,))[1]
     TKeyInner = Base.return_types(f_innerKeySelector, (TI,))[1]
 
     if TKeyOuter!=TKeyInner
-        error("The keys in the join clause have different types.")
+        error("The keys in the join clause have different types, $TKeyOuter and $TKeyInner.")
     end
 
     SO = typeof(outer)

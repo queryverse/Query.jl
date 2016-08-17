@@ -149,6 +149,23 @@ end
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
+# We need to use a typed const here, otherwise type inference stands no chance
+const closure_var_1::Int64 = 1
+
+q = @from i in source_df begin
+    @let k = i.children + closure_var_1
+    @join j in source_df2 on i.children*closure_var_1 equals j.a*closure_var_1
+    @where i.age>closure_var_1
+    @orderby i.age*closure_var_1
+    @select i.children + closure_var_1
+    @collect
+end
+
+@test isa(q, Array{Int64,1})
+@test length(q)==2
+@test q[1]==4
+@test q[2]==3
+
 end
 
 @testset "Examples" begin

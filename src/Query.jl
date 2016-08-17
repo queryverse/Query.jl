@@ -70,22 +70,22 @@ end
 
 macro where_internal(source, f)
 	q = Expr(:quote, f)
-    :(where($(esc(source)), $(esc(q))))
+    :(where($(esc(source)), $(esc(f)), $(esc(q))))
 end
 
 macro select_internal(source, f)
 	q = Expr(:quote, f)
-    :(select($(esc(source)), $(esc(q))))
+    :(select($(esc(source)), $(esc(f)), $(esc(q))))
 end
 
 macro orderby_internal(source, f)
 	q = Expr(:quote, f)
-    :(orderby($(esc(source)), $(esc(q))))
+    :(orderby($(esc(source)), $(esc(f)), $(esc(q))))
 end
 
 macro orderby_descending_internal(source, f)
 	q = Expr(:quote, f)
-    :(orderby_descending($(esc(source)), $(esc(q))))
+    :(orderby_descending($(esc(source)), $(esc(f)), $(esc(q))))
 end
 
 macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
@@ -93,7 +93,7 @@ macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSele
 	q_innerKeySelector = Expr(:quote, innerKeySelector)
 	q_resultSelector = Expr(:quote, resultSelector)
 
-	:(join($(esc(outer)), $(esc(inner)), $(esc(q_outerKeySelector)),$(esc(q_innerKeySelector)),$(esc(q_resultSelector))))
+	:(join($(esc(outer)), $(esc(inner)), $(esc(outerKeySelector)), $(esc(q_outerKeySelector)), $(esc(innerKeySelector)),$(esc(q_innerKeySelector)), $(esc(resultSelector)),$(esc(q_resultSelector))))
 end
 
 end # module
