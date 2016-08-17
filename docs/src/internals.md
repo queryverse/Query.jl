@@ -35,4 +35,5 @@ The [The Wayward WebLog](https://blogs.msdn.microsoft.com/mattwar/) has some exc
 - [Building a LINQ IQueryable Provider – Part XVII (IQToolkit 0.17)](https://blogs.msdn.microsoft.com/mattwar/2010/02/09/building-a-linq-iqueryable-provider-part-xvii-iqtoolkit-0-17/)
 
 [Joe Duffy](http://joeduffyblog.com/) wrote an interesting article about iterator protocolls:
+
 - [Joe Duffy on enumerating in .Net](http://joeduffyblog.com/2008/09/21/the-cost-of-enumerating-in-net/)
