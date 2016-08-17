@@ -166,6 +166,20 @@ end
 @test q[1]==4
 @test q[2]==3
 
+# Test phase 3 query translation
+
+q = @from i in source_array begin
+    @select i
+    @collect
+end
+
+@test isa(q,Array{Person,1})
+@test length(q)==2
+@test q[1].Name=="John"
+@test q[1].Friends==["Sally", "Miles", "Frank"]
+@test q[2].Name=="Sally"
+@test q[2].Friends==["Don", "Martin"]
+
 end
 
 @testset "Examples" begin

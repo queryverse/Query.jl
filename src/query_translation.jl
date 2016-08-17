@@ -11,6 +11,21 @@ function query_expression_translation_phase_A(qe)
 	end
 end
 
+function query_expression_translation_phase_3(qe)
+	done = false
+	while !done
+		if length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@select") && qe[1].args[2].args[2]==qe[2].args[2]
+			x = qe[1].args[2].args[2]
+			e = qe[1].args[2].args[3]
+
+			qe[1] = :( Query.@select_internal($e,x->x) )
+			deleteat!(qe,2)
+		else
+			done = true
+		end
+	end
+end
+
 function query_expression_translation_phase_4(qe)
 	done = false
 	while !done

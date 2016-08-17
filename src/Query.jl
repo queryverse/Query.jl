@@ -49,6 +49,10 @@ macro from(range::Expr, body::Expr)
 	debug_output && println("AFTER A")
 	debug_output && println(body)
 
+	query_expression_translation_phase_3(body.args)
+	debug_output && println("AFTER 3")
+	debug_output && println(body)
+
 	query_expression_translation_phase_4(body.args)
 	debug_output && println("AFTER 4")
 	debug_output && println(body)
