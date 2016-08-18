@@ -58,7 +58,7 @@ q = @from i in source_array begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_NameFriendcount{String,Int64},1})
+@test isa(q,Array{NamedTuples._NT_NameFriendcount{String,Int},1})
 @test length(q)==1
 @test q[1].Name=="John"
 @test q[1].Friendcount==3
@@ -74,7 +74,7 @@ end
 @test q[1,:Name]=="John"
 @test q[1,:Friendcount]==3
 
-source_typedtable = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int64}[3,5,2])
+source_typedtable = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int}[3,5,2])
 
 q = @from i in source_typedtable begin
     @where get(i.age)>30. && get(i.children) >2
@@ -153,7 +153,7 @@ end
 @test q==["john", "sally", "kirk"]
 
 # We need to use a typed const here, otherwise type inference stands no chance
-const closure_var_1::Int64 = 1
+const closure_var_1::Int = 1
 
 q = @from i in source_df begin
     @let k = i.children + closure_var_1
@@ -164,7 +164,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Int64,1})
+@test isa(q, Array{Int,1})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -235,7 +235,7 @@ end
     include("../example/08-join.jl")
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
-    include("../example/11-DataStream.jl")
+    include("../example/11-Datastream.jl")
     include("../example/12-NDSparseData.jl")
 end
 
