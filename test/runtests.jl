@@ -2,6 +2,8 @@ using Query
 using DataFrames
 using TypedTables
 using NamedTuples
+using DataStreams
+using CSV
 using Base.Test
 
 immutable Person
@@ -179,6 +181,17 @@ end
 @test q[1].Friends==["Sally", "Miles", "Frank"]
 @test q[2].Name=="Sally"
 @test q[2].Friends==["Don", "Martin"]
+
+q = @from i in CSV.Source("data.csv") begin
+    @where get(i.Children) > 2
+    @select get(i.Name)
+    @collect
+end
+
+@test isa(q,Array{String,1})
+@test length(q)==2
+@test q[1]=="John"
+@test q[2]=="Kirk"
 
 end
 

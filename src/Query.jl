@@ -24,6 +24,7 @@ include("sources/source_iterable.jl")
 include("sources/source_dataframe.jl")
 include("sources/source_sqlite.jl")
 include("sources/source_typedtable.jl")
+include("sources/source_datastream.jl")
 
 include("sinks/sink_array.jl")
 include("sinks/sink_dataframe.jl")

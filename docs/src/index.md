@@ -2,7 +2,7 @@
 
 ## Overview
 
-Query allows you to execute queries against almost any julia data structure.
+Query allows you to execute queries against almost any julia data structure. The package currently supports queries against [DataFrames](https://github.com/JuliaStats/DataFrames.jl), [TypedTables](https://github.com/FugroRoames/TypedTables.jl), [DataStreams](https://github.com/JuliaData/DataStreams.jl) (e.g. [CSV](https://github.com/JuliaData/CSV.jl)) and any other iterable (arrays, dictionaries etc.).
 
 ## Installation
 
