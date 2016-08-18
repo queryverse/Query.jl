@@ -27,6 +27,7 @@ build_script:
   - IF EXIST .git\shallow (git fetch --unshallow)
   - C:\projects\julia\bin\julia -e "Pkg.clone(\"https://github.com/JuliaComputing/NDSparseData.jl.git\")"
   - C:\projects\julia\bin\julia -e "Pkg.clone(\"SQLite\")"
+  - C:\projects\julia\bin\julia -e "Pkg.build(\"SQLite\")"
   - C:\projects\julia\bin\julia -e "Pkg.clone(pwd(), \"Query\"); versioninfo(); Pkg.build(\"Query\")"
 
 test_script:
