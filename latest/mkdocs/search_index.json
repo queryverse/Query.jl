@@ -2,7 +2,7 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Welcome to Query\n\n\n\n\nOverview\n\n\nQuery allows you to execute queries against almost any julia data structure.\n\n\n\n\nInstallation\n\n\nThis package only works on julia 0.5- and newer. It is currently not registered, so you need to clone it:\n\n\nPkg.clone(\nhttps://github.com/davidanthoff/Query.jl.git\n)", 
+            "text": "Welcome to Query\n\n\n\n\nOverview\n\n\nQuery allows you to execute queries against almost any julia data structure. The package currently supports queries against \nDataFrames\n, \nTypedTables\n, \nDataStreams\n (e.g. \nCSV\n) and any other iterable (arrays, dictionaries etc.).\n\n\n\n\nInstallation\n\n\nThis package only works on julia 0.5- and newer. It is currently not registered, so you need to clone it:\n\n\nPkg.clone(\nhttps://github.com/davidanthoff/Query.jl.git\n)", 
             "title": "Home"
         }, 
         {
@@ -12,7 +12,7 @@
         }, 
         {
             "location": "/#overview", 
-            "text": "Query allows you to execute queries against almost any julia data structure.", 
+            "text": "Query allows you to execute queries against almost any julia data structure. The package currently supports queries against  DataFrames ,  TypedTables ,  DataStreams  (e.g.  CSV ) and any other iterable (arrays, dictionaries etc.).", 
             "title": "Overview"
         }, 
         {
