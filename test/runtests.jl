@@ -235,6 +235,8 @@ end
     include("../example/08-join.jl")
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
+    include("../example/11-DataStream.jl")
+    include("../example/12-NDSparseData.jl")
 end
 
 @testset "Doctests" begin
