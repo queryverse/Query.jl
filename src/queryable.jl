@@ -6,8 +6,8 @@ immutable QueryableWhere{T,Provider} <: Queryable{T,Provider}
 	filter::Expr
 end
 
-function where{T,Provider}(source::Queryable{T,Provider}, filter::Expr)
-    return QueryableWhere{T,Provider}(source, filter)
+function where{T,Provider}(source::Queryable{T,Provider}, filter::Function, filter_expr::Expr)
+    return QueryableWhere{T,Provider}(source, filter_expr)
 end
 
 immutable QueryableSelect{T,Provider} <: Queryable{T,Provider}
@@ -15,8 +15,7 @@ immutable QueryableSelect{T,Provider} <: Queryable{T,Provider}
     f::Expr
 end
 
-function select{TS,Provider}(source::Queryable{TS,Provider}, f_expr::Expr)
-	f = eval(f_expr)
+function select{TS,Provider}(source::Queryable{TS,Provider}, f::Function, f_expr::Expr)
     T = Base.return_types(f, (TS,))[1]
     return QueryableSelect{T,Provider}(source, f_expr)
 end

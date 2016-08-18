@@ -1,4 +1,15 @@
 @require SQLite begin
+using SQLite
+export table
+
+immutable SQLiteTable
+    db::SQLite.DB
+    tablename::String
+end
+
+function table{T<:AbstractString}(db::SQLite.DB,tablename::T)
+    return SQLiteTable(db,tablename)
+end
 
 immutable QueryableSQLite{T,Provider} <: Queryable{T,Provider}
     db::SQLite.DB
@@ -8,8 +19,8 @@ end
 type QueryProviderSQLite <: QueryProvider
 end
 
-function query(db::SQLite.DB, tablename::AbstractString)
-	columns = SQLite.columns(db, tablename)
+function query(table::SQLiteTable)
+	columns = SQLite.columns(table.db, table.tablename)
 
     col_expressions = Array{Expr,1}()
     for i in 1:size(columns,1)
@@ -31,7 +42,7 @@ function query(db::SQLite.DB, tablename::AbstractString)
     eval(NamedTuples, :(import Query))
     t = eval(NamedTuples, t2)
 
-    q = t(db, tablename)
+    q = t(table.db, table.tablename)
 
     return q
 end
