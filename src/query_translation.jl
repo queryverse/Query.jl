@@ -168,6 +168,30 @@ function query_expression_translation_phase_5(qe)
 	end
 end
 
+function query_expression_translation_phase_6(qe)
+	done = false
+	while !done
+		if length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@group")
+			e = qe[1].args[2].args[3]
+			x = qe[1].args[2].args[2]
+			v = qe[2].args[2]
+			k = qe[2].args[4]
+
+			f_elementSelector = Expr(:->, x, k)
+			f_resultSelector = Expr(:->, x, v)
+
+			if v==x
+				qe[1] = :( Query.@group_by_internal_simple($e, $(esc(f_elementSelector))) )
+			else
+				qe[1] = :( Query.@group_by_internal($e, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
+			end
+			deleteat!(qe,2)
+		else
+			done = true
+		end
+	end
+end
+
 # Phase 7
 
 function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in_scope)

@@ -278,6 +278,33 @@ end
 @test q[:Key]==[:a,:b,:b]
 @test q[:Value]==[3,4,5]
 
+source_df_groupby = DataFrame(name=["John", "Sally", "Kirk"], children=[3,2,2])
+
+x = @from i in source_df_groupby begin
+    @group i.name by i.children
+    @collect
+end
+
+@test isa(x, Array{Grouping{Int64,String}})
+@test length(x)==2
+@test x[1].key==2
+@test x[1].elements==["Sally", "Kirk"]
+@test x[2].key==3
+@test x[2].elements==["John"]
+
+x = @from i in source_df_groupby begin
+    @group i by i.children
+    @collect
+end
+
+@test isa(x, Array{Grouping{Int64,NamedTuples._NT_namechildren{String,Int64}},1})
+@test length(x)==2
+@test x[1].key==2
+@test x[1].elements[1].name=="Sally";
+@test x[1].elements[2].name=="Kirk";
+@test x[2].key==3
+@test x[2].elements[1].name=="John";
+
 end
 
 @testset "Examples" begin
@@ -294,6 +321,7 @@ end
     include("../example/11-Datastream.jl")
     include("../example/12-NDSparseData.jl")
     include("../example/13-selectmany.jl")
+    include("../example/14-groupby.jl")
 end
 
 @testset "Doctests" begin

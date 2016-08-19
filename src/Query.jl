@@ -13,7 +13,7 @@ import Base.length
 import Base.eltype
 import Base.join
 
-export @from
+export @from, Grouping
 
 include("enumerable.jl")
 include("queryable.jl")
@@ -63,6 +63,10 @@ macro from(range::Expr, body::Expr)
 	debug_output && println("AFTER 5")
 	debug_output && println(body)
 
+	query_expression_translation_phase_6(body.args)
+	debug_output && println("AFTER 6")
+	debug_output && println(body)
+
 	query_expression_translation_phase_7(body.args)
 	debug_output && println("AFTER 7")
 	debug_output && println(body)
@@ -107,6 +111,19 @@ macro select_many_internal(source,collectionSelector,resultSelector)
 	q_resultSelector = Expr(:quote, resultSelector)
 
 	:(select_many($(esc(source)), $(esc(collectionSelector)), $(esc(q_collectionSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
+
+macro group_by_internal(source,elementSelector,resultSelector)
+	q_elementSelector = Expr(:quote, elementSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
+
+macro group_by_internal_simple(source,elementSelector)
+	q_elementSelector = Expr(:quote, elementSelector)
+
+	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector))))
 end
 
 end # module
