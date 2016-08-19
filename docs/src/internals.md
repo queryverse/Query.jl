@@ -37,3 +37,5 @@ The [The Wayward WebLog](https://blogs.msdn.microsoft.com/mattwar/) has some exc
 [Joe Duffy](http://joeduffyblog.com/) wrote an interesting article about iterator protocolls:
 
 - [Joe Duffy on enumerating in .Net](http://joeduffyblog.com/2008/09/21/the-cost-of-enumerating-in-net/)
+
+On [NULL values and 3VL](https://msdn.microsoft.com/en-us/library/bb738687(v=vs.110).aspx) in .Net.
