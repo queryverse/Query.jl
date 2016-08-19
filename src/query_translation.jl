@@ -2,8 +2,10 @@ function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
-		if clause.head==:macrocall && clause.args[1]==Symbol("@from")
+		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
 			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+		elseif clause.head==:macrocall && clause.args[1]==Symbol("@from")
+			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
 			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 		end

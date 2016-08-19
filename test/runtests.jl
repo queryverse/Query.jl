@@ -222,6 +222,62 @@ end
 @test length(q)==3
 @test q==[91,89,91]
 
+q = @from i in source_df begin
+    @from j in source_df2
+    @select @NT(Name=>i.name,Age=>i.age,Children=>i.children,A=>j.a,B=>j.b)
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(9,5)
+@test q[:Name]==["John","John","John","Sally","Sally","Sally","Kirk","Kirk","Kirk"]
+@test q[:Age]==[23.,23.,23.,42.,42.,42.,59.,59.,59.]
+@test q[:Children]==[3,3,3,5,5,5,2,2,2]
+@test q[:A]==[1,2,3,1,2,3,1,2,3]
+@test q[:B]==[1.,2.,3.,1.,2.,3.,1.,2.,3.]
+
+source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
+
+q = @from i in source_nested_dict begin
+    @from j in i.second
+    @select @NT(Key=>i.first,Value=>j)
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(5,2)
+@test q[:Key]==[:a,:a,:a,:b,:b]
+@test q[:Value]==[1,2,3,4,5]
+
+q = @from i in source_df begin
+    @from j in source_df2
+    @where j.a>1
+    @select @NT(Name=>i.name,Age=>i.age,Children=>i.children,A=>j.a,B=>j.b)
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(6,5)
+@test q[:Name]==["John","John","Sally","Sally","Kirk","Kirk"]
+@test q[:Age]==[23.,23.,42.,42.,59.,59.]
+@test q[:Children]==[3,3,5,5,2,2]
+@test q[:A]==[2,3,2,3,2,3]
+@test q[:B]==[2.,3.,2.,3.,2.,3.]
+
+source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
+
+q = @from i in source_nested_dict begin
+    @from j in i.second
+    @where j>2
+    @select @NT(Key=>i.first,Value=>j)
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(3,2)
+@test q[:Key]==[:a,:b,:b]
+@test q[:Value]==[3,4,5]
+
 end
 
 @testset "Examples" begin
@@ -237,6 +293,7 @@ end
     include("../example/10-orderby.jl")
     include("../example/11-Datastream.jl")
     include("../example/12-NDSparseData.jl")
+    include("../example/13-selectmany.jl")
 end
 
 @testset "Doctests" begin

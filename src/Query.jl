@@ -102,4 +102,11 @@ macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSele
 	:(join($(esc(outer)), $(esc(inner)), $(esc(outerKeySelector)), $(esc(q_outerKeySelector)), $(esc(innerKeySelector)),$(esc(q_innerKeySelector)), $(esc(resultSelector)),$(esc(q_resultSelector))))
 end
 
+macro select_many_internal(source,collectionSelector,resultSelector)
+	q_collectionSelector = Expr(:quote, collectionSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(select_many($(esc(source)), $(esc(collectionSelector)), $(esc(q_collectionSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
+
 end # module
