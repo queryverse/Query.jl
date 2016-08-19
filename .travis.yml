@@ -10,9 +10,6 @@ notifications:
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone("https://github.com/JuliaComputing/NDSparseData.jl.git")'
-  - julia -e 'Pkg.add("SQLite")'
-  - julia -e 'Pkg.checkout("SQLite")'
-  - julia -e 'Pkg.build("SQLite")'
   - julia -e 'Pkg.clone(pwd()); Pkg.build("Query"); Pkg.test("Query"; coverage=true)'
 after_success:
   - julia -e 'cd(Pkg.dir("Query")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
