@@ -287,10 +287,10 @@ end
 
 @test isa(x, Array{Grouping{Int64,String}})
 @test length(x)==2
-@test x[1].key==2
-@test x[1].elements==["Sally", "Kirk"]
-@test x[2].key==3
-@test x[2].elements==["John"]
+@test x[1].key==3
+@test x[1].elements==["John"]
+@test x[2].key==2
+@test x[2].elements==["Sally", "Kirk"]
 
 x = @from i in source_df_groupby begin
     @group i by i.children
@@ -299,11 +299,11 @@ end
 
 @test isa(x, Array{Grouping{Int64,NamedTuples._NT_namechildren{String,Int64}},1})
 @test length(x)==2
-@test x[1].key==2
-@test x[1].elements[1].name=="Sally";
-@test x[1].elements[2].name=="Kirk";
-@test x[2].key==3
-@test x[2].elements[1].name=="John";
+@test x[1].key==3
+@test x[1].elements[1].name=="John";
+@test x[2].key==2
+@test x[2].elements[1].name=="Sally";
+@test x[2].elements[2].name=="Kirk";
 
 end
 

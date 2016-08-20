@@ -143,7 +143,7 @@ end
 function start{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::EnumerableJoin{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS})
     results = Array(T,0)
 
-    inner_dict = Dict{TKeyOuter,Array{TI,1}}()
+    inner_dict = OrderedDict{TKeyOuter,Array{TI,1}}()
     for i in iter.inner
         key = iter.innerKeySelector(i)
         if !haskey(inner_dict, key)
@@ -250,7 +250,7 @@ end
 
 # TODO This should be rewritten as a lazy iterator
 function start{T,TKey,TS,SO,ES}(iter::EnumerableGroupBySimple{T,TKey,TS,SO,ES})
-    result = Dict{TKey,T}()
+    result = OrderedDict{TKey,T}()
     for i in iter.source
         key = iter.elementSelector(i)
         if !haskey(result, key)
@@ -293,7 +293,7 @@ end
 
 # TODO This should be rewritten as a lazy iterator
 function start{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES})
-    result = Dict{TKey,T}()
+    result = OrderedDict{TKey,T}()
     for i in iter.source
         key = iter.elementSelector(i)
         if !haskey(result, key)
