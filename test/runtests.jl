@@ -169,6 +169,26 @@ end
 @test q[1]==4
 @test q[2]==3
 
+q = @from i in [5,4,4,6,1] begin
+    @orderby i
+    @select i
+    @collect
+end
+
+@test isa(q,Array{Int,1})
+@test length(q)==5
+@test q==[1,4,4,5,6]
+
+q = @from i in [5,4,4,6,1] begin
+    @orderby descending(i)
+    @select i
+    @collect
+end
+
+@test isa(q,Array{Int,1})
+@test length(q)==5
+@test q==[6,5,4,4,1]
+
 # Test phase 3 query translation
 
 q = @from i in source_array begin
