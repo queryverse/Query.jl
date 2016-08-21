@@ -99,21 +99,23 @@ end
 
 # TODO This should be changed to a lazy implementation
 function start{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS})
-    dict = Dict{TKS,T}()
+    elements = Array(T,0)
     for i in iter.source
-        dict[iter.keySelector(i)] = i
+        push!(elements, i)
     end
 
-    sortedDict = SortedDict(dict, iter.descending ? Base.Reverse : Base.Forward)
-    return sortedDict, start(sortedDict)
+    sort!(elements, by=iter.keySelector, rev=iter.descending)
+
+    return elements, 1
 end
 
 function next{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}, state)
-    v, new_state = next(state[1], state[2])
-    return v[2], (state[1], new_state)
+    elements = state[1]
+    i = state[2]
+    return elements[i], (elements, i+1)
 end
 
-done{T,S,KS,TKS}(f::EnumerableOrderby{T,S,KS,TKS}, state) = done(state[1], state[2])
+done{T,S,KS,TKS}(f::EnumerableOrderby{T,S,KS,TKS}, state) = state[2] > length(state[1])
 
 immutable EnumerableJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable{T}
     outer::SO
