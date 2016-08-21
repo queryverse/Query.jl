@@ -305,6 +305,29 @@ end
 @test x[2].elements[1].name=="Sally";
 @test x[2].elements[2].name=="Kirk";
 
+q = @from i in source_df_groupby begin
+    @group i by i.children into g
+    @select @NT(Children=>g.key,Number_of_parents=>length(g.elements))
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(2,2)
+@test q[:Children]==[3,2]
+@test q[:Number_of_parents]==[1,2]
+
+
+q = @from i in source_df begin
+    @where i.age>30. && i.children > 2
+    @select i into j
+    @select @NT(Name=>lowercase(j.name))
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(1,1)
+@test q[1,:Name]=="sally"
+
 end
 
 @testset "Examples" begin
@@ -322,6 +345,8 @@ end
     include("../example/12-NDSparseData.jl")
     include("../example/13-selectmany.jl")
     include("../example/14-groupby.jl")
+    include("../example/15-groupinto.jl")
+    include("../example/16-selectinto.jl")
 end
 
 @testset "Doctests" begin

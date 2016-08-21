@@ -3,13 +3,60 @@ function query_expression_translation_phase_A(qe)
 	while i<=length(qe)
 		clause = qe[i]
 		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
-			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+			if !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
+				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+			end
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@from")
 			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
 			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 		end
 		i+=1
+	end
+end
+
+function query_expression_translation_phase_1(qe)
+	done = false
+	while !done
+		group_into_index = findfirst(i->i.head==:macrocall && i.args[1]==Symbol("@group") && length(i.args)==6 && i.args[5]==:into,qe)
+		select_into_index = findfirst(i->i.head==:macrocall && i.args[1]==Symbol("@select") && length(i.args)==4 && i.args[3]==:into,qe)
+		if length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && group_into_index>0
+			x = qe[group_into_index].args[6]
+
+			sub_query = Expr(:block, qe[1:group_into_index]...)
+			deleteat!(sub_query.args[end].args,6)
+			deleteat!(sub_query.args[end].args,5)
+
+			translate_query(sub_query)
+
+			if length(sub_query.args)>1
+				error("Subquery too long")
+			end
+
+			qe[1] = :( @from $x in $(sub_query.args[1]) )
+			for i=group_into_index:-1:2
+				deleteat!(qe,i)
+			end
+		elseif length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && select_into_index>0
+			x = qe[select_into_index].args[4]
+
+			sub_query = Expr(:block, qe[1:select_into_index]...)
+			deleteat!(sub_query.args[end].args,4)
+			deleteat!(sub_query.args[end].args,3)
+
+			translate_query(sub_query)
+
+			if length(sub_query.args)>1
+				error("Subquery too long")
+			end
+
+			qe[1] = :( @from $x in $(sub_query.args[1]) )
+			for i=select_into_index:-1:2
+				deleteat!(qe,i)
+			end
+		else
+			done = true
+		end
 	end
 end
 
@@ -269,4 +316,43 @@ function query_expression_translation_phase_B(qe)
 			i+=1
 		end
 	end
+end
+
+function translate_query(body)
+	debug_output = false
+
+	debug_output && println("AT START")
+	debug_output && println(body)
+
+	query_expression_translation_phase_1(body.args)
+	debug_output && println("AFTER 1")
+	debug_output && println(body)
+
+	query_expression_translation_phase_A(body.args)
+	debug_output && println("AFTER A")
+	debug_output && println(body)
+
+	query_expression_translation_phase_3(body.args)
+	debug_output && println("AFTER 3")
+	debug_output && println(body)
+
+	query_expression_translation_phase_4(body.args)
+	debug_output && println("AFTER 4")
+	debug_output && println(body)
+
+	query_expression_translation_phase_5(body.args)
+	debug_output && println("AFTER 5")
+	debug_output && println(body)
+
+	query_expression_translation_phase_6(body.args)
+	debug_output && println("AFTER 6")
+	debug_output && println(body)
+
+	query_expression_translation_phase_7(body.args)
+	debug_output && println("AFTER 7")
+	debug_output && println(body)
+
+	query_expression_translation_phase_B(body.args)
+	debug_output && println("AFTER B")
+	debug_output && println(body)
 end
