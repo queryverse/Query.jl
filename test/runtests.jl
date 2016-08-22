@@ -305,7 +305,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Int64,String}})
+@test isa(x, Array{Grouping{Int,String}})
 @test length(x)==2
 @test x[1].key==3
 @test x[1].elements==["John"]
@@ -317,7 +317,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Int64,NamedTuples._NT_namechildren{String,Int64}},1})
+@test isa(x, Array{Grouping{Int,NamedTuples._NT_namechildren{String,Int}},1})
 @test length(x)==2
 @test x[1].key==3
 @test x[1].elements[1].name=="John";
@@ -354,7 +354,7 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{Int64,Float64,Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{Int,Float64,Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==3
 @test q[1].a==1
 @test q[1].b==1.
@@ -380,7 +380,7 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{Int64,Float64,Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{Int,Float64,Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==1
 @test q[1].a==2
 @test q[1].b==2.
