@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tutorial · Query.jl documentation</title><link href="assets/documenter.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script></head><body><nav class="toc"><h1>Query.jl</h1><form class="search" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Home</a></li><li class="current"><a class="toctext" href="tutorial.html">Tutorial</a><ul class="internal"><li><a class="toctext" href="#First-steps-1">First steps</a></li><li><a class="toctext" href="#@let-statement-1">@let statement</a></li><li><a class="toctext" href="#@join-statement-1">@join statement</a></li></ul></li><li><a class="toctext" href="internals.html">Internals</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="tutorial.html">Tutorial</a></li></ul><a class="edit-page" href="https://github.com/davidanthoff/Query.jl/tree/22ae0e7110912da902ea557a35c288211c7a0900/docs/src/tutorial.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/></header><h1><a class="nav-anchor" id="Tutorial-1" href="#Tutorial-1">Tutorial</a></h1><h2><a class="nav-anchor" id="First-steps-1" href="#First-steps-1">First steps</a></h2><p>You can use Query to filter and transform columns from a <span>$DataFrame$</span> and then create a new <span>$DataFrame$</span> for the output:</p><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @where i.age&gt;30. &amp;&amp; i.children &gt; 2
+    @select @NT(Name=&gt;lowercase(i.name))
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+1×1 DataFrames.DataFrame
+│ Row │ Name    │
+├─────┼─────────┤
+│ 1   │ &quot;sally&quot; │</code></pre><p>You don&#39;t have to start with a <span>$DataFrame$</span>, you can also query a <span>$Dict$</span> and then collect the results into a <span>$DataFrame$</span>:</p><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+source = Dict(&quot;John&quot;=&gt;34., &quot;Sally&quot;=&gt;56.)
+
+result = @from i in source begin
+         @where i.second&gt;36.
+         @select @NT(Name=&gt;lowercase(i.first))
+         @collect DataFrame
+end
+
+println(result)
+
+# output
+
+1×1 DataFrames.DataFrame
+│ Row │ Name    │
+├─────┼─────────┤
+│ 1   │ &quot;sally&quot; │</code></pre><p>Or you can start with just an array that holds some self-defined type:</p><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+immutable Person
+    Name::String
+    Friends::Vector{String}
+end
+
+source = Array(Person,0)
+push!(source, Person(&quot;John&quot;, [&quot;Sally&quot;, &quot;Miles&quot;, &quot;Frank&quot;]))
+push!(source, Person(&quot;Sally&quot;, [&quot;Don&quot;, &quot;Martin&quot;]))
+
+result = @from i in source begin
+         @where length(i.Friends) &gt; 2
+         @select @NT( Name=&gt;i.Name, Friendcount=&gt;length(i.Friends))
+         @collect DataFrame
+end
+
+println(result)
+
+# output
+
+1×2 DataFrames.DataFrame
+│ Row │ Name   │ Friendcount │
+├─────┼────────┼─────────────┤
+│ 1   │ &quot;John&quot; │ 3           │</code></pre><p>You also don&#39;t have to collect into a <span>$DataFrame$</span>, you can for example collect just one filtered column into an <span>$Array$</span>:</p><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @where i.age&gt;30. &amp;&amp; i.children &gt; 2
+    @select lowercase(i.name)
+    @collect
+end
+
+println(x)
+
+# output
+
+String[&quot;sally&quot;]</code></pre><p>You can also not collect at all and instead just iterate over the results of your query:</p><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @where i.age&gt;30. &amp;&amp; i.children &gt; 2
+    @select @NT(Name=&gt;lowercase(i.name), Kids=&gt;i.children)
+end
+
+for j in x
+    println(&quot;$(j.Name) has $(j.Kids) children.&quot;)
+end
+
+# output
+
+sally has 5 children.</code></pre><h2><a class="nav-anchor" id="@let-statement-1" href="#@let-statement-1">@let statement</a></h2><p>The <span>$@let$</span> statement allows you to define range variables inside your query:</p><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @let name_length = length(i.name)
+    @where name_length &lt;= 4
+    @select @NT(Name=&gt;lowercase(i.name), Length=&gt;name_length)
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+ 2×2 DataFrames.DataFrame
+│ Row │ Name   │ Length │
+├─────┼────────┼────────┤
+│ 1   │ &quot;john&quot; │ 4      │
+│ 2   │ &quot;kirk&quot; │ 4      │</code></pre><h2><a class="nav-anchor" id="@join-statement-1" href="#@join-statement-1">@join statement</a></h2><p>The <span>$@join$</span> statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a <span>$DataFrame$</span> and a <span>$TypedTable$</span> are joined and the results are collected into a <span>$DataFrame$</span>:</p><pre><code class="language-julia">using DataFrames, Query, NamedTuples, TypedTables
+
+df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+df2 = @Table(c=[2.,4.,2.], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
+
+x = @from i in df1 begin
+    @join j in df2 on i.a equals convert(Int,j.c)
+    @select @NT(a=&gt;i.a,b=&gt;i.b,c=&gt;j.c,d=&gt;j.d,e=&gt;&quot;Name: $(j.d)&quot;)
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+2×5 DataFrames.DataFrame
+│ Row │ a │ b   │ c   │ d       │ e             │
+├─────┼───┼─────┼─────┼─────────┼───────────────┤
+│ 1   │ 2 │ 2.0 │ 2.0 │ &quot;John&quot;  │ &quot;Name: John&quot;  │
+│ 2   │ 2 │ 2.0 │ 2.0 │ &quot;Sally&quot; │ &quot;Name: Sally&quot; │</code></pre><footer><hr/><a class="previous" href="index.html"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="internals.html"><span class="direction">Next</span><span class="title">Internals</span></a></footer></article></body></html>
