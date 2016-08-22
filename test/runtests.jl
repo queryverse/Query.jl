@@ -412,7 +412,3 @@ end
     include("../example/16-selectinto.jl")
     include("../example/17-groupjoin.jl")
 end
-
-@testset "Doctests" begin
-    include("../docs/make.jl")
-end
