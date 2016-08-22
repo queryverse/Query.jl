@@ -261,13 +261,16 @@ source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
 q = @from i in source_nested_dict begin
     @from j in i.second
     @select @NT(Key=>i.first,Value=>j)
-    @collect DataFrame
+    @collect
 end
 
-@test isa(q, DataFrame)
-@test size(q)==(5,2)
-@test q[:Key]==[:a,:a,:a,:b,:b]
-@test q[:Value]==[1,2,3,4,5]
+@test isa(q, Array{@NT(Key::Symbol,Value::Int),1})
+@test length(q)==5
+@test in(@NT(Key=>:a,Value=>1), q)
+@test in(@NT(Key=>:a,Value=>2), q)
+@test in(@NT(Key=>:a,Value=>3), q)
+@test in(@NT(Key=>:b,Value=>4), q)
+@test in(@NT(Key=>:b,Value=>5), q)
 
 q = @from i in source_df begin
     @from j in source_df2
@@ -290,13 +293,14 @@ q = @from i in source_nested_dict begin
     @from j in i.second
     @where j>2
     @select @NT(Key=>i.first,Value=>j)
-    @collect DataFrame
+    @collect
 end
 
-@test isa(q, DataFrame)
-@test size(q)==(3,2)
-@test q[:Key]==[:a,:b,:b]
-@test q[:Value]==[3,4,5]
+@test isa(q, Array{@NT(Key::Symbol,Value::Int),1})
+@test length(q)==3
+@test in(@NT(Key=>:a,Value=>3), q)
+@test in(@NT(Key=>:b,Value=>4), q)
+@test in(@NT(Key=>:b,Value=>5), q)
 
 source_df_groupby = DataFrame(name=["John", "Sally", "Kirk"], children=[3,2,2])
 
