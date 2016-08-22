@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "@let statement",
     "category": "section",
-    "text": "The let statement allows you to define range variables inside your query:using Query, DataFrames, NamedTuples\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @let name_length = length(i.name)\n    @where name_length <= 4\n    @select @NT(Name=>lowercase(i.name), Length=>name_length)\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n 2×2 DataFrames.DataFrame\n│ Row │ Name   │ Length │\n├─────┼────────┼────────┤\n│ 1   │ \"john\" │ 4      │\n│ 2   │ \"kirk\" │ 4      │"
+    "text": "The @let statement allows you to define range variables inside your query:using Query, DataFrames, NamedTuples\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @let name_length = length(i.name)\n    @where name_length <= 4\n    @select @NT(Name=>lowercase(i.name), Length=>name_length)\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n 2×2 DataFrames.DataFrame\n│ Row │ Name   │ Length │\n├─────┼────────┼────────┤\n│ 1   │ \"john\" │ 4      │\n│ 2   │ \"kirk\" │ 4      │"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "@join statement",
     "category": "section",
-    "text": "The join statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a DataFrame and a TypedTable are joined and the results are collected into a DataFrame:using DataFrames, Query, NamedTuples, TypedTables\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = @Table(c=[2.,4.,2.], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals convert(Int,j.c)\n    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>\"Name: $(j.d)\")\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×5 DataFrames.DataFrame\n│ Row │ a │ b   │ c   │ d       │ e             │\n├─────┼───┼─────┼─────┼─────────┼───────────────┤\n│ 1   │ 2 │ 2.0 │ 2.0 │ \"John\"  │ \"Name: John\"  │\n│ 2   │ 2 │ 2.0 │ 2.0 │ \"Sally\" │ \"Name: Sally\" │"
+    "text": "The @join statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a DataFrame and a TypedTable are joined and the results are collected into a DataFrame:using DataFrames, Query, NamedTuples, TypedTables\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = @Table(c=[2.,4.,2.], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals convert(Int,j.c)\n    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>\"Name: $(j.d)\")\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×5 DataFrames.DataFrame\n│ Row │ a │ b   │ c   │ d       │ e             │\n├─────┼───┼─────┼─────┼─────────┼───────────────┤\n│ 1   │ 2 │ 2.0 │ 2.0 │ \"John\"  │ \"Name: John\"  │\n│ 2   │ 2 │ 2.0 │ 2.0 │ \"Sally\" │ \"Name: Sally\" │"
 },
 
 {
