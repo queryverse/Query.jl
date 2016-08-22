@@ -2,7 +2,7 @@
 
 ## First steps
 
-You can use Query to filter and transform columns from a ``DataFrame`` and then create a new ``DataFrame`` for the output:
+You can use Query to filter and transform columns from a `DataFrame` and then create a new `DataFrame` for the output:
 
 ```jldoctest
 using Query, DataFrames, NamedTuples
@@ -25,7 +25,7 @@ println(x)
 │ 1   │ "sally" │
 ```
 
-You don't have to start with a ``DataFrame``, you can also query a ``Dict`` and then collect the results into a ``DataFrame``:
+You don't have to start with a `DataFrame`, you can also query a `Dict` and then collect the results into a `DataFrame`:
 
 ```jldoctest
 using Query, DataFrames, NamedTuples
@@ -78,7 +78,7 @@ println(result)
 │ 1   │ "John" │ 3           │
 ```
 
-You also don't have to collect into a ``DataFrame``, you can for example collect just one filtered column into an ``Array``:
+You also don't have to collect into a `DataFrame`, you can for example collect just one filtered column into an `Array`:
 
 ```jldoctest
 using Query, DataFrames, NamedTuples
@@ -121,7 +121,7 @@ sally has 5 children.
 
 ## @let statement
 
-The ``@let`` statement allows you to define range variables inside your query:
+The `@let` statement allows you to define range variables inside your query:
 
 ```jldoctest
 using Query, DataFrames, NamedTuples
@@ -148,7 +148,7 @@ println(x)
 
 ## @join statement
 
-The ``@join`` statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a ``DataFrame`` and a ``TypedTable`` are joined and the results are collected into a ``DataFrame``:
+The `@join` statement implements an inner join between two data sources. You can use this to join sources of different types. For example, below data from a `DataFrame` and a `TypedTable` are joined and the results are collected into a `DataFrame`:
 
 ```jldoctest
 using DataFrames, Query, NamedTuples, TypedTables
