@@ -20,6 +20,7 @@ makedocs(
 deploydocs(
     deps = nothing,
     make = nothing,
+    target = "build",
     repo = "github.com/davidanthoff/Query.jl.git",
     julia = "0.5"
 )
