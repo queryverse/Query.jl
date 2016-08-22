@@ -123,7 +123,7 @@ function query_expression_translation_phase_4(qe)
 
 			qe[1].args[2].args[3] = :( Query.@where_internal($e,$(esc(f_condition))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && qe[3].head==:macrocall && qe[3].args[1]==Symbol("@select")
+		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==6 && qe[3].head==:macrocall && qe[3].args[1]==Symbol("@select")
 			outer = qe[1].args[2].args[3]
 			inner = qe[2].args[2].args[3]
 			outer_range_var = qe[1].args[2].args[2]
@@ -137,7 +137,7 @@ function query_expression_translation_phase_4(qe)
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join")
+		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==6
 			e1 = qe[1].args[2].args[3]
 			e2 = qe[2].args[2].args[3]
 			x1 = qe[1].args[2].args[2]
@@ -150,6 +150,37 @@ function query_expression_translation_phase_4(qe)
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			deleteat!(qe,2)
+		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==8 && qe[3].head==:macrocall && qe[3].args[1]==Symbol("@select")
+			e1 = qe[1].args[2].args[3]
+			e2 = qe[2].args[2].args[3]
+			x1 = qe[1].args[2].args[2]
+			x2 = qe[2].args[2].args[2]
+			k1 = qe[2].args[4]
+			k2 = qe[2].args[6]
+			g = qe[2].args[8]
+			v = qe[3].args[2]
+			f_outer_key = Expr(:->, x1, k1)
+			f_inner_key = Expr(:->, x2, k2)
+			f_result = Expr(:->, Expr(:tuple,x1,g), v)
+			qe[1] = :( Query.@group_join_internal($e1, $e2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+
+			deleteat!(qe,3)
+			deleteat!(qe,2)
+		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==8
+			e1 = qe[1].args[2].args[3]
+			e2 = qe[2].args[2].args[3]
+			x1 = qe[1].args[2].args[2]
+			x2 = qe[2].args[2].args[2]
+			k1 = qe[2].args[4]
+			k2 = qe[2].args[6]
+			g = qe[2].args[8]
+			f_outer_key = Expr(:->, x1, k1)
+			f_inner_key = Expr(:->, x2, k2)
+			f_result = Expr(:->, Expr(:tuple,x1,g), :(@NT($x1=>$x1,$g=>$g)) )
+
+			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, g)
+			qe[1].args[2].args[3] = :( Query.@group_join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@orderby")
 			e = qe[1].args[2].args[3]

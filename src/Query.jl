@@ -76,6 +76,14 @@ macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSele
 	:(join($(esc(outer)), $(esc(inner)), $(esc(outerKeySelector)), $(esc(q_outerKeySelector)), $(esc(innerKeySelector)),$(esc(q_innerKeySelector)), $(esc(resultSelector)),$(esc(q_resultSelector))))
 end
 
+macro group_join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
+	q_outerKeySelector = Expr(:quote, outerKeySelector)
+	q_innerKeySelector = Expr(:quote, innerKeySelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(group_join($(esc(outer)), $(esc(inner)), $(esc(outerKeySelector)), $(esc(q_outerKeySelector)), $(esc(innerKeySelector)),$(esc(q_innerKeySelector)), $(esc(resultSelector)),$(esc(q_resultSelector))))
+end
+
 macro select_many_internal(source,collectionSelector,resultSelector)
 	q_collectionSelector = Expr(:quote, collectionSelector)
 	q_resultSelector = Expr(:quote, resultSelector)
