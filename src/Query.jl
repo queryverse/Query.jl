@@ -68,6 +68,16 @@ macro orderby_descending_internal(source, f)
     :(orderby_descending($(esc(source)), $(esc(f)), $(esc(q))))
 end
 
+macro thenby_internal(source, f)
+	q = Expr(:quote, f)
+    :(thenby($(esc(source)), $(esc(f)), $(esc(q))))
+end
+
+macro thenby_descending_internal(source, f)
+	q = Expr(:quote, f)
+    :(thenby_descending($(esc(source)), $(esc(f)), $(esc(q))))
+end
+
 macro join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
 	q_outerKeySelector = Expr(:quote, outerKeySelector)
 	q_innerKeySelector = Expr(:quote, innerKeySelector)

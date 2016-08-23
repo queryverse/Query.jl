@@ -187,7 +187,19 @@ function query_expression_translation_phase_4(qe)
 			x = qe[1].args[2].args[2]
 			ks = []
 			if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:tuple
-				error("Nested sorting not yet supported")
+				for sort_clause in qe[2].args[2].args
+					if isa(sort_clause, Expr) && sort_clause.head==:call && sort_clause.args[1]==:descending
+						k = sort_clause.args[2]
+						direction = :descending
+					elseif isa(sort_clause, Expr) && sort_clause.head==:call && sort_clause.args[1]==:ascending
+						k = sort_clause.args[2]
+						direction = :ascending
+					else
+						k = sort_clause
+						direction = :ascending
+					end
+					push!(ks, (k, direction))
+				end
 			else
 				if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:call && qe[2].args[2].args[1]==:descending
 					k = qe[2].args[2].args[2]
@@ -202,20 +214,24 @@ function query_expression_translation_phase_4(qe)
 				push!(ks, (k, direction))
 			end
 
-			if length(ks)==1
-				f_condition = Expr(:->, x, ks[1][1])
+			for (i,sort_clause) in enumerate(ks)
+				f_condition = Expr(:->, x, sort_clause[1])
 
-				if ks[1][2]==:ascending
-					qe[1].args[2].args[3] = :( Query.@orderby_internal($e,$(esc(f_condition))) )
-				elseif ks[1][2]==:descending
-					qe[1].args[2].args[3] = :( Query.@orderby_descending_internal($e,$(esc(f_condition))) )
-				else
-					error()
+				if sort_clause[2]==:ascending
+					if i==1
+						qe[1].args[2].args[3] = :( Query.@orderby_internal($e,$(esc(f_condition))) )
+					else
+						qe[1].args[2].args[3] = :( Query.@thenby_internal($(qe[1].args[2].args[3]),$(esc(f_condition))) )
+					end
+				elseif sort_clause[2]==:descending
+					if i==1
+						qe[1].args[2].args[3] = :( Query.@orderby_descending_internal($e,$(esc(f_condition))) )
+					else
+						qe[1].args[2].args[3] = :( Query.@thenby_descending_internal($(qe[1].args[2].args[3]),$(esc(f_condition))) )
+					end
 				end
-				deleteat!(qe,2)
-			else
-				error()
 			end
+			deleteat!(qe,2)
 		else
 			done = true
 		end

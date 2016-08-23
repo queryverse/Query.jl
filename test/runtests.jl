@@ -152,6 +152,18 @@ end
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
+source_nestedsort = [(4,3),(4,3),(1,2),(1,1)]
+q = @from i in source_nestedsort begin
+    @orderby i[1], descending(i[2])
+    @select i
+    @collect
+end
+
+@test isa(q, Array{Tuple{Int,Int},1})
+@test length(q)==4
+@test q==[(1,2),(1,1),(4,3),(4,3)]
+
+
 # We need to use a typed const here, otherwise type inference stands no chance
 const closure_var_1::Int = 1
 
@@ -415,4 +427,5 @@ end
     include("../example/15-groupinto.jl")
     include("../example/16-selectinto.jl")
     include("../example/17-groupjoin.jl")
+    include("../example/18-orderby-nested.jl")
 end
