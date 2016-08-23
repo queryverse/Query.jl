@@ -1,5 +1,6 @@
 module Query
 
+using NullableArrays
 using Requires
 using NamedTuples
 using DataStructures
