@@ -15,8 +15,20 @@ import Base.join
 
 export @from, Grouping
 
-include("enumerable.jl")
-include("queryable.jl")
+
+include("enumerable/enumerable.jl")
+include("enumerable/enumerable_groupby.jl")
+include("enumerable/enumerable_join.jl")
+include("enumerable/enumerable_groupjoin.jl")
+include("enumerable/enumerable_orderby.jl")
+include("enumerable/enumerable_select.jl")
+include("enumerable/enumerable_where.jl")
+include("enumerable/enumerable_selectmany.jl")
+
+include("queryable/queryable.jl")
+include("queryable/queryable_select.jl")
+include("queryable/queryable_where.jl")
+
 include("query_translation.jl")
 
 include("sources/source_array.jl")
