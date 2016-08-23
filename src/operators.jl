@@ -4,17 +4,15 @@ import Base.!=
 const null = Nullable{Union{}}()
 
 # C# spec section 7.10.9
-# TODO Check whether the following assumptions is correct:
-# Nullable{Union{}} can never have a value
 
 =={T}(a::Nullable{T},b::Nullable{Union{}}) = isnull(a)
 =={T}(a::Nullable{Union{}},b::Nullable{T}) = isnull(b)
 !={T}(a::Nullable{T},b::Nullable{Union{}}) = !isnull(a)
 !={T}(a::Nullable{Union{}},b::Nullable{T}) = !isnull(b)
 
-# Custom ops
+# Strings
 
-for op in (:lowercase,:uppercase)
+for op in (:lowercase,:uppercase,:reverse,:ucfirst,:lcfirst,:chop,:chomp)
     @eval begin
         import Base.$(op)
         function $op{T<:AbstractString}(x::Nullable{T})
@@ -24,6 +22,15 @@ for op in (:lowercase,:uppercase)
                 returnNullable($op(get(x)))
             end
         end
+    end
+end
+
+import Base.getindex
+function getindex{T<:AbstractString}(s::Nullable{T},i)
+    if isnull(s)
+        return Nullable{T}()
+    else
+        return Nullable(get(s)[i])
     end
 end
 
