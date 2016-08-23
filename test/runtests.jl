@@ -78,7 +78,7 @@ source_typedtable = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=N
 
 q = @from i in source_typedtable begin
     @where i.age>30 && i.children>2
-    @select @NT(Name=>lowercase(i.name))
+    @select @NT(Name=>lowercase(get(i.name)))
     @collect DataFrame
 end
 
