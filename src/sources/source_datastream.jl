@@ -14,9 +14,15 @@ function query{S<:DataStreams.Data.Source}(source::S)
     columns_tuple_type = Expr(:curly, :Tuple)
 
     for i in 1:schema.cols
-    	col_type = schema.types[i] <: WeakRefString ? String : schema.types[i]
-    	col_type_as_nullable = Nullable{col_type}
-        push!(col_expressions, Expr(:(::), schema.header[i], col_type_as_nullable))
+        if schema.types[i] <: WeakRefString
+            col_type = String
+        elseif schema.types[i] <: Nullable && schema.types[i].parameters[1] <: WeakRefString
+            col_type = Nullable{String}
+        else
+            col_type = schema.types[i]
+        end
+
+        push!(col_expressions, Expr(:(::), schema.header[i], col_type))
         push!(columns_tuple_type.args, col_type)
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
