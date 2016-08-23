@@ -8,8 +8,8 @@ df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64
 # The generaly philosophy here is to not offer anything beyond standard julia
 # Nullables
 x = @from i in df begin
-    @where get(i.age)>30. && get(i.children) >2
-    @select @NT(Name=>lowercase(get(i.name)))
+    @where i.age>30 && i.children >2
+    @select @NT(Name=>lowercase(i.name))
     @collect DataFrame
 end
 

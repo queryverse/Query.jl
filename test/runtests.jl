@@ -77,8 +77,8 @@ end
 source_typedtable = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int}[3,5,2])
 
 q = @from i in source_typedtable begin
-    @where get(i.age)>30. && get(i.children) >2
-    @select @NT(Name=>lowercase(get(i.name)))
+    @where i.age>30 && i.children>2
+    @select @NT(Name=>lowercase(i.name))
     @collect DataFrame
 end
 
@@ -216,7 +216,7 @@ end
 @test q[2].Friends==["Don", "Martin"]
 
 q = @from i in CSV.Source("data.csv") begin
-    @where get(i.Children) > 2
+    @where i.Children > 2
     @select get(i.Name)
     @collect
 end

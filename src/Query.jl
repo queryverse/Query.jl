@@ -16,6 +16,7 @@ import Base.join
 
 export @from, Grouping
 
+include("operators.jl")
 
 include("enumerable/enumerable.jl")
 include("enumerable/enumerable_groupby.jl")
