@@ -3,7 +3,7 @@ using DataStreams
 using CSV
 
 q = @from i in CSV.Source("data.csv") begin
-    @where get(i.Children) > 2
+    @where i.Children > 2
     @select get(i.Name)
     @collect
 end
