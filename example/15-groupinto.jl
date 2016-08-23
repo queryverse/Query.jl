@@ -6,7 +6,7 @@ df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,
 
 x = @from i in df begin
     @group i by i.children into g
-    @select @NT(Key=>g.key,Count=>length(g.elements))
+    @select @NT(Key=>g.key,Count=>length(g))
     @collect DataFrame
 end
 

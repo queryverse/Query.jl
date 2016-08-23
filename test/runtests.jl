@@ -324,9 +324,9 @@ end
 @test isa(x, Array{Grouping{Int,String}})
 @test length(x)==2
 @test x[1].key==3
-@test x[1].elements==["John"]
+@test x[1][:]==["John"]
 @test x[2].key==2
-@test x[2].elements==["Sally", "Kirk"]
+@test x[2][:]==["Sally", "Kirk"]
 
 x = @from i in source_df_groupby begin
     @group i by i.children
@@ -336,14 +336,14 @@ end
 @test isa(x, Array{Grouping{Int,NamedTuples._NT_namechildren{String,Int}},1})
 @test length(x)==2
 @test x[1].key==3
-@test x[1].elements[1].name=="John";
+@test x[1][1].name=="John";
 @test x[2].key==2
-@test x[2].elements[1].name=="Sally";
-@test x[2].elements[2].name=="Kirk";
+@test x[2][1].name=="Sally";
+@test x[2][2].name=="Kirk";
 
 q = @from i in source_df_groupby begin
     @group i by i.children into g
-    @select @NT(Children=>g.key,Number_of_parents=>length(g.elements))
+    @select @NT(Children=>g.key,Number_of_parents=>length(g))
     @collect DataFrame
 end
 

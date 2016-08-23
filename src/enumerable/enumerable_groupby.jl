@@ -3,10 +3,17 @@ immutable EnumerableGroupBySimple{T,TKey,TS,SO,ES} <: Enumerable{T}
     elementSelector::ES
 end
 
-immutable Grouping{TKey,T}
+immutable Grouping{TKey,T} <: AbstractArray{T,1}
     key::TKey
     elements::Array{T,1}
 end
+
+import Base.size
+size{TKey,T}(A::Grouping{TKey,T}) = size(A.elements)
+import Base.getindex
+getindex{TKey,T}(A::Grouping{TKey,T},i) = A.elements[i]
+import Base.length
+length{TKey,T}(A::Grouping{TKey,T}) = length(A.elements)
 
 function group_by{TS}(source::Enumerable{TS}, f_elementSelector::Function, elementSelector::Expr)
     TKey = Base.return_types(f_elementSelector, (TS,))[1]
