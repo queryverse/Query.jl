@@ -31,3 +31,13 @@ result = @from i in result begin
 end
 
 println(result)
+
+# This examples uses SQLite just like any other DataStreams source.
+
+results = @from i in SQLite.Source(db,"SELECT * FROM Employee") begin
+    @where i.ReportsTo==2
+    @select @NT(Name=>i.LastName, Adr=>i.Address)
+    @collect DataFrame
+end
+
+println(result)

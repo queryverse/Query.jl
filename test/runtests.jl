@@ -4,6 +4,7 @@ using TypedTables
 using NamedTuples
 using DataStreams
 using CSV
+using SQLite
 using NDSparseData
 using Base.Test
 
@@ -406,6 +407,19 @@ end
 @test q[1].c[1].d== "John"
 @test q[1].c[2].c==2.
 @test q[1].c[2].d== "Sally"
+
+sqlite_db = SQLite.DB(joinpath(Pkg.dir("SQLite"), "test", "Chinook_Sqlite.sqlite"))
+
+q = @from i in SQLite.Source(sqlite_db,"SELECT * FROM Employee") begin
+    @where i.ReportsTo==2
+    @select @NT(Name=>i.LastName, Adr=>i.Address)
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(3,2)
+@test q[:Name]==["Peacock","Park","Johnson"]
+@test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
 
 end
 
