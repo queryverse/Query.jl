@@ -97,6 +97,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "internals.html#Nullable-1",
+    "page": "Internals",
+    "title": "Nullable",
+    "category": "section",
+    "text": "This package implements the C# spec semantics for lifting and handling Nullables. It currently overrides the definitions for various operators that are in NullableArrays."
+},
+
+{
     "location": "internals.html#Readings-1",
     "page": "Internals",
     "title": "Readings",
