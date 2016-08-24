@@ -14,7 +14,7 @@ import Base.length
 import Base.eltype
 import Base.join
 
-export @from, Grouping
+export @from, Grouping, null
 
 include("operators.jl")
 
