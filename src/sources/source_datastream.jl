@@ -68,7 +68,7 @@ end
 end
 
 function done{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC}, state)
-    return state>iter.schema.rows
+    return Data.isdone(iter.source,state,1)
 end
 
 end
