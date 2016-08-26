@@ -5,7 +5,6 @@ using NamedTuples
 using DataStreams
 using CSV
 using SQLite
-using NDSparseData
 using Base.Test
 
 immutable Person
@@ -227,34 +226,6 @@ end
 @test q[1]=="John"
 @test q[2]=="Kirk"
 
-source_ndsparsearray1 = NDSparse([fill("New York",3); fill("Boston",3)],
-                            repmat(Date(2016,7,6):Date(2016,7,8), 2),
-                            [91,89,91,95,83,76])
-
-q = @from i in source_ndsparsearray1 begin
-    @where i.index[1]=="Boston"
-    @select i.value
-    @collect
-end
-
-@test isa(q, Array{Int,1})
-@test length(q)==3
-@test q==[95,83,76]
-
-source_ndsparsearray2 = NDSparse(Columns(city = [fill("New York",3); fill("Boston",3)],
-                            date = repmat(Date(2016,7,6):Date(2016,7,8), 2)),
-                            [91,89,91,95,83,76])
-
-q = @from i in source_ndsparsearray2 begin
-    @where i.index.city=="New York"
-    @select i.value
-    @collect
-end
-
-@test isa(q, Array{Int,1})
-@test length(q)==3
-@test q==[91,89,91]
-
 q = @from i in source_df begin
     @from j in source_df2
     @select @NT(Name=>i.name,Age=>i.age,Children=>i.children,A=>j.a,B=>j.b)
@@ -421,6 +392,8 @@ end
 @test q[:Name]==["Peacock","Park","Johnson"]
 @test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
 
+include("test_ndsparsedata.jl")
+
 end
 
 @testset "Operators" begin
@@ -439,7 +412,7 @@ end
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
     include("../example/11-Datastream.jl")
-    include("../example/12-NDSparseData.jl")
+    Pkg.installed("NDSparseData") != nothing ? include("../example/12-NDSparseData.jl") : nothing
     include("../example/13-selectmany.jl")
     include("../example/14-groupby.jl")
     include("../example/15-groupinto.jl")
