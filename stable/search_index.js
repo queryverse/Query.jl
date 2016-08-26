@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Overview",
     "category": "section",
-    "text": "Query allows you to execute queries against almost any julia data structure. The package currently supports queries against DataFrames, TypedTables, DataStreams (e.g. CSV) and any other iterable (arrays, dictionaries etc.)."
+    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source. It has enhanced support for querying arrays, DataFrames, TypedTables, NDSparseData and any DataStream source (e.g. CSV, Feather, SQLite etc.).The package currenlty provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a \"query provider\" for SQLite in the package, but it is experimental at this point and only works for a very small subset of queries.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
 },
 
 {
