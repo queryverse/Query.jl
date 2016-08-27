@@ -19,9 +19,9 @@ Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb3
 
 ## Installation
 
-This package only works on julia 0.5- and newer. It is currently not registered, so you need to clone it:
+This package only works on julia 0.5- and newer. You can add it with:
 ````julia
-Pkg.clone("https://github.com/davidanthoff/Query.jl.git")
+Pkg.add("Query")
 ````
 
 ## Getting started
