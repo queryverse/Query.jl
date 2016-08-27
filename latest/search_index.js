@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "This package only works on julia 0.5- and newer. It is currently not registered, so you need to clone it:Pkg.clone(\"https://github.com/davidanthoff/Query.jl.git\")"
+    "text": "This package only works on julia 0.5- and newer. You can add it with:Pkg.add(\"Query\")"
 },
 
 {
