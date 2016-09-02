@@ -1,4 +1,12 @@
-if Pkg.installed("NDSparseData") != nothing
+function is_installed(pkg)
+    try
+        return(Pkg.installed(pkg) === nothing ? false: true)
+    catch
+        return(false)
+    end
+end
+
+if is_installed("NDSparseData")
     using NDSparseData
 
     source_ndsparsearray1 = NDSparse([fill("New York",3); fill("Boston",3)],
