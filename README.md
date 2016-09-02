@@ -4,6 +4,7 @@
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://davidanthoff.github.io/Query.jl/latest)
 [![Build Status](https://travis-ci.org/davidanthoff/Query.jl.svg?branch=master)](https://travis-ci.org/davidanthoff/Query.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/9xdm60oa50uw5eru/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/query-jl/branch/master)
+[![Query](http://pkg.julialang.org/badges/Query_0.5.svg)](http://pkg.julialang.org/?pkg=Query)
 [![codecov](https://codecov.io/gh/davidanthoff/Query.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/davidanthoff/Query.jl)
 
 ## Overview
