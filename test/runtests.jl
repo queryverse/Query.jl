@@ -108,6 +108,28 @@ end
 @test q[2,:d]=="Sally"
 @test q[2,:e]=="Name: Sally"
 
+q = @from i in source_df2 begin
+    @join j in (@from i in source_typedtable2 begin
+                    @where i.c<3.
+                    @select i
+                end) on i.a equals convert(Int,j.c)
+    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>"Name: $(j.d)")
+    @collect DataFrame
+end
+
+@test isa(q,DataFrame)
+@test size(q)==(2,5)
+@test q[1,:a]==2
+@test q[1,:b]==2.
+@test q[1,:c]==2.
+@test q[1,:d]=="John"
+@test q[1,:e]=="Name: John"
+@test q[2,:a]==2
+@test q[2,:b]==2.
+@test q[2,:c]==2.
+@test q[2,:d]=="Sally"
+@test q[2,:e]=="Name: Sally"
+
 q = @from i in source_df begin
     @let count = length(i.name)
     @let kids_per_year = i.children / i.age
