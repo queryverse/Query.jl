@@ -434,7 +434,7 @@ end
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
     include("../example/11-Datastream.jl")
-    Pkg.installed("NDSparseData") != nothing ? include("../example/12-NDSparseData.jl") : nothing
+    is_installed("NDSparseData") && include("../example/12-NDSparseData.jl")
     include("../example/13-selectmany.jl")
     include("../example/14-groupby.jl")
     include("../example/15-groupinto.jl")
