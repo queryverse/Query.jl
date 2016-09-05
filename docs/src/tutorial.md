@@ -11,7 +11,7 @@ df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,
 
 x = @from i in df begin
     @where i.age>30. && i.children > 2
-    @select @NT(Name=>lowercase(i.name))
+    @select {Name=lowercase(i.name)}
     @collect DataFrame
 end
 
@@ -34,7 +34,7 @@ source = Dict("John"=>34., "Sally"=>56.)
 
 result = @from i in source begin
          @where i.second>36.
-         @select @NT(Name=>lowercase(i.first))
+         @select {Name=lowercase(i.first)}
          @collect DataFrame
 end
 
@@ -64,7 +64,7 @@ push!(source, Person("Sally", ["Don", "Martin"]))
 
 result = @from i in source begin
          @where length(i.Friends) > 2
-         @select @NT( Name=>i.Name, Friendcount=>length(i.Friends))
+         @select {i.Name, Friendcount=length(i.Friends)}
          @collect DataFrame
 end
 
@@ -107,7 +107,7 @@ df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,
 
 x = @from i in df begin
     @where i.age>30. && i.children > 2
-    @select @NT(Name=>lowercase(i.name), Kids=>i.children)
+    @select {Name=lowercase(i.name), Kids=i.children}
 end
 
 for j in x
@@ -131,7 +131,7 @@ df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,
 x = @from i in df begin
     @let name_length = length(i.name)
     @where name_length <= 4
-    @select @NT(Name=>lowercase(i.name), Length=>name_length)
+    @select {Name=lowercase(i.name), Length=name_length}
     @collect DataFrame
 end
 
@@ -158,7 +158,7 @@ df2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])
 
 x = @from i in df1 begin
     @join j in df2 on i.a equals convert(Int,j.c)
-    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>"Name: $(j.d)")
+    @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
 
