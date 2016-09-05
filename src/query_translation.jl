@@ -10,6 +10,20 @@ function query_expression_translation_phase_A(qe)
 			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
 			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+		elseif clause.head==:macrocall && clause.args[1]==Symbol("@select")
+			if isa(clause.args[2], Expr) && clause.args[2].head==:cell1d
+				clause.args[2] = Expr(:macrocall, Symbol("@NT"), clause.args[2].args...)
+				for (j,field_in_NT) in enumerate(clause.args[2].args[2:end])
+					if isa(field_in_NT, Expr) && field_in_NT.head==:(=)
+						clause.args[2].args[j+1] = Expr(:(=>), field_in_NT.args...)
+					elseif isa(field_in_NT, Expr) && field_in_NT.head==:.
+						name_to_use = field_in_NT.args[2].args[1]
+						clause.args[2].args[j+1] = Expr(:(=>), name_to_use, field_in_NT)
+					elseif isa(field_in_NT, Symbol)
+						clause.args[2].args[j+1] = Expr(:(=>), field_in_NT, field_in_NT)
+					end
+				end
+			end
 		end
 		i+=1
 	end
