@@ -18,7 +18,11 @@ end
 function collect{T<:NamedTuple}(enumerable::Enumerable{T}, ::Type{DataFrames.DataFrame})
     columns = []
     for t in T.types
-        push!(columns, Array(t,0))
+        if isa(t, TypeVar)
+            push!(columns, Array(Any,0))
+        else
+            push!(columns, Array(t,0))
+        end
     end
     df = DataFrames.DataFrame(columns, fieldnames(T))
     _filldf((df.columns...), enumerable)

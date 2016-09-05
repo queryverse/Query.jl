@@ -4,20 +4,41 @@ immutable EnumerableSelectMany{T,SO,CS,RS} <: Enumerable{T}
     resultSelector::RS
 end
 
+# TODO Make sure this is actually correct. We might have to be more selective,
+# i.e. only scan arguments for certain types of expression etc.
+function expr_contains_ref_to(expr::Expr, var_name::Symbol)
+    for sub_expr in expr.args
+        if isa(sub_expr, Symbol)
+            if sub_expr==var_name
+                return true
+            end
+        else
+            test_sub = expr_contains_ref_to(sub_expr, var_name)
+            if test_sub
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function expr_contains_ref_to(expr::Symbol, var_name::Symbol)
+    return expr==var_name
+end
+
 function select_many{TS}(source::Enumerable{TS}, f_collectionSelector::Function, collectionSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     # First detect whether the collectionSelector return value depends at all
     # on the value of the anonymous function argument
     anon_var = collectionSelector.args[1]
     body = collectionSelector.args[2].args[2]
-    # TODO improve this test by traversing the whole expression tree looking for any occurance
-    # of anon_var
-    crossJoin = !(isa(body, Expr) && body.head==:. && body.args[1]==anon_var)
+    crossJoin = !expr_contains_ref_to(body, anon_var)
 
     if crossJoin
         inner_collection = f_collectionSelector(nothing)
         TCE = typeof(inner_collection).parameters[1]
     else
-        TCE = Base.return_types(f_collectionSelector, (TS,))[1].parameters[1]
+        type_as_guessed = Base.return_types(f_collectionSelector, (TS,))[1]
+        TCE = typeof(type_as_guessed)==Union || type_as_guessed==Any ? Any : type_as_guessed.parameters[1]
     end
 
     T = Base.return_types(f_resultSelector, (TS,TCE))[1]
