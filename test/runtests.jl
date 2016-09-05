@@ -18,7 +18,7 @@ source_df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], child
 
 q = @from i in source_df begin
     @where i.age>30. && i.children > 2
-    @select @NT(Name=>lowercase(i.name))
+    @select {Name=lowercase(i.name)}
     @collect DataFrame
 end
 
@@ -30,7 +30,7 @@ source_dict = Dict("John"=>34., "Sally"=>56.)
 
 q = @from i in source_dict begin
     @where i.second>36.
-    @select @NT(Name=>lowercase(i.first))
+    @select {Name=lowercase(i.first)}
     @collect DataFrame
 end
 
@@ -54,7 +54,7 @@ push!(source_array, Person("Sally", ["Don", "Martin"]))
 
 q = @from i in source_array begin
     @where length(i.Friends) > 2
-    @select @NT( Name=>i.Name, Friendcount=>length(i.Friends))
+    @select {i.Name, Friendcount=length(i.Friends)}
     @collect
 end
 
@@ -65,7 +65,7 @@ end
 
 q = @from i in source_array begin
     @where length(i.Friends) > 2
-    @select @NT( Name=>i.Name, Friendcount=>length(i.Friends))
+    @select {i.Name, Friendcount=length(i.Friends)}
     @collect DataFrame
 end
 
@@ -78,7 +78,7 @@ source_typedtable = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=N
 
 q = @from i in source_typedtable begin
     @where i.age>30 && i.children>2
-    @select @NT(Name=>lowercase(get(i.name)))
+    @select {Name=lowercase(get(i.name))}
     @collect DataFrame
 end
 
@@ -91,7 +91,7 @@ source_typedtable2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])
 
 q = @from i in source_df2 begin
     @join j in source_typedtable2 on i.a equals convert(Int,j.c)
-    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>"Name: $(j.d)")
+    @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
 
@@ -113,7 +113,7 @@ q = @from i in source_df2 begin
                     @where i.c<3.
                     @select i
                 end) on i.a equals convert(Int,j.c)
-    @select @NT(a=>i.a,b=>i.b,c=>j.c,d=>j.d,e=>"Name: $(j.d)")
+    @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
 
@@ -134,7 +134,7 @@ q = @from i in source_df begin
     @let count = length(i.name)
     @let kids_per_year = i.children / i.age
     @where count > 4
-    @select @NT(Name=>i.name, Count=>count, KidsPerYear=>kids_per_year)
+    @select {Name=i.name, Count=count, KidsPerYear=kids_per_year}
     @collect DataFrame
 end
 
@@ -250,7 +250,7 @@ end
 
 q = @from i in source_df begin
     @from j in source_df2
-    @select @NT(Name=>i.name,Age=>i.age,Children=>i.children,A=>j.a,B=>j.b)
+    @select {Name=i.name,Age=i.age,Children=i.children,A=j.a,B=j.b}
     @collect DataFrame
 end
 
@@ -266,7 +266,7 @@ source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
 
 q = @from i in source_nested_dict begin
     @from j in i.second
-    @select @NT(Key=>i.first,Value=>j)
+    @select {Key=i.first,Value=j}
     @collect
 end
 
@@ -281,7 +281,7 @@ end
 q = @from i in source_df begin
     @from j in source_df2
     @where j.a>1
-    @select @NT(Name=>i.name,Age=>i.age,Children=>i.children,A=>j.a,B=>j.b)
+    @select {Name=i.name,Age=i.age,Children=i.children,A=j.a,B=j.b}
     @collect DataFrame
 end
 
@@ -298,7 +298,7 @@ source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
 q = @from i in source_nested_dict begin
     @from j in i.second
     @where j>2
-    @select @NT(Key=>i.first,Value=>j)
+    @select {Key=i.first,Value=j}
     @collect
 end
 
@@ -337,7 +337,7 @@ end
 
 q = @from i in source_df_groupby begin
     @group i by i.children into g
-    @select @NT(Children=>g.key,Number_of_parents=>length(g))
+    @select {Children=g.key,Number_of_parents=length(g)}
     @collect DataFrame
 end
 
@@ -350,7 +350,7 @@ end
 q = @from i in source_df begin
     @where i.age>30. && i.children > 2
     @select i into j
-    @select @NT(Name=>lowercase(j.name))
+    @select {Name=lowercase(j.name)}
     @collect DataFrame
 end
 
@@ -360,7 +360,7 @@ end
 
 q = @from i in source_df2 begin
     @join j in source_typedtable2 on i.a equals convert(Int,j.c) into k
-    @select @NT(a=>i.a,b=>i.b,c=>k)
+    @select {i.a,i.b,c=k}
     @collect
 end
 
@@ -386,7 +386,7 @@ end
 q = @from i in source_df2 begin
     @join j in source_typedtable2 on i.a equals convert(Int,j.c) into k
     @where length(k)>0
-    @select @NT(a=>i.a,b=>i.b,c=>k)
+    @select {i.a,i.b,c=k}
     @collect
 end
 
@@ -405,7 +405,7 @@ sqlite_db = SQLite.DB(joinpath(Pkg.dir("SQLite"), "test", "Chinook_Sqlite.sqlite
 
 q = @from i in SQLite.Source(sqlite_db,"SELECT * FROM Employee") begin
     @where i.ReportsTo==2
-    @select @NT(Name=>i.LastName, Adr=>i.Address)
+    @select {Name=i.LastName, Adr=i.Address}
     @collect DataFrame
 end
 
