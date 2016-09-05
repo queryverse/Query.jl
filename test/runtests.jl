@@ -5,6 +5,7 @@ using NamedTuples
 using DataStreams
 using CSV
 using SQLite
+using JSON
 using Base.Test
 
 immutable Person
@@ -414,6 +415,40 @@ end
 @test q[:Name]==["Peacock","Park","Johnson"]
 @test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
 
+source_json_string = """
+{
+    "Students": [
+        {
+            "Name": "John",
+            "Parents": [ {"name": "Paul"}, {"name": "Mary"}]
+        },
+        {
+            "Name": "Steward",
+            "Parents": [ {"name": "George"} ]
+        },
+        {
+            "Name": "Felix",
+            "Parents": [ {"name": "Greg"}, {"name": "Susan"}]
+        },
+        {
+            "Name": "Sara",
+            "Parents": [ {"name": "Susan"}]
+        }
+    ]
+}
+"""
+
+q = @from student in JSON.parse(source_json_string)["Students"] begin
+    @from parent in student["Parents"]
+    @select {Student=student["Name"], Parent=parent["name"]}
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(6,2)
+@test q[:Student] == Any["John", "John", "Steward", "Felix", "Felix", "Sara"]
+@test q[:Parent] == Any["Paul", "Mary", "George", "Greg", "Susan", "Susan"]
+
 include("test_ndsparsedata.jl")
 
 end
@@ -441,4 +476,5 @@ end
     include("../example/16-selectinto.jl")
     include("../example/17-groupjoin.jl")
     include("../example/18-orderby-nested.jl")
+    include("../example/20-json.jl")
 end
