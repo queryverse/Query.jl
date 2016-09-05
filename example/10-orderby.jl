@@ -12,7 +12,7 @@ df = DataFrame(columns, [:name, :age, :children])
 
 x = @from i in df begin
     @orderby i.age
-    @select @NT(Name=>lowercase(i.name))
+    @select {Name=lowercase(i.name)}
     @collect DataFrame
 end
 
@@ -20,7 +20,7 @@ println(x)
 
 x = @from i in df begin
     @orderby descending(i.age)
-    @select @NT(Name=>lowercase(i.name))
+    @select {Name=lowercase(i.name)}
     @collect DataFrame
 end
 
@@ -28,7 +28,7 @@ println(x)
 
 x = @from i in df begin
     @orderby ascending(i.age)
-    @select @NT(Name=>lowercase(i.name))
+    @select {Name=lowercase(i.name)}
     @collect DataFrame
 end
 

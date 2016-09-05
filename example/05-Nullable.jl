@@ -7,7 +7,7 @@ df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64
 
 x = @from i in df begin
     @where i.age>30 && i.children >2
-    @select @NT(Name=>lowercase(get(i.name)))
+    @select {Name=lowercase(get(i.name))}
     @collect DataFrame
 end
 
