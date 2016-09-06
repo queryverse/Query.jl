@@ -479,6 +479,22 @@ end
 @test q[3,:children]==8
 @test q[4,:children]==2
 
+q = @from i in source_df begin
+    @select i
+    @collect CSV.Sink("test-output.csv")
+end
+close(q)
+df_loaded_from_csv = CSV.read("test-output.csv")
+@test source_df == df_loaded_from_csv
+
+q = @from i in source_df begin
+    @select i
+    @collect Feather.Sink("test-output.feather")
+end
+close(q)
+df_loaded_from_feather = Feather.read("test-output.feather")
+@test source_df == df_loaded_from_feather
+
 include("test_ndsparsedata.jl")
 
 end
@@ -509,4 +525,5 @@ end
     include("../example/19-feather.jl")
     include("../example/20-json.jl")
     include("../example/21-nulls.jl")
+    include("../example/22-datastreams-sink.jl")
 end
