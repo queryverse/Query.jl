@@ -1,4 +1,4 @@
-# Welcome to Query
+# Introduction
 
 ## Overview
 

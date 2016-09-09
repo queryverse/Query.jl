@@ -12,8 +12,9 @@ makedocs(
 	format = Documenter.Formats.HTML,
 	sitename = "Query.jl",
 	pages = [
-		"Home" => "index.md",
-		"Tutorial" => "tutorial.md",
+		"Introduction" => "index.md",
+		"Query Commands" => "querycommands.md",
+		"Examples" => "examples.md",
 		"Internals" => "internals.md"]
 )
 
