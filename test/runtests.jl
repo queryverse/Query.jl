@@ -6,6 +6,7 @@ using DataStreams
 using CSV
 using SQLite
 using JSON
+using Feather
 using Base.Test
 
 immutable Person
@@ -449,6 +450,16 @@ end
 @test q[:Student] == Any["John", "John", "Steward", "Felix", "Felix", "Sara"]
 @test q[:Parent] == Any["Paul", "Mary", "George", "Greg", "Susan", "Susan"]
 
+
+q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "data", "airquality.feather")) begin
+    @where i.Day==2
+    @select i.Month
+    @collect
+end
+
+@test isa(q, Array{Int32,1})
+@test q==[5,6,7,8,9]
+
 include("test_ndsparsedata.jl")
 
 end
@@ -476,5 +487,6 @@ end
     include("../example/16-selectinto.jl")
     include("../example/17-groupjoin.jl")
     include("../example/18-orderby-nested.jl")
+    include("../example/19-feather.jl")
     include("../example/20-json.jl")
 end
