@@ -1,5 +1,6 @@
 using Query
 using DataFrames
+using DataArrays
 using TypedTables
 using NamedTuples
 using DataStreams
@@ -92,7 +93,7 @@ source_df2 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 source_typedtable2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])
 
 q = @from i in source_df2 begin
-    @join j in source_typedtable2 on i.a equals convert(Int,j.c)
+    @join j in source_typedtable2 on get(i.a) equals convert(Int,j.c)
     @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
@@ -114,7 +115,7 @@ q = @from i in source_df2 begin
     @join j in (@from i in source_typedtable2 begin
                     @where i.c<3.
                     @select i
-                end) on i.a equals convert(Int,j.c)
+                end) on get(i.a) equals convert(Int,j.c)
     @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
@@ -152,7 +153,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Array{Nullable{String},1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -162,7 +163,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Array{Nullable{String},1})
 @test length(q)==3
 @test q==["kirk", "sally", "john"]
 
@@ -172,7 +173,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Array{Nullable{String},1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -200,7 +201,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Int,1})
+@test isa(q, Array{Nullable{Int},1})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -317,7 +318,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Int,String}})
+@test isa(x, Array{Grouping{Nullable{Int},Nullable{String}}})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][:]==["John"]
@@ -329,7 +330,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Int,NamedTuples._NT_namechildren{String,Int}},1})
+@test isa(x, Array{Grouping{Nullable{Int},NamedTuples._NT_namechildren{Nullable{String},Nullable{Int}}},1})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][1].name=="John";
@@ -361,12 +362,12 @@ end
 @test q[1,:Name]=="sally"
 
 q = @from i in source_df2 begin
-    @join j in source_typedtable2 on i.a equals convert(Int,j.c) into k
+    @join j in source_typedtable2 on get(i.a) equals convert(Int,j.c) into k
     @select {i.a,i.b,c=k}
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{Int,Float64,Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{Nullable{Int},Nullable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==3
 @test q[1].a==1
 @test q[1].b==1.
@@ -386,13 +387,13 @@ end
 @test length(q[3].c)==0
 
 q = @from i in source_df2 begin
-    @join j in source_typedtable2 on i.a equals convert(Int,j.c) into k
+    @join j in source_typedtable2 on get(i.a) equals convert(Int,j.c) into k
     @where length(k)>0
     @select {i.a,i.b,c=k}
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{Int,Float64,Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{Nullable{Int},Nullable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==1
 @test q[1].a==2
 @test q[1].b==2.
@@ -460,6 +461,24 @@ end
 @test isa(q, Array{Int32,1})
 @test q==[5,6,7,8,9]
 
+source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
+q = @from i in source_df_nulls begin
+    @select i
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(4,3)
+@test q[1,:name]=="John"
+@test q[2,:name]=="Sally"
+@test isna(q[3,:name])
+@test q[4,:name]=="Kirk"
+@test q[:age]==@data([23., 42., 54., 59.])
+@test q[1,:children]==3
+@test isna(q[2,:children])
+@test q[3,:children]==8
+@test q[4,:children]==2
+
 include("test_ndsparsedata.jl")
 
 end
@@ -489,4 +508,5 @@ end
     include("../example/18-orderby-nested.jl")
     include("../example/19-feather.jl")
     include("../example/20-json.jl")
+    include("../example/21-nulls.jl")
 end

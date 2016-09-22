@@ -140,3 +140,6 @@ end
 
 @test Nullable("TEST")[2:end]==Nullable("EST")
 @test Nullable{String}()[2:end]==Nullable{String}()
+
+@test length(Nullable("TEST"))==Nullable(4)
+@test length(Nullable{String}())==Nullable{Int}()

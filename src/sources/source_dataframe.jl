@@ -1,4 +1,5 @@
 @require DataFrames begin
+using DataArrays
 
 # T is the type of the elements produced
 # TS is a tuple type that stores the columns of the DataFrame
@@ -14,7 +15,11 @@ function query(df::DataFrames.DataFrame)
     col_expressions = Array{Expr,1}()
     df_columns_tuple_type = Expr(:curly, :Tuple)
     for i in 1:length(df.columns)
-        push!(col_expressions, Expr(:(::), names(df)[i], eltype(df.columns[i])))
+        if isa(df.columns[i], DataArray)
+            push!(col_expressions, Expr(:(::), names(df)[i], Nullable{eltype(df.columns[i])}))
+        else
+            push!(col_expressions, Expr(:(::), names(df)[i], eltype(df.columns[i])))
+        end
         push!(df_columns_tuple_type.args, typeof(df.columns[i]))
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
@@ -46,7 +51,11 @@ end
 @generated function next{T,TS}(iter::EnumerableDF{T,TS}, state)
     constructor_call = Expr(:call, :($T))
     for i in 1:length(iter.types[2].types)
-        push!(constructor_call.args, :(columns[$i][i]))
+        if iter.parameters[1].parameters[i] <: Nullable
+            push!(constructor_call.args, :(isna(columns[$i][i]) ? $(iter.parameters[1].parameters[i])() : columns[$i][i]))
+        else
+            push!(constructor_call.args, :(columns[$i][i]))
+        end
     end
 
     quote

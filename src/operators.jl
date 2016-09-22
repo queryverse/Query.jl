@@ -44,6 +44,15 @@ function endof{T<:AbstractString}(s::Nullable{T})
     end
 end
 
+import Base.length
+function length{T<:AbstractString}(s::Nullable{T})
+    if isnull(s)
+        return Nullable{Int}()
+    else
+        return Nullable{Int}(length(get(s)))
+    end
+end
+
 # C# spec section 7.3.7
 
 for op in (:+, :-, :!, :~)
