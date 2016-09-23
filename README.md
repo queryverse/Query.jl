@@ -16,7 +16,7 @@ The package currenlty provides working implementations for in-memory data source
 Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx), in fact right now the package is largely an implementation of the [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) part of the [C# specification](https://msdn.microsoft.com/en-us/library/ms228593.aspx). Future versions of Query will most likely add features that are not found in the original [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) design.
 
 ## Alternatives
-[Query.jl](https://github.com/davidanthoff/Query.jl) is not the only julia initiative for querying data, there are many other packages that have similar goals. Take a look at [DataFramesMeta.jl](https://github.com/JuliaStats/DataFramesMeta.jl), [jplyr.jl](https://github.com/davidagold/jplyr.jl) and [PanQuery.jl](https://github.com/bramtayl/PanQuery.jl). *If I missed other initiatives, please let me know and I'll add them to this list!*
+[Query.jl](https://github.com/davidanthoff/Query.jl) is not the only julia initiative for querying data, there are many other packages that have similar goals. Take a look at [DataFramesMeta.jl](https://github.com/JuliaStats/DataFramesMeta.jl) and [jplyr.jl](https://github.com/davidagold/jplyr.jl). *If I missed other initiatives, please let me know and I'll add them to this list!*
 
 ## Installation
 
