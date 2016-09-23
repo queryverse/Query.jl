@@ -152,10 +152,10 @@ The syntax for an inner join is `@join <range variable> in <source> on <left key
 using DataFrames, Query, NamedTuples
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
-df2 = DataFrame(c=[2.,4.,2.], d=["John", "Jim","Sally"])
+df2 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
 
 x = @from i in df1 begin
-    @join j in df2 on i.a equals convert(Int,j.c)
+    @join j in df2 on i.a equals j.c
     @select {i.a,i.b,j.c,j.d}
     @collect DataFrame
 end
@@ -165,10 +165,10 @@ println(x)
 # output
 
 2×4 DataFrames.DataFrame
-│ Row │ a │ b   │ c   │ d       │
-├─────┼───┼─────┼─────┼─────────┤
-│ 1   │ 2 │ 2.0 │ 2.0 │ "John"  │
-│ 2   │ 2 │ 2.0 │ 2.0 │ "Sally" │
+│ Row │ a │ b   │ c │ d       │
+├─────┼───┼─────┼───┼─────────┤
+│ 1   │ 2 │ 2.0 │ 2 │ "John"  │
+│ 2   │ 2 │ 2.0 │ 2 │ "Sally" │
 ```
 
 The syntax for a group join is `@join <range variable> in <source> on <left key> equals <right key> into <group variable>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. `<group variable>` is the name of the variable that will hold all the elements from the right source that are joined to a given element from the left source.
@@ -179,11 +179,11 @@ The syntax for a group join is `@join <range variable> in <source> on <left key>
 using DataFrames, Query, NamedTuples
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
-df2 = DataFrame(c=[2.,4.,2.], d=["John", "Jim","Sally"])
+df2 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
 
 x = @from i in df1 begin
-    @join j in df2 on i.a equals convert(Int,j.c) into k
-    @select {t1=i,t2=length(k)}
+    @join j in df2 on i.a equals j.c into k
+    @select {t1=i.a,t2=length(k)}
     @collect DataFrame
 end
 
@@ -192,11 +192,11 @@ println(x)
 # output
 
 3×2 DataFrames.DataFrame
-│ Row │ t1                 │ t2 │
-├─────┼────────────────────┼────┤
-│ 1   │ (a => 1, b => 1.0) │ 0  │
-│ 2   │ (a => 2, b => 2.0) │ 2  │
-│ 3   │ (a => 3, b => 3.0) │ 0  │
+│ Row │ t1 │ t2 │
+├─────┼────┼────┤
+│ 1   │ 1  │ 0  │
+│ 2   │ 2  │ 2  │
+│ 3   │ 3  │ 0  │
 ```
  ## Grouping
 
@@ -220,7 +220,7 @@ println(x)
 
 # output
 
-Query.Grouping{Int64,String}[String["John"],String["Sally","Kirk"]]
+Query.Grouping{Nullable{Int64},Nullable{String}}[Nullable{String}["John"],Nullable{String}["Sally","Kirk"]]
 ```
 This is an example of a `@group` statement with an `into` clause:
 
