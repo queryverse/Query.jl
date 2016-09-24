@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Flattening",
     "category": "section",
-    "text": "One can project child elements from the elements of a source by using multiple @from statements. The nested child elements are flattened into one stream of results when multiple @from statements are used. The syntax for any additional @from statement (apart from the initial one that starts a query) is @from <range variable> in <selector>. <range variable is the name of the range variable to be used for the child elements, and <selector> is a julia expression that returns the child elements."
+    "text": "One can project child elements from the elements of a source by using multiple @from statements. The nested child elements are flattened into one stream of results when multiple @from statements are used. The syntax for any additional @from statement (apart from the initial one that starts a query) is @from <range variable> in <selector>. <range variable> is the name of the range variable to be used for the child elements, and <selector> is a julia expression that returns the child elements."
 },
 
 {
