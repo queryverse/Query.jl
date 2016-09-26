@@ -14,6 +14,8 @@ makedocs(
 	pages = [
 		"Introduction" => "index.md",
 		"Query Commands" => "querycommands.md",
+		"Data Sources" => "sources.md",
+		"Data Sinks" => "sinks.md",
 		"Internals" => "internals.md"]
 )
 
