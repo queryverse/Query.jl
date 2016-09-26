@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Data Sinks · Query.jl documentation</title><link href="assets/documenter.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script></head><body><nav class="toc"><h1>Query.jl</h1><form class="search" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">Introduction</a></li><li><a class="toctext" href="gettingstarted.html">Getting Started</a></li><li><a class="toctext" href="querycommands.html">Query Commands</a></li><li><a class="toctext" href="sources.html">Data Sources</a></li><li class="current"><a class="toctext" href="sinks.html">Data Sinks</a><ul class="internal"><li><a class="toctext" href="#Array-1">Array</a></li><li><a class="toctext" href="#DataFrame-1">DataFrame</a></li><li><a class="toctext" href="#CSV-file-1">CSV file</a></li><li><a class="toctext" href="#DataStram-sink-1">DataStram sink</a></li></ul></li><li><a class="toctext" href="internals.html">Internals</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="sinks.html">Data Sinks</a></li></ul><a class="edit-page" href="https://github.com/davidanthoff/Query.jl/tree/e3ed8324f34eeee887621b7a563fa12c0679750d/docs/src/sinks.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/></header><h1><a class="nav-anchor" id="Data-Sinks-1" href="#Data-Sinks-1">Data Sinks</a></h1><p>Query supports a number of different data sink types. One can materialize the results of a query into a specific sink by using the <code>@collect</code> statement. Queries that don&#39;t end with a <code>@collect</code> statement return an iterator that can be used to iterate over the results of the query.</p><h2><a class="nav-anchor" id="Array-1" href="#Array-1">Array</a></h2><p>Using the <code>@collect</code> statement without any further argument will materialize the query results into an array. The array will be a vector, and the element type of the array is the type of the elements returned by the last projection statement.</p><h3><a class="nav-anchor" id="Example-1" href="#Example-1">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select i.name
+    @collect
+end
+
+println(x)
+
+# output
+
+Nullable{String}[&quot;John&quot;,&quot;Sally&quot;,&quot;Kirk&quot;]</code></pre><h2><a class="nav-anchor" id="DataFrame-1" href="#DataFrame-1">DataFrame</a></h2><p>The statement <code>@collect DataFrame</code> will materialize the query results into a new <code>DataFrame</code> instance. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax.</p><h3><a class="nav-anchor" id="Example-2" href="#Example-2">Example</a></h3><pre><code class="language-julia">using Query, DataFrames, NamedTuples
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select {i.name, i.age, Children=i.children}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+3×3 DataFrames.DataFrame
+│ Row │ name    │ age  │ Children │
+├─────┼─────────┼──────┼──────────┤
+│ 1   │ &quot;John&quot;  │ 23.0 │ 3        │
+│ 2   │ &quot;Sally&quot; │ 42.0 │ 5        │
+│ 3   │ &quot;Kirk&quot;  │ 59.0 │ 2        │</code></pre><h2><a class="nav-anchor" id="CSV-file-1" href="#CSV-file-1">CSV file</a></h2><p>The statement <code>@collect CsvFile(filename)</code> will write the results of the query into a CSV file with the name <code>filename</code>. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax. The <code>CsvFile</code> constructor call takes a number of optional arguments: <code>delim_char</code>, <code>quote_char</code>, <code>escape_char</code> and <code>header</code>. These arguments control the format of the CSV file that is created by the statement.</p><h3><a class="nav-anchor" id="Example-3" href="#Example-3">Example</a></h3><p>[TODO]</p><h2><a class="nav-anchor" id="DataStram-sink-1" href="#DataStram-sink-1">DataStram sink</a></h2><p>If a <code>DataStreams</code> sink is passed to the <code>@collect</code> statement, the results of the query will be written into that sink. The syntax for this is <code>@collect sink</code>, where <code>sink</code> can be any DataStreams sink instance. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax. Currently sinks of type <code>CSV</code> and <code>Feather</code> are regularly tested.</p><h3><a class="nav-anchor" id="Example-4" href="#Example-4">Example</a></h3><p>[TODO]</p><footer><hr/><a class="previous" href="sources.html"><span class="direction">Previous</span><span class="title">Data Sources</span></a><a class="next" href="internals.html"><span class="direction">Next</span><span class="title">Internals</span></a></footer></article></body></html>
