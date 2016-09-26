@@ -10,7 +10,7 @@ Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb3
 
 ## Installation
 
-This package only works on julia 0.5- and newer. You can add it with:
+This package only works on julia 0.5 and newer. You can add it with:
 ````julia
 Pkg.add("Query")
 ````
