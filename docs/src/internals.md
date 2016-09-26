@@ -12,7 +12,7 @@ The wording of methods and types currently follows LINQ, not julia conventions. 
 
 ## Nullable
 
-This package implements the C# spec semantics for lifting and handling ``Nullable``s. It currently overrides the definitions for various operators that are in ``NullableArrays``.
+This package implements the C# spec semantics for lifting and handling `Nullable`s. It currently overrides the definitions for various operators that are in `NullableArrays`.
 
 ## Readings
 
