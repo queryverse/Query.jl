@@ -33,6 +33,54 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "index.html#Highlights-1",
+    "page": "Introduction",
+    "title": "Highlights",
+    "category": "section",
+    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, TypedTables, normal arrays, any DataStream source (this includes CSV, Feather, SQLite), NDSparseData structures and any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, arrays or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
+},
+
+{
+    "location": "gettingstarted.html#",
+    "page": "Getting Started",
+    "title": "Getting Started",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "gettingstarted.html#Getting-Started-1",
+    "page": "Getting Started",
+    "title": "Getting Started",
+    "category": "section",
+    "text": "The basic structure of a query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames, NamedTuples\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │"
+},
+
+{
+    "location": "gettingstarted.html#Result-types-1",
+    "page": "Getting Started",
+    "title": "Result types",
+    "category": "section",
+    "text": "A query that is not terminated with a @collect statement will return an iterator that can be used to iterate over the individual elements of the result set. A @collect statement on the other hand materializes the results of a query into a specific data structure, e.g. an array or a DataFrame. The Data Sinks section describes all the available formats for query materialization."
+},
+
+{
+    "location": "gettingstarted.html#Tables-1",
+    "page": "Getting Started",
+    "title": "Tables",
+    "category": "section",
+    "text": "The Query package does not require data sources or sinks to have a table like structure (i.e. rows and columns). When a table like structure is queried, it is treated as a set of NamedTuples, where the set elements correspond to the rows of the source, and the fields of the NamedTuple correspond to the columns. Data sinks that have a table like structure typically require the results of the query to be projected into a NamedTuple. The experimental {} syntax in the Query package provides a simplified way to construct NamedTuples in a @select statement."
+},
+
+{
+    "location": "gettingstarted.html#Null-values-1",
+    "page": "Getting Started",
+    "title": "Null values",
+    "category": "section",
+    "text": "Missing values are represented as Nullable types. The eventual goal of the Query package is to not provide any special casing of null value handling, but instead rely entirely on julia base semantics for dealing with Nullable types. Currently support for Nullable types is sparse in julia base, and therefore Query provides a number of methods that make working with Nullable types easier, mostly in the form of lifted versions of standard operators."
+},
+
+{
     "location": "querycommands.html#",
     "page": "Query Commands",
     "title": "Query Commands",
