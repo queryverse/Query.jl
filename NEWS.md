@@ -1,4 +1,9 @@
-Query.jl v.next Release Notes
+Query.jl v.0.1.0 Release Notes
+=================================
+* Add DataStreams sink support
+* Documentation updates
+
+Query.jl v.0.0.4 Release Notes
 =================================
 * Add {} syntax
 * Bug fixes
