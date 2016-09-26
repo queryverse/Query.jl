@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Installation",
     "category": "section",
-    "text": "This package only works on julia 0.5- and newer. You can add it with:Pkg.add(\"Query\")"
+    "text": "This package only works on julia 0.5 and newer. You can add it with:Pkg.add(\"Query\")"
 },
 
 {
@@ -166,6 +166,198 @@ var documenterSearchIndex = {"docs": [
     "title": "Example",
     "category": "section",
     "text": "using DataFrames, Query, NamedTuples\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @let count = length(i.name)\n    @let kids_per_year = i.children / i.age\n    @where count > 4\n    @select {Name=i.name, Count=count, KidsPerYear=kids_per_year}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ Name    │ Count │ KidsPerYear │\n├─────┼─────────┼───────┼─────────────┤\n│ 1   │ \"Sally\" │ 5     │ 0.047619    │"
+},
+
+{
+    "location": "sources.html#",
+    "page": "Data Sources",
+    "title": "Data Sources",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "sources.html#Data-Sources-1",
+    "page": "Data Sources",
+    "title": "Data Sources",
+    "category": "section",
+    "text": "Query supports many different types of data sources, and you can often mix and match different source types in one query. This section describes all the currently supported data source types."
+},
+
+{
+    "location": "sources.html#DataFrame-1",
+    "page": "Data Sources",
+    "title": "DataFrame",
+    "category": "section",
+    "text": "DataFrames are probably the most common data source in Query. They are implemented as an Enumerable data source type, and can therefore be combined with any other Enuermable data source type within one query. The range variable in a query that has a DataFrame as its source is a NamedTuple that has fields for each column of the DataFrame. The implementation of DataFrame sources gets around all problems of type stability that are sometimes associated with the DataFrames package."
+},
+
+{
+    "location": "sources.html#Example-1",
+    "page": "Data Sources",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name    │ age  │ children │\n├─────┼─────────┼──────┼──────────┤\n│ 1   │ \"John\"  │ 23.0 │ 3        │\n│ 2   │ \"Sally\" │ 42.0 │ 5        │\n│ 3   │ \"Kirk\"  │ 59.0 │ 2        │"
+},
+
+{
+    "location": "sources.html#TypedTable-1",
+    "page": "Data Sources",
+    "title": "TypedTable",
+    "category": "section",
+    "text": "The TypedTables package provides an alternative implementation of a DataFrame-like data structure. Support for TypedTable data sources works in the same way as normal DataFrame sources, i.e. columns are represented as fields of NamedTuples. TypedTable sources are implemented as  Enumerable data source and can therefore be combined with any other Enumerable data source in a single query."
+},
+
+{
+    "location": "sources.html#Example-2",
+    "page": "Data Sources",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames, TypedTables\n\ntt = @Table(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in tt begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name    │ age  │ children │\n├─────┼─────────┼──────┼──────────┤\n│ 1   │ \"John\"  │ 23.0 │ 3        │\n│ 2   │ \"Sally\" │ 42.0 │ 5        │\n│ 3   │ \"Kirk\"  │ 59.0 │ 2        │"
+},
+
+{
+    "location": "sources.html#Arrays-1",
+    "page": "Data Sources",
+    "title": "Arrays",
+    "category": "section",
+    "text": "Any array can be a data source for a query. The range variables are of the element type of the array and the elements are iterated in the order of the standard iterator of the array. Array sources are implemented as Enumerable data sources and can therefore be combined with any other Enumerable data source in a single query."
+},
+
+{
+    "location": "sources.html#Example-3",
+    "page": "Data Sources",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames, NamedTuples\n\nimmutable Person\n    Name::String\n    Friends::Vector{String}\nend\n\nsource = Array(Person,0)\npush!(source, Person(\"John\", [\"Sally\", \"Miles\", \"Frank\"]))\npush!(source, Person(\"Sally\", [\"Don\", \"Martin\"]))\n\nresult = @from i in source begin\n         @where length(i.Friends) > 2\n         @select {i.Name, Friendcount=length(i.Friends)}\n         @collect\nend\n\nprintln(result)\n\n# output\n\nNamedTuples._NT_NameFriendcount{String,Int64}[(Name => John, Friendcount => 3)]"
+},
+
+{
+    "location": "sources.html#DataStream-1",
+    "page": "Data Sources",
+    "title": "DataStream",
+    "category": "section",
+    "text": "Any DataStream source can be a source in a query. This includes CSV.jl, Feather.jl and SQLite.jl sources (these are currenlty tested as part of Query.jl). Individual rows of these sources are represented as NamedTuple elements that have fields for all the columns of the data source. DataStreams sources are implemented as Enumerable data sources and can therefore be combined with any other Enumerable data source in a single query."
+},
+
+{
+    "location": "sources.html#Example-4",
+    "page": "Data Sources",
+    "title": "Example",
+    "category": "section",
+    "text": "This example reads a CSV file:using Query, DataStreams, CSV\n\nq = @from i in CSV.Source(joinpath(Pkg.dir(\"Query\"),\"example\", \"data.csv\")) begin\n    @where i.Children > 2\n    @select i.Name\n    @collect\nend\n\nprintln(q)\n\n# output\n\nNullable{String}[\"John\",\"Kirk\"]This example reads a Feather file:using Query, DataStreams, Feather\n\nq = @from i in Feather.Source(joinpath(Pkg.dir(\"Feather\"),\"test\", \"data\", \"airquality.feather\")) begin\n    @where i.Day==2\n    @select i.Month\n    @collect\nend\n\nprintln(q)\n\n# output\n\nWARNING: This Feather file is old and will not be readable beyond the 0.3.0 release\nInt32[5,6,7,8,9]"
+},
+
+{
+    "location": "sources.html#NDSparseData-1",
+    "page": "Data Sources",
+    "title": "NDSparseData",
+    "category": "section",
+    "text": "NDSparse data sources can be a source in a query. Individual rows are represented as a NamedTuple with two fields. The index field holds the index data for this row. If the source has named columns, the type of the index field is a NamedTuple, where the fieldnames correspond to the names of the index columns. If the source doesn't use named columns, the type of the index field is a regular tuple. The second field is named value and holds the value of the row in the original source. NDSparse sources are implemented as Enumerable data sources and can therefore be combined with any other Enumerable data source in a single query."
+},
+
+{
+    "location": "sources.html#Example-5",
+    "page": "Data Sources",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, NDSparseData\n\nsource_ndsparsearray = NDSparse(Columns(city = [fill(\"New York\",3); fill(\"Boston\",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), [91,89,91,95,83,76])\n\nq = @from i in source_ndsparsearray begin\n    @where i.index.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91,89,91]"
+},
+
+{
+    "location": "sources.html#Any-iterable-type-1",
+    "page": "Data Sources",
+    "title": "Any iterable type",
+    "category": "section",
+    "text": "Any data source type that implements the standard julia iterator protocoll (i.e. a start, next and done method) can be a query data source. Iterable data sources are implemented as Enumerable data sources and can therefore be combined with any other Enumerable data source in a single query."
+},
+
+{
+    "location": "sources.html#Example-6",
+    "page": "Data Sources",
+    "title": "Example",
+    "category": "section",
+    "text": "[TODO]"
+},
+
+{
+    "location": "sinks.html#",
+    "page": "Data Sinks",
+    "title": "Data Sinks",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "sinks.html#Data-Sinks-1",
+    "page": "Data Sinks",
+    "title": "Data Sinks",
+    "category": "section",
+    "text": "Query supports a number of different data sink types. One can materialize the results of a query into a specific sink by using the @collect statement. Queries that don't end with a @collect statement return an iterator that can be used to iterate over the results of the query."
+},
+
+{
+    "location": "sinks.html#Array-1",
+    "page": "Data Sinks",
+    "title": "Array",
+    "category": "section",
+    "text": "Using the @collect statement without any further argument will materialize the query results into an array. The array will be a vector, and the element type of the array is the type of the elements returned by the last projection statement."
+},
+
+{
+    "location": "sinks.html#Example-1",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i.name\n    @collect\nend\n\nprintln(x)\n\n# output\n\nNullable{String}[\"John\",\"Sally\",\"Kirk\"]"
+},
+
+{
+    "location": "sinks.html#DataFrame-1",
+    "page": "Data Sinks",
+    "title": "DataFrame",
+    "category": "section",
+    "text": "The statement @collect DataFrame will materialize the query results into a new DataFrame instance. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax."
+},
+
+{
+    "location": "sinks.html#Example-2",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames, NamedTuples\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, i.age, Children=i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name    │ age  │ Children │\n├─────┼─────────┼──────┼──────────┤\n│ 1   │ \"John\"  │ 23.0 │ 3        │\n│ 2   │ \"Sally\" │ 42.0 │ 5        │\n│ 3   │ \"Kirk\"  │ 59.0 │ 2        │"
+},
+
+{
+    "location": "sinks.html#CSV-file-1",
+    "page": "Data Sinks",
+    "title": "CSV file",
+    "category": "section",
+    "text": "The statement @collect CsvFile(filename) will write the results of the query into a CSV file with the name filename. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax. The CsvFile constructor call takes a number of optional arguments: delim_char, quote_char, escape_char and header. These arguments control the format of the CSV file that is created by the statement."
+},
+
+{
+    "location": "sinks.html#Example-3",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "[TODO]"
+},
+
+{
+    "location": "sinks.html#DataStram-sink-1",
+    "page": "Data Sinks",
+    "title": "DataStram sink",
+    "category": "section",
+    "text": "If a DataStreams sink is passed to the @collect statement, the results of the query will be written into that sink. The syntax for this is @collect sink, where sink can be any DataStreams sink instance. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax. Currently sinks of type CSV and Feather are regularly tested."
+},
+
+{
+    "location": "sinks.html#Example-4",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "[TODO]"
 },
 
 {
