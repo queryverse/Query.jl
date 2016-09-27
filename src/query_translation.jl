@@ -340,6 +340,15 @@ function find_and_translate_transparent_identifier(ex::Expr)
 		names_to_put_in_scope = find_names_to_put_in_scope(ex.args[1])
 		ex.args[1] = ex.args[1].args[1]
 		replace_transparent_identifier_in_anonym_func(ex, names_to_put_in_scope)
+	elseif ex.head==:-> && isa(ex.args[1], Expr) && ex.args[1].head==:tuple
+		names_to_put_in_scope = []
+		for (i, child_ex) in enumerate(ex.args[1].args)
+			if isa(child_ex, Expr) && child_ex.head==:transparentidentifier
+				append!(names_to_put_in_scope, find_names_to_put_in_scope(child_ex))
+				ex.args[1].args[i] = child_ex.args[1]
+			end
+		end
+		replace_transparent_identifier_in_anonym_func(ex, names_to_put_in_scope)
 	end
 
 
