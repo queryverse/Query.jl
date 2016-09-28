@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Joining",
     "category": "section",
-    "text": "The @join statement combines data from two different sources. There are two variants of the statement: an inner join and a group join.The syntax for an inner join is @join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values."
+    "text": "The @join statement combines data from two different sources. There are two variants of the statement: an inner join and a group join. The @left_outer_join statement provides a traditional left outer join option.The syntax for an inner join is @join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values."
 },
 
 {
@@ -181,7 +181,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query, NamedTuples\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c into k\n    @select {t1=i.a,t2=length(k)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ t1 │ t2 │\n├─────┼────┼────┤\n│ 1   │ 1  │ 0  │\n│ 2   │ 2  │ 2  │\n│ 3   │ 3  │ 0  │"
+    "text": "using DataFrames, Query, NamedTuples\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c into k\n    @select {t1=i.a,t2=length(k)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ t1 │ t2 │\n├─────┼────┼────┤\n│ 1   │ 1  │ 0  │\n│ 2   │ 2  │ 2  │\n│ 3   │ 3  │ 0  │They syntax for a left outer join is @left_outer_join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, <range variable> is assigned the default value returned by the default_if_empty function based on the element types of <source>. If the right source has elements of type NamedTuple, and the fields of that named tuple are all of type Nullable, then an instance of that named tuple with all fields having null values will be used."
+},
+
+{
+    "location": "querycommands.html#Example-7",
+    "page": "Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames, NamedTuples\nsource_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\nsource_df2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nq = @from i in source_df1 begin\n    @left_outer_join j in source_df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n4×4 DataFrames.DataFrame\n│ Row │ a │ b   │ c  │ d       │\n├─────┼───┼─────┼────┼─────────┤\n│ 1   │ 1 │ 1.0 │ NA │ NA      │\n│ 2   │ 2 │ 2.0 │ 2  │ \"John\"  │\n│ 3   │ 2 │ 2.0 │ 2  │ \"Sally\" │\n│ 4   │ 3 │ 3.0 │ NA │ NA      │"
 },
 
 {
@@ -193,7 +201,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-7",
+    "location": "querycommands.html#Example-8",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -209,7 +217,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-8",
+    "location": "querycommands.html#Example-9",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
