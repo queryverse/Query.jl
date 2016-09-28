@@ -1,3 +1,9 @@
+Query.jl v.0.1.1 Release Notes
+=================================
+* Add @left_outer_join statement
+* Fix bug in transparent identifier phase
+* Add default_if_empty query operator
+
 Query.jl v.0.1.0 Release Notes
 =================================
 * Add DataStreams sink support

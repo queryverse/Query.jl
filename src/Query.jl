@@ -26,6 +26,7 @@ include("enumerable/enumerable_orderby.jl")
 include("enumerable/enumerable_select.jl")
 include("enumerable/enumerable_where.jl")
 include("enumerable/enumerable_selectmany.jl")
+include("enumerable/enumerable_defaultifempty.jl")
 
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")

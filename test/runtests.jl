@@ -495,6 +495,35 @@ close(q)
 df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df == df_loaded_from_feather
 
+q = Query.collect(Query.default_if_empty(Nullable{String}[]))
+@test length(q)==1
+@test isnull(q[1])
+
+q = Query.collect(Query.default_if_empty(Nullable{String}["John", "Sally"]))
+@test length(q)==2
+@test q==Nullable{String}["John", "Sally"]
+
+
+source_df3 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
+q = @from i in source_df2 begin
+    @left_outer_join j in source_df3 on i.a equals j.c
+    @select {i.a,i.b,j.c,j.d}
+    @collect DataFrame
+end
+
+@test isa(q, DataFrame)
+@test size(q)==(4,4)
+@test q[:a]==[1,2,2,3]
+@test q[:b]==[1.,2.,2.,3.]
+@test isna(q[1,:c])
+@test q[2,:c]==2
+@test q[3,:c]==2
+@test isna(q[4,:c])
+@test isna(q[1,:d])
+@test q[2,:d]=="John"
+@test q[3,:d]=="Sally"
+@test isna(q[4,:d])
+
 include("test_ndsparsedata.jl")
 
 end

@@ -2,6 +2,23 @@ function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
+		if clause.head==:macrocall && clause.args[1]==Symbol("@left_outer_join")
+			clause.args[1] = Symbol("@join")
+			temp_name = gensym()
+			x1 = clause.args[2].args[2]
+			push!(clause.args, :into)
+			push!(clause.args, temp_name)
+			nested_from = :(@from $x1 in Query.default_if_empty($temp_name))
+			insert!(qe,i+1,nested_from)
+		end
+		i+=1
+	end
+end
+
+function query_expression_translation_phase_B(qe)
+	i = 1
+	while i<=length(qe)
+		clause = qe[i]
 		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
 			if !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
 				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
@@ -370,7 +387,7 @@ function query_expression_translation_phase_7(qe)
 end
 
 
-function query_expression_translation_phase_B(qe)
+function query_expression_translation_phase_C(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
@@ -402,6 +419,10 @@ function translate_query(body)
 	debug_output && println("AFTER A")
 	debug_output && println(body)
 
+	query_expression_translation_phase_B(body.args)
+	debug_output && println("AFTER B")
+	debug_output && println(body)
+
 	query_expression_translation_phase_3(body.args)
 	debug_output && println("AFTER 3")
 	debug_output && println(body)
@@ -422,7 +443,7 @@ function translate_query(body)
 	debug_output && println("AFTER 7")
 	debug_output && println(body)
 
-	query_expression_translation_phase_B(body.args)
+	query_expression_translation_phase_C(body.args)
 	debug_output && println("AFTER B")
 	debug_output && println(body)
 end

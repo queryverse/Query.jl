@@ -142,7 +142,7 @@ println(q)
 
 ## Joining
 
-The `@join` statement combines data from two different sources. There are two variants of the statement: an inner join and a group join.
+The `@join` statement combines data from two different sources. There are two variants of the statement: an inner join and a group join. The `@left_outer_join` statement provides a traditional left outer join option.
 
 The syntax for an inner join is `@join <range variable> in <source> on <left key> equals <right key>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values.
 
@@ -198,7 +198,36 @@ println(x)
 │ 2   │ 2  │ 2  │
 │ 3   │ 3  │ 0  │
 ```
- ## Grouping
+
+They syntax for a left outer join is `@left_outer_join <range variable> in <source> on <left key> equals <right key>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, `<range variable>` is assigned the default value returned by the `default_if_empty` function based on the element types of `<source>`. If the right source has elements of type `NamedTuple`, and the fields of that named tuple are all of type `Nullable`, then an instance of that named tuple with all fields having null values will be used.
+
+### Example
+
+```jldoctest
+using Query, DataFrames, NamedTuples
+source_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+source_df2 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
+
+q = @from i in source_df1 begin
+    @left_outer_join j in source_df2 on i.a equals j.c
+    @select {i.a,i.b,j.c,j.d}
+    @collect DataFrame
+end
+
+println(q)
+
+# output
+
+4×4 DataFrames.DataFrame
+│ Row │ a │ b   │ c  │ d       │
+├─────┼───┼─────┼────┼─────────┤
+│ 1   │ 1 │ 1.0 │ NA │ NA      │
+│ 2   │ 2 │ 2.0 │ 2  │ "John"  │
+│ 3   │ 2 │ 2.0 │ 2  │ "Sally" │
+│ 4   │ 3 │ 3.0 │ NA │ NA      │
+```
+
+## Grouping
 
  The `@group` statement groups elements from the source by some attribute. The syntax for the group statement is `@group <element selector> by <key selector> [into <range variable>]`. `<element selector>` is an arbitrary julia expression that determines the content of the group elements. `<key selector>` is an arbitrary julia expression that returns the values by which the elements are grouped. A `@group` statement without an `into` clause ends a query statement, i.e. no further `@select` statement is needed. When a `@group` statement has an `into` clause, the `<range variable>` sets the name of the range variable for the groups, and further query statements can operate on these groups by referencing that range variable.
 

@@ -26,6 +26,10 @@ function expr_contains_ref_to(expr::Symbol, var_name::Symbol)
     return expr==var_name
 end
 
+function expr_contains_ref_to(expr::QuoteNode, var_name::Symbol)
+    return expr==var_name
+end
+
 function select_many{TS}(source::Enumerable{TS}, f_collectionSelector::Function, collectionSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     # First detect whether the collectionSelector return value depends at all
     # on the value of the anonymous function argument
