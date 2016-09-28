@@ -4,7 +4,7 @@
 
 The `@orderby` statement sorts the elements from a source by one or more element attributes. The syntax for the `@orderby` statement is `@orderby <attribute>[, <attribute>]`. `<attribute>` can be any julia expression that returns an attribute by which the source elements should be sorted. The default sort order is ascending. By wrapping an `<attribute>` in a call to `descending(<attribute)` one can reverse the sort order. The `@orderby` statement accepts multiple `<attribute>`s separated by `,`s. With multiple sorting attributes, the elements are first sorted by the first attribute. Elements that can't be ranked by the first attribute are then sorted by the second attribute etc.
 
-### Example
+#### Example
 
 ```jldoctest
 using Query, DataFrames
@@ -36,7 +36,7 @@ println(x)
 
 The `@where` statement filters a source so that only those elements are returned that satisfy a filter condition. The syntax for the `@where` statement is `@where <condition>`. `<condition>` can be any arbitrary julia expression that evaluates to `true` or `false`.
 
-### Example
+#### Example
 
 ```jldoctest
 using Query, DataFrames
@@ -64,7 +64,7 @@ println(x)
 
 The `@select` statement applies a transformation to each element of the source. The syntax for the `@select` statement is `@select <condition>`. `<condition>` can be any arbitrary julia expression that transforms an element from the source into the desired target format.
 
-### Example
+#### Example
 
 The following example transforms each element from the source by squaring it.
 
@@ -113,7 +113,7 @@ The elements of the new named tuple are separated by commas `,`. One can specify
 
 One can project child elements from the elements of a source by using multiple `@from` statements. The nested child elements are flattened into one stream of results when multiple `@from` statements are used. The syntax for any additional `@from` statement (apart from the initial one that starts a query) is `@from <range variable> in <selector>`. `<range variable>` is the name of the range variable to be used for the child elements, and `<selector>` is a julia expression that returns the child elements.
 
-### Example
+#### Example
 
 ```jldoctest
 using DataFrames, Query, NamedTuples
@@ -144,9 +144,11 @@ println(q)
 
 The `@join` statement combines data from two different sources. There are two variants of the statement: an inner join and a group join. The `@left_outer_join` statement provides a traditional left outer join option.
 
+### Inner join
+
 The syntax for an inner join is `@join <range variable> in <source> on <left key> equals <right key>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values.
 
-### Example
+#### Example
 
 ```jldoctest
 using DataFrames, Query, NamedTuples
@@ -171,9 +173,11 @@ println(x)
 │ 2   │ 2 │ 2.0 │ 2 │ "Sally" │
 ```
 
+### Group join
+
 The syntax for a group join is `@join <range variable> in <source> on <left key> equals <right key> into <group variable>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. `<group variable>` is the name of the variable that will hold all the elements from the right source that are joined to a given element from the left source.
 
-### Example
+#### Example
 
 ```jldoctest
 using DataFrames, Query, NamedTuples
@@ -199,9 +203,11 @@ println(x)
 │ 3   │ 3  │ 0  │
 ```
 
+### Left outer join
+
 They syntax for a left outer join is `@left_outer_join <range variable> in <source> on <left key> equals <right key>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, `<range variable>` is assigned the default value returned by the `default_if_empty` function based on the element types of `<source>`. If the right source has elements of type `NamedTuple`, and the fields of that named tuple are all of type `Nullable`, then an instance of that named tuple with all fields having null values will be used.
 
-### Example
+#### Example
 
 ```jldoctest
 using Query, DataFrames, NamedTuples
@@ -231,7 +237,7 @@ println(q)
 
  The `@group` statement groups elements from the source by some attribute. The syntax for the group statement is `@group <element selector> by <key selector> [into <range variable>]`. `<element selector>` is an arbitrary julia expression that determines the content of the group elements. `<key selector>` is an arbitrary julia expression that returns the values by which the elements are grouped. A `@group` statement without an `into` clause ends a query statement, i.e. no further `@select` statement is needed. When a `@group` statement has an `into` clause, the `<range variable>` sets the name of the range variable for the groups, and further query statements can operate on these groups by referencing that range variable.
 
- ### Example
+#### Example
 
  This is an example of a `@group` statement without a `into` clause:
 
@@ -251,6 +257,7 @@ println(x)
 
 Query.Grouping{Nullable{Int64},Nullable{String}}[Nullable{String}["John"],Nullable{String}["Sally","Kirk"]]
 ```
+
 This is an example of a `@group` statement with an `into` clause:
 
 ```jldoctest
@@ -279,7 +286,7 @@ println(x)
 
 The `@let` statement introduces new range variables in a query expression. The syntax for the range statement is `@let <range variable> = <value selector>`. `<range variable>` specifies the name of the new range variable and `<value selector>` is any julia expression that returns the value that should be assigned to the new range variable.
 
-### Example
+#### Example
 
 ```jldoctest
 using DataFrames, Query, NamedTuples
