@@ -1,4 +1,4 @@
-Query.jl v.0.1.1 Release Notes
+Query.jl v.0.2.0 Release Notes
 =================================
 * Add @left_outer_join statement
 * Fix bug in transparent identifier phase
