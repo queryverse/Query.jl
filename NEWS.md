@@ -1,3 +1,7 @@
+Query.jl v.next Release Notes
+=============================
+* Throw an error if a DataStreams source doesn't support field-based streaming
+
 Query.jl v.0.2.0 Release Notes
 =================================
 * Add @left_outer_join statement

@@ -8,6 +8,10 @@ immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC} <: Enumerable{
 end
 
 function query{S<:DataStreams.Data.Source}(source::S)
+    if !Data.streamtype(S, Data.Field)
+        error("Only sources that support field-based streaming are supported by Query.")
+    end
+
 	schema = Data.schema(source)
 
     col_expressions = Array{Expr,1}()
