@@ -72,6 +72,8 @@ for op in (:+, :-, :*, :/, :%, :&, :|, :^, :<<, :>>)
     end
 end
 
+^{T<:Number}(x::Nullable{T},p::Integer) = isnull(x) ? Nullable{T}() : Nullable(get(x)^p)
+
 =={T1,T2}(a::Nullable{T1},b::Nullable{T2}) = isnull(a) && isnull(b) ? true : !isnull(a) && !isnull(b) ? get(a)==get(b) : false
 =={T1,T2}(a::Nullable{T1},b::T2) = isnull(a) ? false : get(a)==b
 =={T1,T2}(a::T1,b::Nullable{T2}) = isnull(b) ? false : a==get(b)

@@ -89,6 +89,9 @@ for op in (:+, :-, :*, :%, :&, :|, :<<, :>>)
     end
 end
 
+@test Nullable(3)^2 == Nullable(9)
+@test Nullable{Int}()^2 == Nullable{Int}()
+
 @test Nullable(3) == Nullable(3)
 @test !(Nullable(3) == Nullable(4))
 @test !(Nullable{Int}() == Nullable(3))
