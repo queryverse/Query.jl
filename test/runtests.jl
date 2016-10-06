@@ -483,7 +483,7 @@ q = @from i in source_df begin
     @select i
     @collect CSV.Sink("test-output.csv")
 end
-close(q)
+Data.close!(q)
 df_loaded_from_csv = CSV.read("test-output.csv")
 @test source_df == df_loaded_from_csv
 
@@ -491,7 +491,7 @@ q = @from i in source_df begin
     @select i
     @collect Feather.Sink("test-output.feather")
 end
-close(q)
+Data.close!(q)
 df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df == df_loaded_from_feather
 
