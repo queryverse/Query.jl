@@ -1,11 +1,11 @@
-@require NDSparseData begin
-using NDSparseData: NDSparse
+@require IndexedTables begin
+using IndexedTables: NDSparse
 
-immutable EnumerableNDSparseData{T, S<:NDSparse} <: Enumerable{T}
+immutable EnumerableIndexedTables{T, S<:NDSparse} <: Enumerable{T}
     source::S
 end
 
-immutable NDSparseDataRow{TIndex,TValue}
+immutable IndexedTablesRow{TIndex,TValue}
     index::TIndex
     value::TValue
 end
@@ -27,7 +27,7 @@ function query{S<:NDSparse}(source::S)
         TIndex = S.parameters[2]
     end
 
-    e_df = EnumerableNDSparseData{NDSparseDataRow{TIndex,TValue},S}(source)
+    e_df = EnumerableIndexedTables{IndexedTablesRow{TIndex,TValue},S}(source)
 
     return e_df
 end
@@ -40,18 +40,18 @@ end
 #    return T
 #end
 
-function start{T,S<:NDSparse}(iter::EnumerableNDSparseData{T,S})
+function start{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S})
     return 1
 end
 
-@generated function next{T,S<:NDSparse}(iter::EnumerableNDSparseData{T,S}, state)
+@generated function next{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}, state)
     if T.parameters[1]<:NamedTuples.NamedTuple
-        constructor_call = Expr(:call, :NDSparseDataRow, Expr(:call,T.parameters[1]),:(iter.source.data[row]))
+        constructor_call = Expr(:call, :IndexedTablesRow, Expr(:call,T.parameters[1]),:(iter.source.data[row]))
         for i in 1:length(S.parameters[2].parameters)
             push!(constructor_call.args[2].args, :( iter.source.index.columns[$i][row] ))
         end
     else
-        constructor_call = Expr(:call, :NDSparseDataRow,:((1,)),:(iter.source.data[row]))
+        constructor_call = Expr(:call, :IndexedTablesRow,:((1,)),:(iter.source.data[row]))
         constructor_call.args[2].args[1] = :( iter.source.index.columns[1][row] )
         for i in 2:length(S.parameters[2].parameters)
             push!(constructor_call.args[2].args, :( iter.source.index.columns[$i][row] ))
@@ -66,7 +66,7 @@ end
     end
 end
 
-function done{T,S<:NDSparse}(iter::EnumerableNDSparseData{T,S}, state)
+function done{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}, state)
     return state>length(iter.source)
 end
 

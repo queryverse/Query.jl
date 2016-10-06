@@ -524,7 +524,7 @@ end
 @test q[3,:d]=="Sally"
 @test isna(q[4,:d])
 
-include("test_ndsparsedata.jl")
+include("test_indexedtables.jl")
 
 end
 
@@ -544,7 +544,7 @@ end
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
     include("../example/11-Datastream.jl")
-    is_installed("NDSparseData") && include("../example/12-NDSparseData.jl")
+    is_installed("IndexedTables") && include("../example/12-IndexedTables.jl")
     include("../example/13-selectmany.jl")
     include("../example/14-groupby.jl")
     include("../example/15-groupinto.jl")
