@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Overview",
     "category": "section",
-    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source. It has enhanced support for querying arrays, DataFrames, TypedTables, NDSparseData and any DataStream source (e.g. CSV, Feather, SQLite etc.).The package currenlty provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a \"query provider\" for SQLite in the package, but it is experimental at this point and only works for a very small subset of queries.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
+    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source. It has enhanced support for querying arrays, DataFrames, TypedTables, IndexedTables and any DataStream source (e.g. CSV, Feather, SQLite etc.).The package currenlty provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a \"query provider\" for SQLite in the package, but it is experimental at this point and only works for a very small subset of queries.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
 },
 
 {
@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Highlights",
     "category": "section",
-    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, TypedTables, normal arrays, any DataStream source (this includes CSV, Feather, SQLite), NDSparseData structures and any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, arrays or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
+    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, TypedTables, normal arrays, any DataStream source (this includes CSV, Feather, SQLite), IndexedTables structures and any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, arrays or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
 },
 
 {
@@ -329,9 +329,9 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#NDSparseData-1",
+    "location": "sources.html#IndexedTables-1",
     "page": "Data Sources",
-    "title": "NDSparseData",
+    "title": "IndexedTables",
     "category": "section",
     "text": "NDSparse data sources can be a source in a query. Individual rows are represented as a NamedTuple with two fields. The index field holds the index data for this row. If the source has named columns, the type of the index field is a NamedTuple, where the fieldnames correspond to the names of the index columns. If the source doesn't use named columns, the type of the index field is a regular tuple. The second field is named value and holds the value of the row in the original source. NDSparse sources are implemented as Enumerable data sources and can therefore be combined with any other Enumerable data source in a single query."
 },
@@ -341,7 +341,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, NDSparseData\n\nsource_ndsparsearray = NDSparse(Columns(city = [fill(\"New York\",3); fill(\"Boston\",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), [91,89,91,95,83,76])\n\nq = @from i in source_ndsparsearray begin\n    @where i.index.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91,89,91]"
+    "text": "using Query, IndexedTables\n\nsource_ndsparsearray = NDSparse(Columns(city = [fill(\"New York\",3); fill(\"Boston\",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), [91,89,91,95,83,76])\n\nq = @from i in source_ndsparsearray begin\n    @where i.index.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91,89,91]"
 },
 
 {
