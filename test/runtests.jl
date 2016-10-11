@@ -482,7 +482,7 @@ q = @from i in source_df begin
     @select i
     @collect CSV.Sink("test-output.csv")
 end
-close(q)
+Data.close!(q)
 df_loaded_from_csv = CSV.read("test-output.csv")
 @test source_df == df_loaded_from_csv
 
@@ -490,7 +490,7 @@ q = @from i in source_df begin
     @select i
     @collect Feather.Sink("test-output.feather")
 end
-close(q)
+Data.close!(q)
 df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df == df_loaded_from_feather
 
@@ -523,7 +523,7 @@ end
 @test q[3,:d]=="Sally"
 @test isnull(q[4,:d])
 
-include("test_ndsparsedata.jl")
+include("test_indexedtables.jl")
 
 end
 
@@ -543,7 +543,7 @@ end
     include("../example/09-let.jl")
     include("../example/10-orderby.jl")
     include("../example/11-Datastream.jl")
-    is_installed("NDSparseData") && include("../example/12-NDSparseData.jl")
+    is_installed("IndexedTables") && include("../example/12-IndexedTables.jl")
     include("../example/13-selectmany.jl")
     include("../example/14-groupby.jl")
     include("../example/15-groupinto.jl")

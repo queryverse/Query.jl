@@ -60,7 +60,7 @@ end
     constructor_call = Expr(:call, :($T))
     for i in 1:length(TC.types)
     	col_type = TC.types[i] <: WeakRefString ? String : TC.types[i]
-        push!(constructor_call.args, :(Data.getfield(source, $col_type, row, $i)))
+        push!(constructor_call.args, :(Data.streamfrom(source, Data.Field, $col_type, row, $i)))
     end
 
     quote

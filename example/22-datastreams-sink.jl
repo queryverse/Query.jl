@@ -11,10 +11,10 @@ x = @from i in df begin
     @select i
     @collect CSV.Sink("test-output2.csv")
 end
-close(x)
+Data.close!(x)
 
 x = @from i in df begin
     @select i
     @collect Feather.Sink("test-output2.feather")
 end
-close(x)
+Data.close!(x)

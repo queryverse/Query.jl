@@ -6,8 +6,8 @@ function is_installed(pkg)
     end
 end
 
-if is_installed("NDSparseData")
-    using NDSparseData
+if is_installed("IndexedTables")
+    using IndexedTables
 
     source_ndsparsearray1 = NDSparse([fill("New York",3); fill("Boston",3)],
                             repmat(Date(2016,7,6):Date(2016,7,8), 2),
