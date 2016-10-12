@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Highlights",
     "category": "section",
-    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, TypedTables, normal arrays, any DataStream source (this includes CSV, Feather, SQLite), IndexedTables structures and any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, arrays or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
+    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, TypedTables, normal arrays, any DataStream source (this includes CSV, Feather, SQLite), IndexedTables structures and any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, arrays, dictionaries or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
 },
 
 {
@@ -409,6 +409,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "sinks.html#Dict-1",
+    "page": "Data Sinks",
+    "title": "Dict",
+    "category": "section",
+    "text": "The statement @collect Dict will materialize the query results into a new Dict instance. This statement only works if the last projection statement transformed the results into a Pair, for example by using the => syntax."
+},
+
+{
+    "location": "sinks.html#Example-3",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames, NamedTuples\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select get(i.name)=>get(i.children)\n    @collect Dict\nend\n\nprintln(x)\n\n# output\n\nDict(\"Sally\"=>5,\"John\"=>3,\"Kirk\"=>2)"
+},
+
+{
     "location": "sinks.html#CSV-file-1",
     "page": "Data Sinks",
     "title": "CSV file",
@@ -417,7 +433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-3",
+    "location": "sinks.html#Example-4",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -433,7 +449,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-4",
+    "location": "sinks.html#Example-5",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
