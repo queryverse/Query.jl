@@ -524,6 +524,17 @@ end
 @test q[3,:d]=="Sally"
 @test isna(q[4,:d])
 
+q = @from i in source_df begin
+    @select get(i.name)=>get(i.children)
+    @collect Dict
+end
+
+@test isa(q, Dict{String,Int})
+@test length(q)==3
+@test q["John"]==3
+@test q["Sally"]==5
+@test q["Kirk"]==2
+
 include("test_indexedtables.jl")
 
 end
@@ -555,4 +566,5 @@ end
     include("../example/20-json.jl")
     include("../example/21-nulls.jl")
     include("../example/22-datastreams-sink.jl")
+    include("../example/23-dict-sink.jl")
 end
