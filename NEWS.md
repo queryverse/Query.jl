@@ -1,6 +1,10 @@
 Query.jl v.next Release Notes
 =============================
-* Throw an error if a DataStreams source doesn't support field-based streaming
+
+Query.jl v.0.2.1 Release Notes
+=================================* Throw an error if a DataStreams source doesn't support field-based streaming
+* Track rename of NDSparseData to IndexedTables
+* Track DataStreams breaking changes
 
 Query.jl v.0.2.0 Release Notes
 =================================
