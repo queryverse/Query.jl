@@ -1,6 +1,5 @@
 using Query
 using DataFrames
-using DataArrays
 using TypedTables
 using NamedTuples
 using DataStreams
@@ -145,7 +144,7 @@ end
 @test size(q)==(1,3)
 @test q[1,:Name]=="Sally"
 @test q[1,:Count]==5
-@test q[1,:KidsPerYear]≈0.119047619047
+@test get(q[1,:KidsPerYear])≈0.119047619047
 
 q = @from i in source_df begin
     @orderby i.age
@@ -461,7 +460,7 @@ end
 @test isa(q, Array{Int32,1})
 @test q==[5,6,7,8,9]
 
-source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
+source_df_nulls = DataFrame(name=NullableArray(["John", "Sally", "NA", "Kirk"],[false,false,true,false]), age=[23., 42., 54., 59.], children=NullableArray([3,0,8,2],[false,true,false,false]))
 q = @from i in source_df_nulls begin
     @select i
     @collect DataFrame
@@ -471,11 +470,11 @@ end
 @test size(q)==(4,3)
 @test q[1,:name]=="John"
 @test q[2,:name]=="Sally"
-@test isna(q[3,:name])
+@test isnull(q[3,:name])
 @test q[4,:name]=="Kirk"
-@test q[:age]==@data([23., 42., 54., 59.])
+@test q[:age]==NullableArray([23., 42., 54., 59.])
 @test q[1,:children]==3
-@test isna(q[2,:children])
+@test isnull(q[2,:children])
 @test q[3,:children]==8
 @test q[4,:children]==2
 
@@ -515,14 +514,14 @@ end
 @test size(q)==(4,4)
 @test q[:a]==[1,2,2,3]
 @test q[:b]==[1.,2.,2.,3.]
-@test isna(q[1,:c])
+@test isnull(q[1,:c])
 @test q[2,:c]==2
 @test q[3,:c]==2
-@test isna(q[4,:c])
-@test isna(q[1,:d])
+@test isnull(q[4,:c])
+@test isnull(q[1,:d])
 @test q[2,:d]=="John"
 @test q[3,:d]=="Sally"
-@test isna(q[4,:d])
+@test isnull(q[4,:d])
 
 q = @from i in source_df begin
     @select get(i.name)=>get(i.children)
