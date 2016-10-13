@@ -13,8 +13,9 @@ import Base.collect
 import Base.length
 import Base.eltype
 import Base.join
+import Base.count
 
-export @from, Grouping, null
+export @from, @count, Grouping, null
 
 include("operators.jl")
 
@@ -27,6 +28,7 @@ include("enumerable/enumerable_select.jl")
 include("enumerable/enumerable_where.jl")
 include("enumerable/enumerable_selectmany.jl")
 include("enumerable/enumerable_defaultifempty.jl")
+include("enumerable/enumerable_count.jl")
 
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")

@@ -535,6 +535,9 @@ end
 @test q["Sally"]==5
 @test q["Kirk"]==2
 
+@test @count(source_df)==3
+@test @count(source_df, i->i.children>3)==1
+
 include("test_indexedtables.jl")
 
 end
