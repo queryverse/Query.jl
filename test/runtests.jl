@@ -538,6 +538,14 @@ end
 @test @count(source_df)==3
 @test @count(source_df, i->i.children>3)==1
 
+q = collect(@where(source_df, i->i.age>30. && i.children > 2), DataFrame)
+
+@test isa(q, DataFrame)
+@test size(q)==(1,3)
+@test q[1,:name]==Nullable("Sally")
+@test q[1,:age]==Nullable(42.)
+@test q[1,:children]==Nullable(5)
+
 include("test_indexedtables.jl")
 
 end
