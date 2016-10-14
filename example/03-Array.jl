@@ -1,6 +1,5 @@
 using Query
 using DataFrames
-using NamedTuples
 
 immutable Person
     Name::String

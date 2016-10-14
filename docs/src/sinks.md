@@ -32,7 +32,7 @@ The statement `@collect DataFrame` will materialize the query results into a new
 ### Example
 
 ```jldoctest
-using Query, DataFrames, NamedTuples
+using Query, DataFrames
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
@@ -60,7 +60,7 @@ The statement `@collect Dict` will materialize the query results into a new `Dic
 ### Example
 
 ````jldoctest
-using Query, DataFrames, NamedTuples
+using Query, DataFrames
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 

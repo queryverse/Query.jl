@@ -1,6 +1,5 @@
 using Query
 using DataFrames
-using NamedTuples
 
 # We want a DataFrame without Nullable's, so
 # we need to construct a DataFrame with columns of Array

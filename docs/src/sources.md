@@ -65,7 +65,7 @@ Any array can be a data source for a query. The range variables are of the eleme
 ### Example
 
 ```jldoctest
-using Query, DataFrames, NamedTuples
+using Query, DataFrames
 
 immutable Person
     Name::String

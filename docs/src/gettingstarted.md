@@ -11,7 +11,7 @@ end
 Multiple `<query statements>` are separated by line breaks. Probably the most simple example is a query that filters a `DataFrame` and returns a subset of its columns:
 
 ```jldoctest
-using Query, DataFrames, NamedTuples
+using Query, DataFrames
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 

@@ -1,4 +1,4 @@
-using JSON, Query, NamedTuples, DataFrames
+using JSON, Query, DataFrames
 
 s = """
 {

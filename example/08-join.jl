@@ -1,4 +1,4 @@
-using DataFrames, Query, NamedTuples, TypedTables
+using DataFrames, Query, TypedTables
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 df2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])

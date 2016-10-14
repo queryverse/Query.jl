@@ -15,7 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, Grouping, null
+export @from, @count, @where, Grouping, null, @NT
 
 include("operators.jl")
 

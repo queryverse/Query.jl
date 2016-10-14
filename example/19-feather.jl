@@ -1,4 +1,4 @@
-using Query, DataFrames, Feather, NamedTuples
+using Query, DataFrames, Feather
 
 testfile = joinpath(Pkg.dir("Feather"),"test", "data", "airquality.feather")
 

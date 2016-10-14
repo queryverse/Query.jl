@@ -1,7 +1,6 @@
 using SQLite
 using Query
 using DataFrames
-using NamedTuples
 
 db = SQLite.DB(joinpath(Pkg.dir("SQLite"), "test", "Chinook_Sqlite.sqlite"))
 

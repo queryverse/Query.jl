@@ -1,6 +1,5 @@
 using Query
 using DataFrames
-using NamedTuples
 using DataStreams
 using CSV
 using Feather

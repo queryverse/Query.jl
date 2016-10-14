@@ -87,7 +87,7 @@ println(x)
 One of the most common patterns in Query is to transform elements into [named tuples](https://github.com/blackrock/NamedTuples.jl) with a `@select` statement. There are two ways to create a [named tuples](https://github.com/blackrock/NamedTuples.jl) in Query: a) using the standard syntax from the [NamedTuples](https://github.com/blackrock/NamedTuples.jl) package, or b) an experimental syntax that *only* works in a Query `@select` statement. The experimental syntax is based on curly brackets `{}`. An example that highlights all options of the experimental syntax is this:
 
 ```jldoctest
-using Query, DataFrames, NamedTuples
+using Query, DataFrames
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
@@ -116,7 +116,7 @@ One can project child elements from the elements of a source by using multiple `
 #### Example
 
 ```jldoctest
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 source = Dict(:a=>[1,2,3], :b=>[4,5])
 
@@ -151,7 +151,7 @@ The syntax for an inner join is `@join <range variable> in <source> on <left key
 #### Example
 
 ```jldoctest
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 df2 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
@@ -180,7 +180,7 @@ The syntax for a group join is `@join <range variable> in <source> on <left key>
 #### Example
 
 ```jldoctest
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 df2 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
@@ -210,7 +210,8 @@ They syntax for a left outer join is `@left_outer_join <range variable> in <sour
 #### Example
 
 ```jldoctest
-using Query, DataFrames, NamedTuples
+using Query, DataFrames
+
 source_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 source_df2 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
 
@@ -242,7 +243,7 @@ println(q)
  This is an example of a `@group` statement without a `into` clause:
 
  ```jldoctest
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,2,2])
 
@@ -261,7 +262,7 @@ Query.Grouping{Nullable{Int64},Nullable{String}}[Nullable{String}["John"],Nullab
 This is an example of a `@group` statement with an `into` clause:
 
 ```jldoctest
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,2,2])
 
@@ -289,7 +290,7 @@ The `@let` statement introduces new range variables in a query expression. The s
 #### Example
 
 ```jldoctest
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,2,2])
 

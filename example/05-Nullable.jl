@@ -1,6 +1,5 @@
 using Query
 using TypedTables
-using NamedTuples
 using DataFrames
 
 df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int64}[3,5,2])

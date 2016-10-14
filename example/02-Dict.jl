@@ -1,6 +1,5 @@
 using Query
 using DataFrames
-using NamedTuples
 
 source = Dict("John"=>34., "Sally"=>56.)
 

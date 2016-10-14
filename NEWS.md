@@ -1,6 +1,7 @@
 Query.jl v.next Release Notes
 =============================
 * Add Dict sink support
+* Reexport @NT, so one doesn't have to load NamedTuples manually
 
 Query.jl v.0.2.1 Release Notes
 =================================
