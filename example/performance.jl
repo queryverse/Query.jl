@@ -1,13 +1,13 @@
-using DataFrames, Query, NamedTuples
+using DataFrames, Query
 
 include("prep_data.jl")
 
 function foo_a(df)
-    return Query.collect(Query.@select(Query.@where(Query.query(df),i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)), DataFrame)
+    return collect(@select(@where(df,i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)), DataFrame)
 end
 
 function foo_b(df)
-    return Query.collect(Query.@select(Query.@where(Query.query(df),i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)))
+    return collect(@select(@where(df,i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)))
 end
 
 immutable Mydata
