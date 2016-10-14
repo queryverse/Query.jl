@@ -15,7 +15,7 @@ immutable Person
     Friends::Vector{String}
 end
 
-@testset begin
+@testset "Queries" begin
 
 source_df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
@@ -560,27 +560,40 @@ include("test_operators.jl")
 end
 
 @testset "Examples" begin
-    include("../example/01-DataFrame.jl")
-    include("../example/02-Dict.jl")
-    include("../example/03-Array.jl")
-    include("../example/04-SQLite.jl")
-    include("../example/05-Nullable.jl")
-    include("../example/06-Generator.jl")
-    include("../example/07-typedtables.jl")
-    include("../example/08-join.jl")
-    include("../example/09-let.jl")
-    include("../example/10-orderby.jl")
-    include("../example/11-Datastream.jl")
-    is_installed("IndexedTables") && include("../example/12-IndexedTables.jl")
-    include("../example/13-selectmany.jl")
-    include("../example/14-groupby.jl")
-    include("../example/15-groupinto.jl")
-    include("../example/16-selectinto.jl")
-    include("../example/17-groupjoin.jl")
-    include("../example/18-orderby-nested.jl")
-    include("../example/19-feather.jl")
-    include("../example/20-json.jl")
-    include("../example/21-nulls.jl")
-    include("../example/22-datastreams-sink.jl")
-    include("../example/23-dict-sink.jl")
+    example_files = ["../example/01-DataFrame.jl",
+        "../example/02-Dict.jl",
+        "../example/03-Array.jl",
+        "../example/04-SQLite.jl",
+        "../example/05-Nullable.jl",
+        "../example/06-Generator.jl",
+        "../example/07-typedtables.jl",
+        "../example/08-join.jl",
+        "../example/09-let.jl",
+        "../example/10-orderby.jl",
+        "../example/11-Datastream.jl",
+        "../example/13-selectmany.jl",
+        "../example/14-groupby.jl",
+        "../example/15-groupinto.jl",
+        "../example/16-selectinto.jl",
+        "../example/17-groupjoin.jl",
+        "../example/18-orderby-nested.jl",
+        "../example/19-feather.jl",
+        "../example/20-json.jl",
+        "../example/21-nulls.jl",
+        "../example/22-datastreams-sink.jl",
+        "../example/23-dict-sink.jl"]
+
+    is_installed("IndexedTables") && push!(example_files, "../example/12-IndexedTables.jl")
+
+    color = Base.have_color ? "--color=yes" : "--color=no"
+    compilecache = "--compilecache=" * (Bool(Base.JLOptions().use_compilecache) ? "yes" : "no")
+    julia_exe = Base.julia_cmd()
+
+    for file in example_files
+        if success(`$julia_exe --check-bounds=yes $color $compilecache $file`)
+            @test true
+        else
+            @test false
+        end
+    end
 end
