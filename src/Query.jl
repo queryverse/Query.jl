@@ -15,7 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, Grouping, null, @NT
+export @from, @count, @where, @select, Grouping, null, @NT
 
 include("operators.jl")
 
@@ -66,11 +66,6 @@ macro from(range::Expr, body::Expr)
 	translate_query(body)
 
 	return body.args[1]
-end
-
-macro select_internal(source, f)
-	q = Expr(:quote, f)
-    :(select($(esc(source)), $(esc(f)), $(esc(q))))
 end
 
 macro orderby_internal(source, f)

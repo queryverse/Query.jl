@@ -546,6 +546,11 @@ q = collect(@where(source_df, i->i.age>30. && i.children > 2), DataFrame)
 @test q[1,:age]==Nullable(42.)
 @test q[1,:children]==Nullable(5)
 
+q = collect(Query.@select(source_df, i->get(i.children)))
+
+@test isa(q, Array{Int,1})
+@test q==[3,5,2]
+
 include("test_indexedtables.jl")
 
 end
