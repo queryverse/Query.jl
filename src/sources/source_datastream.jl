@@ -2,7 +2,7 @@
 using DataStreams
 using WeakRefStrings
 
-immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC} <: Enumerable{T}
+immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC, TSC} <: Enumerable{T}
     source::S
     schema::DataStreams.Data.Schema
 end
@@ -16,25 +16,30 @@ function query{S<:DataStreams.Data.Source}(source::S)
 
     col_expressions = Array{Expr,1}()
     columns_tuple_type = Expr(:curly, :Tuple)
+    columns_tuple_type_source = Expr(:curly, :Tuple)
 
     for i in 1:schema.cols
         if schema.types[i] <: WeakRefString
             col_type = String
         elseif schema.types[i] <: Nullable && schema.types[i].parameters[1] <: WeakRefString
-            col_type = Nullable{String}
+            col_type = NAable{String}
+        elseif schema.types[i] <: Nullable
+            col_type = NAable{schema.types[i].parameters[1]}
         else
             col_type = schema.types[i]
         end
 
         push!(col_expressions, Expr(:(::), schema.header[i], col_type))
         push!(columns_tuple_type.args, col_type)
+        push!(columns_tuple_type_source.args, schema.types[i])
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
 
-    t2 = :(Query.EnumerableDataStream{Float64,Float64,Float64})
+    t2 = :(Query.EnumerableDataStream{Float64,Float64,Float64,Float64})
     t2.args[2] = t_expr
     t2.args[3] = typeof(source)
     t2.args[4] = columns_tuple_type
+    t2.args[5] = columns_tuple_type_source
 
     eval(NamedTuples, :(import Query))
     t = eval(NamedTuples, t2)
@@ -44,23 +49,40 @@ function query{S<:DataStreams.Data.Source}(source::S)
     return e_df
 end
 
-function length{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC})
+function length{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
     return iter.schema.rows
 end
 
-function eltype{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC})
+function eltype{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
     return T
 end
 
-function start{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC})
+function start{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
     return 1
 end
 
-@generated function next{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC}, state)
+function _convertion_helper_for_datastreams(source, row, col)
+    v = Data.streamfrom(source, Data.Field, Nullable{WeakRefString}, row, col)
+    if isnull(v)
+        return NAable{String}()
+    else
+        return NAable{String}(String(get(v)))
+    end
+end
+
+@generated function next{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC}, state)
     constructor_call = Expr(:call, :($T))
     for i in 1:length(TC.types)
-    	col_type = TC.types[i] <: WeakRefString ? String : TC.types[i]
-        push!(constructor_call.args, :(Data.streamfrom(source, Data.Field, $col_type, row, $i)))
+        if TC.types[i] <: String
+            get_expression = :(Data.streamfrom(source, Data.Field, WeakRefString, row, $i))
+        elseif TC.types[i] <: NAable && TSC.types[i].parameters[1] <: WeakRefString
+            get_expression = :(_convertion_helper_for_datastreams(source, row, $i))
+        elseif TC.types[i] <: NAable
+            get_expression = :(NAable(Data.streamfrom(source, Data.Field, Nullable{$(TC.types[i].parameters[1])}, row, $i)))
+        else
+            get_expression = :(Data.streamfrom(source, Data.Field, $(TC.types[i]), row, $i))
+        end
+        push!(constructor_call.args, get_expression)
     end
 
     quote
@@ -71,7 +93,7 @@ end
     end
 end
 
-function done{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC}, state)
+function done{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC}, state)
     return Data.isdone(iter.source,state,1)
 end
 

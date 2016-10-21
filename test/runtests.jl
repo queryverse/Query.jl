@@ -153,7 +153,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Nullable{String},1})
+@test isa(q, Array{NAable{String},1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -163,7 +163,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Nullable{String},1})
+@test isa(q, Array{NAable{String},1})
 @test length(q)==3
 @test q==["kirk", "sally", "john"]
 
@@ -173,7 +173,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Nullable{String},1})
+@test isa(q, Array{NAable{String},1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -201,7 +201,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Nullable{Int},1})
+@test isa(q, Array{NAable{Int},1})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -318,7 +318,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Nullable{Int},Nullable{String}}})
+@test isa(x, Array{Grouping{NAable{Int},NAable{String}}})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][:]==["John"]
@@ -330,7 +330,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Nullable{Int},NamedTuples._NT_namechildren{Nullable{String},Nullable{Int}}},1})
+@test isa(x, Array{Grouping{NAable{Int},NamedTuples._NT_namechildren{NAable{String},NAable{Int}}},1})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][1].name=="John";
@@ -367,7 +367,7 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{Nullable{Int},Nullable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{NAable{Int},NAable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==3
 @test q[1].a==1
 @test q[1].b==1.
@@ -393,7 +393,7 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{Nullable{Int},Nullable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{NAable{Int},NAable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==1
 @test q[1].a==2
 @test q[1].b==2.
@@ -485,7 +485,16 @@ q = @from i in source_df begin
 end
 Data.close!(q)
 df_loaded_from_csv = CSV.read("test-output.csv")
-@test source_df == df_loaded_from_csv
+@test size(source_df) == size(df_loaded_from_csv)
+@test source_df[1,:name] == get(df_loaded_from_csv[1,:name])
+@test source_df[2,:name] == get(df_loaded_from_csv[2,:name])
+@test source_df[3,:name] == get(df_loaded_from_csv[3,:name])
+@test source_df[1,:age] == get(df_loaded_from_csv[1,:age])
+@test source_df[2,:age] == get(df_loaded_from_csv[2,:age])
+@test source_df[3,:age] == get(df_loaded_from_csv[3,:age])
+@test source_df[1,:children] == get(df_loaded_from_csv[1,:children])
+@test source_df[2,:children] == get(df_loaded_from_csv[2,:children])
+@test source_df[3,:children] == get(df_loaded_from_csv[3,:children])
 
 q = @from i in source_df begin
     @select i
@@ -493,15 +502,24 @@ q = @from i in source_df begin
 end
 Data.close!(q)
 df_loaded_from_feather = Feather.read("test-output.feather")
-@test source_df == df_loaded_from_feather
+@test size(source_df) == size(df_loaded_from_feather)
+@test source_df[1,:name] == get(df_loaded_from_feather[1,:name])
+@test source_df[2,:name] == get(df_loaded_from_feather[2,:name])
+@test source_df[3,:name] == get(df_loaded_from_feather[3,:name])
+@test source_df[1,:age] == df_loaded_from_feather[1,:age]
+@test source_df[2,:age] == df_loaded_from_feather[2,:age]
+@test source_df[3,:age] == df_loaded_from_feather[3,:age]
+@test source_df[1,:children] == df_loaded_from_feather[1,:children]
+@test source_df[2,:children] == df_loaded_from_feather[2,:children]
+@test source_df[3,:children] == df_loaded_from_feather[3,:children]
 
-q = Query.collect(Query.default_if_empty(Nullable{String}[]))
+q = Query.collect(Query.default_if_empty(NAable{String}[]))
 @test length(q)==1
-@test isnull(q[1])
+@test isna(q[1])
 
-q = Query.collect(Query.default_if_empty(Nullable{String}["John", "Sally"]))
+q = Query.collect(Query.default_if_empty(NAable{String}["John", "Sally"]))
 @test length(q)==2
-@test q==Nullable{String}["John", "Sally"]
+@test q==NAable{String}["John", "Sally"]
 
 
 source_df3 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
@@ -542,9 +560,9 @@ q = collect(@where(source_df, i->i.age>30. && i.children > 2), DataFrame)
 
 @test isa(q, DataFrame)
 @test size(q)==(1,3)
-@test q[1,:name]==Nullable("Sally")
-@test q[1,:age]==Nullable(42.)
-@test q[1,:children]==Nullable(5)
+@test q[1,:name]=="Sally"
+@test q[1,:age]==42.
+@test q[1,:children]==5
 
 q = collect(Query.@select(source_df, i->get(i.children)))
 

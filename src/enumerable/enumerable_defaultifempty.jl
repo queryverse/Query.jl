@@ -7,13 +7,13 @@ function default_if_empty{S}(source::S)
     T = eltype(source)
 
     if T<:NamedTuple
-        if !all(i->i<:Nullable,T.parameters)
-            error("default_if_empty requires a default value if the source element is a NamedTuple and at least one of its fields is not a Nullable.")
+        if !all(i->i<:NAable,T.parameters)
+            error("default_if_empty requires a default value if the source element is a NamedTuple and at least one of its fields is not a NAable.")
         end
         default_value = T([i() for i in T.parameters]...)
     else
-        if !(T<:Nullable)
-            error("default_if_empty requires a default value if the source element is not a Nullable.")
+        if !(T<:NAable)
+            error("default_if_empty requires a default value if the source element is not a NAable.")
         end
         default_value = T()
     end

@@ -1,9 +1,9 @@
 module Query
 
-using NullableArrays
 using Requires
 using NamedTuples
 using DataStructures
+using DataArrays
 import FunctionWrappers: FunctionWrapper
 
 import Base.start
@@ -15,7 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, @select, Grouping, null, @NT
+export @from, @count, @where, @select, Grouping, null, @NT, NAable
 
 include("operators.jl")
 

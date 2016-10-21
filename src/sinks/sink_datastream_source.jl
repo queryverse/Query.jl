@@ -62,7 +62,17 @@ function Data.streamfrom{T}(source::DataStreamSource, ::Type{Data.Field}, ::Type
         source.current_row = source.current_row+1
     end
 
-    return Nullable{T}(source.current_val[col])
+    val = source.current_val[col]
+
+    if typeof(val) <: NAable
+        if isna(val)
+            return Nullable{T}()
+        else
+            return Nullable{T}(get(val))
+        end
+    else
+        return Nullable{T}(val)
+    end
 end
 
 function Data.schema(source::DataStreamSource)
@@ -74,7 +84,7 @@ function Data.schema(source::DataStreamSource, ::Type{Data.Field})
 end
 
 function collect{T<:NamedTuple, TSink<:Data.Sink}(enumerable::Enumerable{T}, sink::TSink)
-    schema = Data.Schema(fieldnames(T),[convert(DataType,i) for i in T.parameters],-1)
+    schema = Data.Schema(fieldnames(T),[i <: NAable ? Nullable{i.parameters[1]} : i for i in T.parameters],-1)
     source = DataStreamSource{typeof(enumerable),T}(schema, enumerable)
     Data.stream!(source, sink)
     return sink

@@ -5,7 +5,7 @@
     push_exprs = Expr(:block)
     for i in 1:n
         if columns.parameters[i] <: DataArray
-            ex = :( push!(columns[$i], isnull(i[$i]) ? NA : get(i[$i])) )
+            ex = :( push!(columns[$i], isna(i[$i]) ? NA : get(i[$i])) )
         else
             ex = :( push!(columns[$i], i[$i]) )
         end
@@ -24,7 +24,7 @@ function collect{T<:NamedTuple}(enumerable::Enumerable{T}, ::Type{DataFrames.Dat
     for t in T.types
         if isa(t, TypeVar)
             push!(columns, Array(Any,0))
-        elseif t <: Nullable
+        elseif t <: NAable
             push!(columns, DataArray(t.parameters[1],0))
         else
             push!(columns, Array(t,0))
