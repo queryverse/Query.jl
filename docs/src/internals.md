@@ -10,10 +10,6 @@ If one starts with a queryable data source (like SQLite), the query will automat
 
 The wording of methods and types currently follows LINQ, not julia conventions. This is mainly to prevent clashes while Query.jl is in development.
 
-## Nullable
-
-This package implements the C# spec semantics for lifting and handling `Nullable`s. It currently overrides the definitions for various operators that are in `NullableArrays`.
-
 ## Readings
 
 The original [LINQ](https://msdn.microsoft.com/en-us/library/bb308959.aspx) document is still a good read.

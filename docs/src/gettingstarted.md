@@ -39,6 +39,6 @@ A query that is not terminated with a `@collect` statement will return an iterat
 
 The Query package does not require data sources or sinks to have a table like structure (i.e. rows and columns). When a table like structure is queried, it is treated as a set of `NamedTuples`, where the set elements correspond to the rows of the source, and the fields of the `NamedTuple` correspond to the columns. Data sinks that have a table like structure typically require the results of the query to be projected into a `NamedTuple`. The experimental `{}` syntax in the Query package provides a simplified way to construct `NamedTuples` in a `@select` statement.
 
-## Null values
+## Missing values
 
-Missing values are represented as `Nullable` types. The eventual goal of the Query package is to not provide any special casing of null value handling, but instead rely entirely on julia base semantics for dealing with `Nullable` types. Currently support for `Nullable` types is sparse in julia base, and therefore Query provides a number of methods that make working with `Nullable` types easier, mostly in the form of lifted versions of standard operators.
+Missing values are represented as `NAable` types. Query.jl currently provides a set of lifted methods for common operations on values that work with ``NAable``, but the eventual goal is to move all of that into its own package. ``NAable`` is only used within Query.jl, the package can without problem work with data sources that use ``Nullable`` as their type to represent potentially missing values.

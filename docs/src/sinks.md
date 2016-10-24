@@ -22,7 +22,7 @@ println(x)
 
 # output
 
-Nullable{String}["John","Sally","Kirk"]
+NAable{String}["John","Sally","Kirk"]
 ```
 
 ## DataFrame

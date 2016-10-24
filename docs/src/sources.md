@@ -110,7 +110,7 @@ println(q)
 
 # output
 
-Nullable{String}["John","Kirk"]
+NAable{String}["John","Kirk"]
 ```
 
 This example reads a Feather file:
