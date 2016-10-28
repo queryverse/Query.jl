@@ -61,8 +61,8 @@ function start{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream
     return 1
 end
 
-function _convertion_helper_for_datastreams(source, row, col)
-    v = Data.streamfrom(source, Data.Field, Nullable{WeakRefString}, row, col)
+function _convertion_helper_for_datastreams(source, row, col, T)
+    v = Data.streamfrom(source, Data.Field, Nullable{T}, row, col)
     if isnull(v)
         return NAable{String}()
     else
@@ -76,7 +76,7 @@ end
         if TC.types[i] <: String
             get_expression = :(Data.streamfrom(source, Data.Field, WeakRefString, row, $i))
         elseif TC.types[i] <: NAable && TSC.types[i].parameters[1] <: WeakRefString
-            get_expression = :(_convertion_helper_for_datastreams(source, row, $i))
+            get_expression = :(_convertion_helper_for_datastreams(source, row, $i, TSC.types[$i].parameters[1]))
         elseif TC.types[i] <: NAable
             get_expression = :(NAable(Data.streamfrom(source, Data.Field, Nullable{$(TC.types[i].parameters[1])}, row, $i)))
         else

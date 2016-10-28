@@ -8,6 +8,7 @@ using CSV
 using SQLite
 using JSON
 using Feather
+using NullableArrays
 using Base.Test
 
 immutable Person
@@ -458,7 +459,7 @@ q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "data", "airqu
     @collect
 end
 
-@test isa(q, Array{Int32,1})
+@test isa(q, Array{Query.NAable{Int32},1})
 @test q==[5,6,7,8,9]
 
 source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
@@ -506,12 +507,12 @@ df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df[1,:name] == get(df_loaded_from_feather[1,:name])
 @test source_df[2,:name] == get(df_loaded_from_feather[2,:name])
 @test source_df[3,:name] == get(df_loaded_from_feather[3,:name])
-@test source_df[1,:age] == df_loaded_from_feather[1,:age]
-@test source_df[2,:age] == df_loaded_from_feather[2,:age]
-@test source_df[3,:age] == df_loaded_from_feather[3,:age]
-@test source_df[1,:children] == df_loaded_from_feather[1,:children]
-@test source_df[2,:children] == df_loaded_from_feather[2,:children]
-@test source_df[3,:children] == df_loaded_from_feather[3,:children]
+@test source_df[1,:age] == get(df_loaded_from_feather[1,:age])
+@test source_df[2,:age] == get(df_loaded_from_feather[2,:age])
+@test source_df[3,:age] == get(df_loaded_from_feather[3,:age])
+@test source_df[1,:children] == get(df_loaded_from_feather[1,:children])
+@test source_df[2,:children] == get(df_loaded_from_feather[2,:children])
+@test source_df[3,:children] == get(df_loaded_from_feather[3,:children])
 
 q = Query.collect(Query.default_if_empty(NAable{String}[]))
 @test length(q)==1
