@@ -25,7 +25,7 @@ function _writevalue(io::IO, value, file::CsvFile)
     print(io, value)
 end
 
-@generated function _writecsv{T}(io::IO, enumerable::Enumerable{T}, csvfile::CsvFile)
+@generated function _writecsv(io::IO, enumerable::Enumerable, csvfile::CsvFile, T::Type)
     col_names = fieldnames(T)
     n = length(col_names)
     push_exprs = Expr(:block)
@@ -44,13 +44,17 @@ end
     end
 end
 
-function collect{T<:NamedTuple}(enumerable::Enumerable{T}, file::CsvFile)
+function collect(enumerable::Enumerable, file::CsvFile)
+    T = eltype(enumerable)
+    if !(T<:NamedTuple)
+        error("Can only collect a NamedTuple iterable to a CSV file.")
+    end
     open(file.filename, "w") do io
         if file.header
             join(io,["$(file.quote_char)" *replace(string(colname), file.quote_char, "$(file.escape_char)$(file.quote_char)") * "$(file.quote_char)" for colname in fieldnames(T)],file.delim_char)
             println(io)
         end
-        _writecsv(io, enumerable, file)
+        _writecsv(io, enumerable, file, T)
     end
     return nothing
 end

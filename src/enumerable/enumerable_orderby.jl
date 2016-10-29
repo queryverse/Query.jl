@@ -1,15 +1,19 @@
-immutable EnumerableOrderby{T,S,KS,TKS} <: Enumerable{T}
+immutable EnumerableOrderby{T,S,KS,TKS} <: Enumerable
     source::S
     keySelector::KS
     descending::Bool
 end
 
-function orderby{T}(source::Enumerable{T}, f::Function, f_expr::Expr)
+Base.eltype{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}) = T
+
+function orderby(source::Enumerable, f::Function, f_expr::Expr)
+    T = eltype(source)
     TKS = Base.return_types(f, (T,))[1]
     return EnumerableOrderby{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, false)
 end
 
-function orderby_descending{T}(source::Enumerable{T}, f::Function, f_expr::Expr)
+function orderby_descending(source::Enumerable, f::Function, f_expr::Expr)
+    T = eltype(source)
     TKS = Base.return_types(f, (T,))[1]
     return EnumerableOrderby{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, true)
 end
@@ -35,18 +39,22 @@ end
 
 done{T,S,KS,TKS}(f::EnumerableOrderby{T,S,KS,TKS}, state) = state[2] > length(state[1])
 
-immutable EnumerableThenBy{T,S,KS,TKS} <: Enumerable{T}
+immutable EnumerableThenBy{T,S,KS,TKS} <: Enumerable
     source::S
     keySelector::KS
     descending::Bool
 end
 
-function thenby{T}(source::Enumerable{T}, f::Function, f_expr::Expr)
+Base.eltype{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS}) = T
+
+function thenby(source::Enumerable, f::Function, f_expr::Expr)
+    T = eltype(source)
     TKS = Base.return_types(f, (T,))[1]
     return EnumerableThenBy{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, false)
 end
 
-function thenby_descending{T}(source::Enumerable{T}, f::Function, f_expr::Expr)
+function thenby_descending(source::Enumerable, f::Function, f_expr::Expr)
+    T = eltype(source)
     TKS = Base.return_types(f, (T,))[1]
     return EnumerableThenBy{T,typeof(source), FunctionWrapper{TKS,Tuple{T}},TKS}(source, f, true)
 end

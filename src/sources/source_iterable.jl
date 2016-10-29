@@ -1,4 +1,4 @@
-immutable EnumerableIterable{T,S} <: Enumerable{T}
+immutable EnumerableIterable{T,S} <: Enumerable
     source::S
 end
 
@@ -6,6 +6,8 @@ function query{S}(source::S)
 	T = eltype(source)
     return EnumerableIterable{T,S}(source)
 end
+
+Base.eltype{T,S}(iter::EnumerableIterable{T,S}) = T
 
 function start{T,S}(iter::EnumerableIterable{T,S})
     return start(iter.source)

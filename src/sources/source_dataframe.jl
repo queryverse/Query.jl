@@ -3,7 +3,7 @@ using DataArrays
 
 # T is the type of the elements produced
 # TS is a tuple type that stores the columns of the DataFrame
-immutable EnumerableDF{T, TS} <: Enumerable{T}
+immutable EnumerableDF{T, TS} <: Enumerable
     df::DataFrames.DataFrame
     # This field hols a tuple with the columns of the DataFrame.
     # Having a tuple of the columns here allows the iterator

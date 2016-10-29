@@ -1,4 +1,4 @@
-immutable EnumerableJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable{T}
+immutable EnumerableJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable
     outer::SO
     inner::SI
     outerKeySelector::OKS
@@ -6,7 +6,11 @@ immutable EnumerableJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable{T}
     resultSelector::RS
 end
 
-function join{TO,TI}(outer::Enumerable{TO}, inner::Enumerable{TI}, f_outerKeySelector::Function, outerKeySelector::Expr, f_innerKeySelector::Function, innerKeySelector::Expr, f_resultSelector::Function, resultSelector::Expr)
+Base.eltype{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::EnumerableJoin{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}) = T
+
+function join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Function, outerKeySelector::Expr, f_innerKeySelector::Function, innerKeySelector::Expr, f_resultSelector::Function, resultSelector::Expr)
+    TO = eltype(outer)
+    TI = eltype(inner)
     TKeyOuter = Base.return_types(f_outerKeySelector, (TO,))[1]
     TKeyInner = Base.return_types(f_innerKeySelector, (TI,))[1]
 

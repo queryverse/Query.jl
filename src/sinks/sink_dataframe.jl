@@ -19,7 +19,12 @@
     end
 end
 
-function collect{T<:NamedTuple}(enumerable::Enumerable{T}, ::Type{DataFrames.DataFrame})
+function collect(enumerable::Enumerable, ::Type{DataFrames.DataFrame})
+    T = eltype(enumerable)
+    if !(T<:NamedTuple)
+        error("Can only collect a NamedTuple iterator into a DataFrame")
+    end
+
     columns = []
     for t in T.types
         if isa(t, TypeVar)

@@ -1,8 +1,10 @@
 # T is the type of the elements produced by this iterator
-immutable EnumerableWhere{T,S,Q} <: Enumerable{T}
+immutable EnumerableWhere{T,S,Q} <: Enumerable
     source::S
     filter::Q
 end
+
+Base.eltype{T,S,Q}(iter::EnumerableWhere{T,S,Q}) = T
 
 immutable EnumerableWhereState{T,S}
     done::Bool
@@ -10,7 +12,8 @@ immutable EnumerableWhereState{T,S}
     source_state::S
 end
 
-function where{T}(source::Enumerable{T}, filter::Function, filter_expr::Expr)
+function where(source::Enumerable, filter::Function, filter_expr::Expr)
+    T = eltype(source)
     S = typeof(source)
     return EnumerableWhere{T,S,FunctionWrapper{Bool,Tuple{T}}}(source, filter)
 end

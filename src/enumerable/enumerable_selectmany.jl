@@ -1,8 +1,10 @@
-immutable EnumerableSelectMany{T,SO,CS,RS} <: Enumerable{T}
+immutable EnumerableSelectMany{T,SO,CS,RS} <: Enumerable
     source::SO
     collectionSelector::CS
     resultSelector::RS
 end
+
+Base.eltype{T,SO,CS,RS}(iter::EnumerableSelectMany{T,SO,CS,RS}) = T
 
 # TODO Make sure this is actually correct. We might have to be more selective,
 # i.e. only scan arguments for certain types of expression etc.
@@ -30,7 +32,8 @@ function expr_contains_ref_to(expr::QuoteNode, var_name::Symbol)
     return expr==var_name
 end
 
-function select_many{TS}(source::Enumerable{TS}, f_collectionSelector::Function, collectionSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
+function select_many(source::Enumerable, f_collectionSelector::Function, collectionSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
+    TS = eltype(source)
     # First detect whether the collectionSelector return value depends at all
     # on the value of the anonymous function argument
     anon_var = collectionSelector.args[1]
@@ -39,16 +42,17 @@ function select_many{TS}(source::Enumerable{TS}, f_collectionSelector::Function,
 
     if crossJoin
         inner_collection = f_collectionSelector(nothing)
-        TCE = typeof(inner_collection).parameters[1]
+        input_type_collection_selector = typeof(inner_collection)
+        TCE = input_type_collection_selector.parameters[1]
     else
-        type_as_guessed = Base.return_types(f_collectionSelector, (TS,))[1]
-        TCE = typeof(type_as_guessed)==Union || type_as_guessed==Any ? Any : type_as_guessed.parameters[1]
+        input_type_collection_selector = Base.return_types(f_collectionSelector, (TS,))[1]
+        TCE = typeof(input_type_collection_selector)==Union || input_type_collection_selector==Any ? Any : input_type_collection_selector.parameters[1]
     end
 
     T = Base.return_types(f_resultSelector, (TS,TCE))[1]
     SO = typeof(source)
 
-    return EnumerableSelectMany{T,SO,FunctionWrapper{Enumerable{TCE},Tuple{TS}},FunctionWrapper{T,Tuple{TS,TCE}}}(source,f_collectionSelector,f_resultSelector)
+    return EnumerableSelectMany{T,SO,FunctionWrapper{input_type_collection_selector,Tuple{TS}},FunctionWrapper{T,Tuple{TS,TCE}}}(source,f_collectionSelector,f_resultSelector)
 end
 
 # TODO This should be changed to a lazy implementation

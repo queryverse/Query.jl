@@ -1,7 +1,9 @@
 # TODO Make work with multidimensional arrays
-immutable EnumerableArray{T,S} <: Enumerable{T}
+immutable EnumerableArray{T,S} <: Enumerable
     source::S
 end
+
+Base.eltype{T,S}(iter::EnumerableArray{T,S}) = T
 
 function query{TS,N}(source::Array{TS,N})
     return EnumerableArray{TS,Array{TS,N}}(source)

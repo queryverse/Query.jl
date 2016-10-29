@@ -1,6 +1,6 @@
 @require TypedTables begin
 
-immutable EnumerableTypedTable{T, TS} <: Enumerable{T}
+immutable EnumerableTypedTable{T, TS} <: Enumerable
     df::TypedTables.Table
     # This field hols a tuple with the columns of the DataFrame.
     # Having a tuple of the columns here allows the iterator

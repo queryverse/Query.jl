@@ -1,7 +1,7 @@
 @require IndexedTables begin
 using IndexedTables: NDSparse
 
-immutable EnumerableIndexedTables{T, S<:NDSparse} <: Enumerable{T}
+immutable EnumerableIndexedTables{T, S<:NDSparse} <: Enumerable
     source::S
 end
 
@@ -36,9 +36,7 @@ end
 #    return iter.schema.rows
 #end
 
-#function eltype{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC})
-#    return T
-#end
+Base.eltype{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}) = T
 
 function start{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S})
     return 1

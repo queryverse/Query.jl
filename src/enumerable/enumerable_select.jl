@@ -1,9 +1,12 @@
-immutable EnumerableSelect{T, S, Q} <: Enumerable{T}
+immutable EnumerableSelect{T, S, Q} <: Enumerable
     source::S
     f::Q
 end
 
-function select{TS}(source::Enumerable{TS}, f::Function, f_expr::Expr)
+Base.eltype{T,S,Q}(iter::EnumerableSelect{T,S,Q}) = T
+
+function select(source::Enumerable, f::Function, f_expr::Expr)
+    TS = eltype(source)
     T = Base.return_types(f, (TS,))[1]
     S = typeof(source)
     return EnumerableSelect{T,S,FunctionWrapper{T,Tuple{TS}}}(source, f)

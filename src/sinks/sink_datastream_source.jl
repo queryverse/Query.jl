@@ -83,7 +83,12 @@ function Data.schema(source::DataStreamSource, ::Type{Data.Field})
     return Data.schema(source)
 end
 
-function collect{T<:NamedTuple, TSink<:Data.Sink}(enumerable::Enumerable{T}, sink::TSink)
+function collect{TSink<:Data.Sink}(enumerable::Enumerable, sink::TSink)
+    T = eltype(enumerable)
+    if !(T<:NamedTuple)
+        error("Can only collect a NamedTuple iterator into a Data.Sink.")
+    end
+
     schema = Data.Schema(fieldnames(T),[i <: NAable ? Nullable{i.parameters[1]} : i for i in T.parameters],-1)
     source = DataStreamSource{typeof(enumerable),T}(schema, enumerable)
     Data.stream!(source, sink)

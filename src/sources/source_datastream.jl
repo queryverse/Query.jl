@@ -2,7 +2,7 @@
 using DataStreams
 using WeakRefStrings
 
-immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC, TSC} <: Enumerable{T}
+immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC, TSC} <: Enumerable
     source::S
     schema::DataStreams.Data.Schema
 end

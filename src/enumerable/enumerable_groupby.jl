@@ -1,4 +1,4 @@
-immutable EnumerableGroupBySimple{T,TKey,TS,SO,ES} <: Enumerable{T}
+immutable EnumerableGroupBySimple{T,TKey,TS,SO,ES} <: Enumerable
     source::SO
     elementSelector::ES
 end
@@ -15,7 +15,10 @@ getindex{TKey,T}(A::Grouping{TKey,T},i) = A.elements[i]
 import Base.length
 length{TKey,T}(A::Grouping{TKey,T}) = length(A.elements)
 
-function group_by{TS}(source::Enumerable{TS}, f_elementSelector::Function, elementSelector::Expr)
+Base.eltype{T,TKey,TS,SO,ES}(iter::EnumerableGroupBySimple{T,TKey,TS,SO,ES}) = T
+
+function group_by(source::Enumerable, f_elementSelector::Function, elementSelector::Expr)
+    TS = eltype(source)
     TKey = Base.return_types(f_elementSelector, (TS,))[1]
 
     SO = typeof(source)
@@ -50,13 +53,16 @@ function done{T,TKey,TS,SO,ES}(iter::EnumerableGroupBySimple{T,TKey,TS,SO,ES}, s
     return curr_index > length(results)
 end
 
-immutable EnumerableGroupBy{T,TKey,TR,SO,ES,RS} <: Enumerable{T}
+immutable EnumerableGroupBy{T,TKey,TR,SO,ES,RS} <: Enumerable
     source::SO
     elementSelector::ES
     resultSelector::RS
 end
 
-function group_by{TS}(source::Enumerable{TS}, f_elementSelector::Function, elementSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
+Base.eltype{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES}) = T
+
+function group_by(source::Enumerable, f_elementSelector::Function, elementSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
+    TS = eltype(source)
     TKey = Base.return_types(f_elementSelector, (TS,))[1]
 
     SO = typeof(source)

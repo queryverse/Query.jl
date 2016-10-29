@@ -1,7 +1,9 @@
-immutable EnumerableDefaultIfEmpty{T,S} <: Enumerable{T}
+immutable EnumerableDefaultIfEmpty{T,S} <: Enumerable
     source::S
     default_value::T
 end
+
+Base.eltype{T,S}(iter::EnumerableDefaultIfEmpty{T,S}) = T
 
 function default_if_empty{S}(source::S)
     T = eltype(source)
