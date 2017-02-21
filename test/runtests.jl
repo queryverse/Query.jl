@@ -458,7 +458,7 @@ q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "data", "airqu
     @collect
 end
 
-@test isa(q, Array{Int32,1})
+@test isa(q, Array{Nullable{Int32},1})
 @test q==[5,6,7,8,9]
 
 source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
