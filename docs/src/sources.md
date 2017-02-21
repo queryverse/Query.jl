@@ -129,7 +129,7 @@ println(q)
 # output
 
 WARNING: This Feather file is old and will not be readable beyond the 0.3.0 release
-Int32[5,6,7,8,9]
+Nullable{Int32}[5,6,7,8,9]
 ```
 
 ## IndexedTables
