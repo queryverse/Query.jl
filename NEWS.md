@@ -1,3 +1,8 @@
+Query.jl v0.3.1 Release Notes
+=============================
+* Add DataTable source and sink support
+* Track DataStreams breaking changes
+
 Query.jl v0.3.0 Release Notes
 =============================
 * Add Dict sink support
