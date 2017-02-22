@@ -15,7 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, @select, Grouping, null, @NT, NAable
+export @from, @count, @where, @select, Grouping, null, @NT, DataValue
 
 include("operators.jl")
 

@@ -29,7 +29,7 @@ function collect(enumerable::Enumerable, ::Type{DataFrames.DataFrame})
     for t in T.types
         if isa(t, TypeVar)
             push!(columns, Array(Any,0))
-        elseif t <: NAable
+        elseif t <: DataValue
             push!(columns, DataArray(t.parameters[1],0))
         else
             push!(columns, Array(t,0))

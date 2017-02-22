@@ -110,7 +110,7 @@ println(q)
 
 # output
 
-NAable{String}["John","Kirk"]
+DataValue{String}["John","Kirk"]
 ```
 
 This example reads a Feather file:

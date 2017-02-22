@@ -154,7 +154,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{NAable{String},1})
+@test isa(q, Array{DataValue{String},1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -164,7 +164,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{NAable{String},1})
+@test isa(q, Array{DataValue{String},1})
 @test length(q)==3
 @test q==["kirk", "sally", "john"]
 
@@ -174,7 +174,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{NAable{String},1})
+@test isa(q, Array{DataValue{String},1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -202,7 +202,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{NAable{Int},1})
+@test isa(q, Array{DataValue{Int},1})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -319,7 +319,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{NAable{Int},NAable{String}}})
+@test isa(x, Array{Grouping{DataValue{Int},DataValue{String}}})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][:]==["John"]
@@ -331,7 +331,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{NAable{Int},NamedTuples._NT_namechildren{NAable{String},NAable{Int}}},1})
+@test isa(x, Array{Grouping{DataValue{Int},NamedTuples._NT_namechildren{DataValue{String},DataValue{Int}}},1})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][1].name=="John";
@@ -368,7 +368,7 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{NAable{Int},NAable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==3
 @test q[1].a==1
 @test q[1].b==1.
@@ -394,7 +394,7 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{NAable{Int},NAable{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_abc{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
 @test length(q)==1
 @test q[1].a==2
 @test q[1].b==2.
@@ -459,7 +459,7 @@ q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "data", "airqu
     @collect
 end
 
-@test isa(q, Array{Query.NAable{Int32},1})
+@test isa(q, Array{Query.DataValue{Int32},1})
 @test q==[5,6,7,8,9]
 
 source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
@@ -514,13 +514,13 @@ df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df[2,:children] == get(df_loaded_from_feather[2,:children])
 @test source_df[3,:children] == get(df_loaded_from_feather[3,:children])
 
-q = Query.collect(Query.default_if_empty(NAable{String}[]))
+q = Query.collect(Query.default_if_empty(DataValue{String}[]))
 @test length(q)==1
 @test isna(q[1])
 
-q = Query.collect(Query.default_if_empty(NAable{String}["John", "Sally"]))
+q = Query.collect(Query.default_if_empty(DataValue{String}["John", "Sally"]))
 @test length(q)==2
-@test q==NAable{String}["John", "Sally"]
+@test q==DataValue{String}["John", "Sally"]
 
 
 source_df3 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])

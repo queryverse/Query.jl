@@ -1,6 +1,6 @@
 Query.jl v.next Release Notes
 =============================
-* Use NAable instead of Nullable
+* Use DataValue instead of Nullable
 
 Query.jl v0.3.0 Release Notes
 =============================

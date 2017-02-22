@@ -205,7 +205,7 @@ println(x)
 
 ### Left outer join
 
-They syntax for a left outer join is `@left_outer_join <range variable> in <source> on <left key> equals <right key>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, `<range variable>` is assigned the default value returned by the `default_if_empty` function based on the element types of `<source>`. If the right source has elements of type `NamedTuple`, and the fields of that named tuple are all of type `NAable`, then an instance of that named tuple with all fields having NA values will be used.
+They syntax for a left outer join is `@left_outer_join <range variable> in <source> on <left key> equals <right key>`. `<range variable>` is the name of the variable that should reference elements from the right source in the join. `<source>` is the name of the right source in the join operation. `<left key>` and `<right key>` are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, `<range variable>` is assigned the default value returned by the `default_if_empty` function based on the element types of `<source>`. If the right source has elements of type `NamedTuple`, and the fields of that named tuple are all of type `DataValue`, then an instance of that named tuple with all fields having NA values will be used.
 
 #### Example
 
@@ -256,7 +256,7 @@ println(x)
 
 # output
 
-Query.Grouping{NAable{Int64},NAable{String}}[NAable{String}["John"],NAable{String}["Sally","Kirk"]]
+Query.Grouping{DataValue{Int64},DataValue{String}}[DataValue{String}["John"],DataValue{String}["Sally","Kirk"]]
 ```
 
 This is an example of a `@group` statement with an `into` clause:

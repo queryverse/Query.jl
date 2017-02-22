@@ -1,40 +1,40 @@
 import Base.get
 import Base.convert
 
-immutable NAable{T}
+immutable DataValue{T}
     hasvalue::Bool
     value::T
 
-    NAable() = new(false)
-    NAable(value::T, hasvalue::Bool=true) = new(hasvalue, value)
+    DataValue() = new(false)
+    DataValue(value::T, hasvalue::Bool=true) = new(hasvalue, value)
 end
 
-NAable{T}(value::T, hasvalue::Bool=true) = NAable{T}(value, hasvalue)
-NAable{T}(value::Nullable{T}) = isnull(value) ? NAable{T}() : NAable{T}(get(value))
-NAable() = NAable{Union{}}()
+DataValue{T}(value::T, hasvalue::Bool=true) = DataValue{T}(value, hasvalue)
+DataValue{T}(value::Nullable{T}) = isnull(value) ? DataValue{T}() : DataValue{T}(get(value))
+DataValue() = DataValue{Union{}}()
 
-eltype{T}(::Type{NAable{T}}) = T
+eltype{T}(::Type{DataValue{T}}) = T
 
-convert{T}(::Type{NAable{T}}, x::NAable{T}) = x
-convert(::Type{NAable}, x::NAable) = x
+convert{T}(::Type{DataValue{T}}, x::DataValue{T}) = x
+convert(::Type{DataValue}, x::DataValue) = x
 
-convert{T}(t::Type{NAable{T}}, x::Any) = convert(t, convert(T, x))
+convert{T}(t::Type{DataValue{T}}, x::Any) = convert(t, convert(T, x))
 
-function convert{T}(::Type{NAable{T}}, x::NAable)
-    return isna(x) ? NAable{T}() : NAable{T}(convert(T, get(x)))
+function convert{T}(::Type{DataValue{T}}, x::DataValue)
+    return isna(x) ? DataValue{T}() : DataValue{T}(convert(T, get(x)))
 end
 
-convert{T}(::Type{NAable{T}}, x::T) = NAable{T}(x)
-convert{T}(::Type{NAable}, x::T) = NAable{T}(x)
+convert{T}(::Type{DataValue{T}}, x::T) = DataValue{T}(x)
+convert{T}(::Type{DataValue}, x::T) = DataValue{T}(x)
 
-convert{T}(::Type{NAable{T}}, ::Void) = NAable{T}()
-convert(::Type{NAable}, ::Void) = NAable{Union{}}()
+convert{T}(::Type{DataValue{T}}, ::Void) = DataValue{T}()
+convert(::Type{DataValue}, ::Void) = DataValue{Union{}}()
 
-promote_rule{S,T}(::Type{NAable{S}}, ::Type{T}) = NAable{promote_type(S, T)}
-promote_rule{S,T}(::Type{NAable{S}}, ::Type{NAable{T}}) = NAable{promote_type(S, T)}
-promote_op{S,T}(op::Any, ::Type{NAable{S}}, ::Type{NAable{T}}) = NAable{promote_op(op, S, T)}
+promote_rule{S,T}(::Type{DataValue{S}}, ::Type{T}) = DataValue{promote_type(S, T)}
+promote_rule{S,T}(::Type{DataValue{S}}, ::Type{DataValue{T}}) = DataValue{promote_type(S, T)}
+promote_op{S,T}(op::Any, ::Type{DataValue{S}}, ::Type{DataValue{T}}) = DataValue{promote_op(op, S, T)}
 
-function show{T}(io::IO, x::NAable{T})
+function show{T}(io::IO, x::DataValue{T})
     if get(io, :compact, false)
         if isna(x)
             print(io, "#NA")
@@ -42,7 +42,7 @@ function show{T}(io::IO, x::NAable{T})
             show(io, x.value)
         end
     else
-        print(io, "NAable{")
+        print(io, "DataValue{")
         showcompact(io, eltype(x))
         print(io, "}(")
         if !isna(x)
@@ -52,7 +52,7 @@ function show{T}(io::IO, x::NAable{T})
     end
 end
 
-@inline function get{S,T}(x::NAable{S}, y::T)
+@inline function get{S,T}(x::DataValue{S}, y::T)
     if isbits(S)
         ifelse(isna(x), y, x.value)
     else
@@ -60,22 +60,22 @@ end
     end
 end
 
-get(x::NAable) = isna(x) ? throw(NAableException()) : x.value
+get(x::DataValue) = isna(x) ? throw(DataValueException()) : x.value
 
-unsafe_get(x::NAable) = x.value
+unsafe_get(x::DataValue) = x.value
 unsafe_get(x) = x
 
 import DataArrays.isna
-isna(x::NAable) = !x.hasvalue
+isna(x::DataValue) = !x.hasvalue
 # isna(x) = false
 
-const NAablehash_seed = UInt === UInt64 ? 0x932e0143e51d0171 : 0xe51d0171
+const DataValuehash_seed = UInt === UInt64 ? 0x932e0143e51d0171 : 0xe51d0171
 
-function hash(x::NAable, h::UInt)
+function hash(x::DataValue, h::UInt)
     if isna(x)
-        return h + NAablehash_seed
+        return h + DataValuehash_seed
     else
-        return hash(x.value, h + NAablehash_seed)
+        return hash(x.value, h + DataValuehash_seed)
     end
 end
 
@@ -84,37 +84,37 @@ import Base.!=
 
 # C# spec section 7.10.9
 
-=={T}(a::NAable{T},b::NAable{Union{}}) = isna(a)
-=={T}(a::NAable{Union{}},b::NAable{T}) = isna(b)
-!={T}(a::NAable{T},b::NAable{Union{}}) = !isna(a)
-!={T}(a::NAable{Union{}},b::NAable{T}) = !isna(b)
+=={T}(a::DataValue{T},b::DataValue{Union{}}) = isna(a)
+=={T}(a::DataValue{Union{}},b::DataValue{T}) = isna(b)
+!={T}(a::DataValue{T},b::DataValue{Union{}}) = !isna(a)
+!={T}(a::DataValue{Union{}},b::DataValue{T}) = !isna(b)
 
 # Strings
 
 for op in (:lowercase,:uppercase,:reverse,:ucfirst,:lcfirst,:chop,:chomp)
     @eval begin
         import Base.$(op)
-        function $op{T<:AbstractString}(x::NAable{T})
+        function $op{T<:AbstractString}(x::DataValue{T})
             if isna(x)
-                return NAable{T}()
+                return DataValue{T}()
             else
-                return NAable($op(get(x)))
+                return DataValue($op(get(x)))
             end
         end
     end
 end
 
 import Base.getindex
-function getindex{T<:AbstractString}(s::NAable{T},i)
+function getindex{T<:AbstractString}(s::DataValue{T},i)
     if isna(s)
-        return NAable{T}()
+        return DataValue{T}()
     else
-        return NAable(get(s)[i])
+        return DataValue(get(s)[i])
     end
 end
 
 import Base.endof
-function endof{T<:AbstractString}(s::NAable{T})
+function endof{T<:AbstractString}(s::DataValue{T})
     if isna(s)
         # TODO Decide whether this makes sense?
         return 0
@@ -124,11 +124,11 @@ function endof{T<:AbstractString}(s::NAable{T})
 end
 
 import Base.length
-function length{T<:AbstractString}(s::NAable{T})
+function length{T<:AbstractString}(s::DataValue{T})
     if isna(s)
-        return NAable{Int}()
+        return DataValue{Int}()
     else
-        return NAable{Int}(length(get(s)))
+        return DataValue{Int}(length(get(s)))
     end
 end
 
@@ -137,7 +137,7 @@ end
 for op in (:+, :-, :!, :~)
     @eval begin
         import Base.$(op)
-        $op{T<:Number}(x::NAable{T}) = isna(x) ? NAable{T}() : NAable($op(get(x)))
+        $op{T<:Number}(x::DataValue{T}) = isna(x) ? DataValue{T}() : DataValue($op(get(x)))
     end
 end
 
@@ -145,68 +145,68 @@ end
 for op in (:+, :-, :*, :/, :%, :&, :|, :^, :<<, :>>)
     @eval begin
         import Base.$(op)
-        $op{T1<:Number,T2<:Number}(a::NAable{T1},b::NAable{T2}) = isna(a) || isna(b) ? NAable{promote_type(T1,T2)}() : NAable{promote_type(T1,T2)}($op(get(a), get(b)))
-        $op{T1<:Number,T2<:Number}(x::NAable{T1},y::T2) = isna(x) ? NAable{promote_type(T1,T2)}() : NAable{promote_type(T1,T2)}($op(get(x), y))
-        $op{T1<:Number,T2<:Number}(x::T1,y::NAable{T2}) = isna(y) ? NAable{promote_type(T1,T2)}() : NAable{promote_type(T1,T2)}($op(x, get(y)))
+        $op{T1<:Number,T2<:Number}(a::DataValue{T1},b::DataValue{T2}) = isna(a) || isna(b) ? DataValue{promote_type(T1,T2)}() : DataValue{promote_type(T1,T2)}($op(get(a), get(b)))
+        $op{T1<:Number,T2<:Number}(x::DataValue{T1},y::T2) = isna(x) ? DataValue{promote_type(T1,T2)}() : DataValue{promote_type(T1,T2)}($op(get(x), y))
+        $op{T1<:Number,T2<:Number}(x::T1,y::DataValue{T2}) = isna(y) ? DataValue{promote_type(T1,T2)}() : DataValue{promote_type(T1,T2)}($op(x, get(y)))
     end
 end
 
-^{T<:Number}(x::NAable{T},p::Integer) = isna(x) ? NAable{T}() : NAable(get(x)^p)
+^{T<:Number}(x::DataValue{T},p::Integer) = isna(x) ? DataValue{T}() : DataValue(get(x)^p)
 
-=={T1,T2}(a::NAable{T1},b::NAable{T2}) = isna(a) && isna(b) ? true : !isna(a) && !isna(b) ? get(a)==get(b) : false
-=={T1,T2}(a::NAable{T1},b::T2) = isna(a) ? false : get(a)==b
-=={T1,T2}(a::T1,b::NAable{T2}) = isna(b) ? false : a==get(b)
+=={T1,T2}(a::DataValue{T1},b::DataValue{T2}) = isna(a) && isna(b) ? true : !isna(a) && !isna(b) ? get(a)==get(b) : false
+=={T1,T2}(a::DataValue{T1},b::T2) = isna(a) ? false : get(a)==b
+=={T1,T2}(a::T1,b::DataValue{T2}) = isna(b) ? false : a==get(b)
 
-!={T1,T2}(a::NAable{T1},b::NAable{T2}) = isna(a) && isna(b) ? false : !isna(a) && !isna(b) ? get(a)!=get(b) : true
-!={T1,T2}(a::NAable{T1},b::T2) = isna(a) ? true : get(a)!=b
-!={T1,T2}(a::T1,b::NAable{T2}) = isna(b) ? true : a!=get(b)
+!={T1,T2}(a::DataValue{T1},b::DataValue{T2}) = isna(a) && isna(b) ? false : !isna(a) && !isna(b) ? get(a)!=get(b) : true
+!={T1,T2}(a::DataValue{T1},b::T2) = isna(a) ? true : get(a)!=b
+!={T1,T2}(a::T1,b::DataValue{T2}) = isna(b) ? true : a!=get(b)
 
 for op in (:<,:>,:<=,:>=)
     @eval begin
         import Base.$(op)
-        $op{T<:Number}(a::NAable{T},b::NAable{T}) = isna(a) || isna(b) ? false : $op(get(a), get(b))
-        $op{T1<:Number,T2<:Number}(x::NAable{T1},y::T2) = isna(x) ? false : $op(get(x), y)
-        $op{T1<:Number,T2<:Number}(x::T1,y::NAable{T2}) = isna(y) ? false : $op(x, get(y))
+        $op{T<:Number}(a::DataValue{T},b::DataValue{T}) = isna(a) || isna(b) ? false : $op(get(a), get(b))
+        $op{T1<:Number,T2<:Number}(x::DataValue{T1},y::T2) = isna(x) ? false : $op(get(x), y)
+        $op{T1<:Number,T2<:Number}(x::T1,y::DataValue{T2}) = isna(y) ? false : $op(x, get(y))
     end
 end
 
 # C# spec 7.11.4
-function (&)(x::NAable{Bool},y::NAable{Bool})
+function (&)(x::DataValue{Bool},y::DataValue{Bool})
     if isna(x)
         if isna(y) || get(y)==true
-            return NAable{Bool}()
+            return DataValue{Bool}()
         else
-            return NAable(false)
+            return DataValue(false)
         end
     elseif get(x)==true
         return y
     else
-        return NAable(false)
+        return DataValue(false)
     end
 end
 
-(&)(x::Bool,y::NAable{Bool}) = x ? y : NAable(false)
-(&)(x::NAable{Bool},y::Bool) = y ? x : NAable(false)
+(&)(x::Bool,y::DataValue{Bool}) = x ? y : DataValue(false)
+(&)(x::DataValue{Bool},y::Bool) = y ? x : DataValue(false)
 
-function (|)(x::NAable{Bool},y::NAable{Bool})
+function (|)(x::DataValue{Bool},y::DataValue{Bool})
     if isna(x)
         if isna(y) || !get(y)
-            return NAable{Bool}()
+            return DataValue{Bool}()
         else
-            return NAable(true)
+            return DataValue(true)
         end
     elseif get(x)
-        return NAable(true)
+        return DataValue(true)
     else
         return y
     end
 end
 
-(|)(x::Bool,y::NAable{Bool}) = x ? NAable(true) : y
-(|)(x::NAable{Bool},y::Bool) = y ? NAable(true) : x
+(|)(x::Bool,y::DataValue{Bool}) = x ? DataValue(true) : y
+(|)(x::DataValue{Bool},y::Bool) = y ? DataValue(true) : x
 
 import Base.isless
-function isless{S,T}(x::NAable{S}, y::NAable{T})
+function isless{S,T}(x::DataValue{S}, y::DataValue{T})
     if isna(x)
         return false
     elseif isna(y)

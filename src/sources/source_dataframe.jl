@@ -16,7 +16,7 @@ function query(df::DataFrames.DataFrame)
     df_columns_tuple_type = Expr(:curly, :Tuple)
     for i in 1:length(df.columns)
         if isa(df.columns[i], DataArray)
-            push!(col_expressions, Expr(:(::), names(df)[i], NAable{eltype(df.columns[i])}))
+            push!(col_expressions, Expr(:(::), names(df)[i], DataValue{eltype(df.columns[i])}))
         else
             push!(col_expressions, Expr(:(::), names(df)[i], eltype(df.columns[i])))
         end
@@ -51,7 +51,7 @@ end
 @generated function next{T,TS}(iter::EnumerableDF{T,TS}, state)
     constructor_call = Expr(:call, :($T))
     for i in 1:length(iter.types[2].types)
-        if iter.parameters[1].parameters[i] <: NAable
+        if iter.parameters[1].parameters[i] <: DataValue
             push!(constructor_call.args, :(isna(columns[$i][i]) ? $(iter.parameters[1].parameters[i])() : $(iter.parameters[1].parameters[i])(columns[$i][i])))
         else
             push!(constructor_call.args, :(columns[$i][i]))

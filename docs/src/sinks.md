@@ -22,7 +22,7 @@ println(x)
 
 # output
 
-NAable{String}["John","Sally","Kirk"]
+DataValue{String}["John","Sally","Kirk"]
 ```
 
 ## DataFrame

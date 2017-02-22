@@ -41,4 +41,4 @@ The Query package does not require data sources or sinks to have a table like st
 
 ## Missing values
 
-Missing values are represented as `NAable` types. Query.jl currently provides a set of lifted methods for common operations on values that work with ``NAable``, but the eventual goal is to move all of that into its own package. ``NAable`` is only used within Query.jl, the package can without problem work with data sources that use ``Nullable`` as their type to represent potentially missing values.
+Missing values are represented as `DataValue` types. Query.jl currently provides a set of lifted methods for common operations on values that work with ``DataValue``, but the eventual goal is to move all of that into its own package. ``DataValue`` is only used within Query.jl, the package can without problem work with data sources that use ``Nullable`` as their type to represent potentially missing values.
