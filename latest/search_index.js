@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Missing values",
     "category": "section",
-    "text": "Missing values are represented as NAable types. Query.jl currently provides a set of lifted methods for common operations on values that work with NAable, but the eventual goal is to move all of that into its own package. NAable is only used within Query.jl, the package can without problem work with data sources that use Nullable as their type to represent potentially missing values."
+    "text": "Missing values are represented as DataValue types. Query.jl currently provides a set of lifted methods for common operations on values that work with DataValue, but the eventual goal is to move all of that into its own package. DataValue is only used within Query.jl, the package can without problem work with data sources that use Nullable as their type to represent potentially missing values."
 },
 
 {
@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Left outer join",
     "category": "section",
-    "text": "They syntax for a left outer join is @left_outer_join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, <range variable> is assigned the default value returned by the default_if_empty function based on the element types of <source>. If the right source has elements of type NamedTuple, and the fields of that named tuple are all of type NAable, then an instance of that named tuple with all fields having NA values will be used."
+    "text": "They syntax for a left outer join is @left_outer_join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don't have any corresponding element in the right source, <range variable> is assigned the default value returned by the default_if_empty function based on the element types of <source>. If the right source has elements of type NamedTuple, and the fields of that named tuple are all of type DataValue, then an instance of that named tuple with all fields having NA values will be used."
 },
 
 {
@@ -229,7 +229,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.Grouping{NAable{Int64},NAable{String}}[NAable{String}[\"John\"],NAable{String}[\"Sally\",\"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=g.key,Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key │ Count │\n├─────┼─────┼───────┤\n│ 1   │ 3   │ 1     │\n│ 2   │ 2   │ 2     │"
+    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.Grouping{Query.DataValue{Int64},Query.DataValue{String}}[Query.DataValue{String}[\"John\"],Query.DataValue{String}[\"Sally\",\"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=g.key,Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key │ Count │\n├─────┼─────┼───────┤\n│ 1   │ 3   │ 1     │\n│ 2   │ 2   │ 2     │"
 },
 
 {
@@ -325,7 +325,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "This example reads a CSV file:using Query, DataStreams, CSV\n\nq = @from i in CSV.Source(joinpath(Pkg.dir(\"Query\"),\"example\", \"data.csv\")) begin\n    @where i.Children > 2\n    @select i.Name\n    @collect\nend\n\nprintln(q)\n\n# output\n\nNAable{String}[\"John\",\"Kirk\"]This example reads a Feather file:using Query, DataStreams, Feather\n\nq = @from i in Feather.Source(joinpath(Pkg.dir(\"Feather\"),\"test\", \"data\", \"airquality.feather\")) begin\n    @where i.Day==2\n    @select i.Month\n    @collect\nend\n\nprintln(q)\n\n# output\n\nWARNING: This Feather file is old and will not be readable beyond the 0.3.0 release\nInt32[5,6,7,8,9]"
+    "text": "This example reads a CSV file:using Query, DataStreams, CSV\n\nq = @from i in CSV.Source(joinpath(Pkg.dir(\"Query\"),\"example\", \"data.csv\")) begin\n    @where i.Children > 2\n    @select i.Name\n    @collect\nend\n\nprintln(q)\n\n# output\n\nQuery.DataValue{String}[\"John\",\"Kirk\"]This example reads a Feather file:using Query, DataStreams, Feather\n\nq = @from i in Feather.Source(joinpath(Pkg.dir(\"Feather\"),\"test\", \"data\", \"airquality.feather\")) begin\n    @where i.Day==2\n    @select i.Month\n    @collect\nend\n\nprintln(q)\n\n# output\n\nWARNING: This Feather file is old and will not be readable beyond the 0.3.0 release\nQuery.DataValue{Int32}[5,6,7,8,9]"
 },
 
 {
@@ -389,7 +389,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i.name\n    @collect\nend\n\nprintln(x)\n\n# output\n\nNAable{String}[\"John\",\"Sally\",\"Kirk\"]"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i.name\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.DataValue{String}[\"John\",\"Sally\",\"Kirk\"]"
 },
 
 {
