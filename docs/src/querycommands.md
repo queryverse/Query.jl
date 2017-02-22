@@ -256,7 +256,7 @@ println(x)
 
 # output
 
-Query.Grouping{DataValue{Int64},DataValue{String}}[DataValue{String}["John"],DataValue{String}["Sally","Kirk"]]
+Query.Grouping{Query.DataValue{Int64},Query.DataValue{String}}[Query.DataValue{String}["John"],Query.DataValue{String}["Sally","Kirk"]]
 ```
 
 This is an example of a `@group` statement with an `into` clause:

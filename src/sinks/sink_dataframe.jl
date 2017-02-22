@@ -5,7 +5,7 @@
     push_exprs = Expr(:block)
     for i in 1:n
         if columns.parameters[i] <: DataArray
-            ex = :( push!(columns[$i], isna(i[$i]) ? NA : get(i[$i])) )
+            ex = :( push!(columns[$i], isnull(i[$i]) ? NA : get(i[$i])) )
         else
             ex = :( push!(columns[$i], i[$i]) )
         end

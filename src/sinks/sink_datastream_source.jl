@@ -65,7 +65,7 @@ function Data.streamfrom{T}(source::DataStreamSource, ::Type{Data.Field}, ::Type
     val = source.current_val[col]
 
     if typeof(val) <: DataValue
-        if isna(val)
+        if isnull(val)
             return Nullable{T}()
         else
             return Nullable{T}(get(val))

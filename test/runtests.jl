@@ -516,7 +516,7 @@ df_loaded_from_feather = Feather.read("test-output.feather")
 
 q = Query.collect(Query.default_if_empty(DataValue{String}[]))
 @test length(q)==1
-@test isna(q[1])
+@test isnull(q[1])
 
 q = Query.collect(Query.default_if_empty(DataValue{String}["John", "Sally"]))
 @test length(q)==2

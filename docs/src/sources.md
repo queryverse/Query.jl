@@ -110,7 +110,7 @@ println(q)
 
 # output
 
-DataValue{String}["John","Kirk"]
+Query.DataValue{String}["John","Kirk"]
 ```
 
 This example reads a Feather file:
@@ -129,7 +129,7 @@ println(q)
 # output
 
 WARNING: This Feather file is old and will not be readable beyond the 0.3.0 release
-Int32[5,6,7,8,9]
+Query.DataValue{Int32}[5,6,7,8,9]
 ```
 
 ## IndexedTables

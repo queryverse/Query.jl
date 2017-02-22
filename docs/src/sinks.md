@@ -22,7 +22,7 @@ println(x)
 
 # output
 
-DataValue{String}["John","Sally","Kirk"]
+Query.DataValue{String}["John","Sally","Kirk"]
 ```
 
 ## DataFrame
