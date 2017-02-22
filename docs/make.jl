@@ -15,7 +15,7 @@ using Feather
 
 makedocs(
 	modules = [Query],
-	format = Documenter.Formats.HTML,
+	format = :html,
 	sitename = "Query.jl",
 	pages = [
 		"Introduction" => "index.md",
