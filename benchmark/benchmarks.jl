@@ -7,3 +7,15 @@ using Query
     end
     @bench "select" collect($q)
 end
+
+function foo(n)
+    res = 0
+    for i=1:n
+        res += i
+    end
+    return res
+end
+
+@benchgroup "stupid-test" begin
+    @bench "basic" foo(1_000_000)
+end
