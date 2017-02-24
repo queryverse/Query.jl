@@ -30,6 +30,8 @@ convert{T}(::Type{DataValue}, x::T) = DataValue{T}(x)
 convert{T}(::Type{DataValue{T}}, ::Void) = DataValue{T}()
 convert(::Type{DataValue}, ::Void) = DataValue{Union{}}()
 
+Nullable{T}(value::DataValue{T}) = isnull(value) ? Nullable{T}() : Nullable{T}(get(value))
+
 promote_rule{S,T}(::Type{DataValue{S}}, ::Type{T}) = DataValue{promote_type(S, T)}
 promote_rule{S,T}(::Type{DataValue{S}}, ::Type{DataValue{T}}) = DataValue{promote_type(S, T)}
 promote_op{S,T}(op::Any, ::Type{DataValue{S}}, ::Type{DataValue{T}}) = DataValue{promote_op(op, S, T)}
