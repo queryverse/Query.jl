@@ -1,5 +1,6 @@
 using Query
 using DataFrames
+using DataTables
 using DataArrays
 using TypedTables
 using NamedTuples
@@ -27,6 +28,18 @@ q = @from i in source_df begin
 end
 
 @test isa(q, DataFrame)
+@test size(q)==(1,1)
+@test q[1,:Name]=="sally"
+
+source_dt = DataTable(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
+
+q = @from i in source_dt begin
+    @where i.age>30. && i.children > 2
+    @select {Name=lowercase(i.name)}
+    @collect DataTable
+end
+
+@test isa(q, DataTable)
 @test size(q)==(1,1)
 @test q[1,:Name]=="sally"
 
@@ -600,7 +613,8 @@ end
         "../example/20-json.jl",
         "../example/21-nulls.jl",
         "../example/22-datastreams-sink.jl",
-        "../example/23-dict-sink.jl"]
+        "../example/23-dict-sink.jl",
+        "../example/24-DataTable.jl"]
 
     is_installed("IndexedTables") && push!(example_files, "../example/12-IndexedTables.jl")
 
