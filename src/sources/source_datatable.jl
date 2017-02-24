@@ -15,7 +15,8 @@ function query(df::DataTables.DataTable)
     col_expressions = Array{Expr,1}()
     df_columns_tuple_type = Expr(:curly, :Tuple)
     for i in 1:length(df.columns)
-        push!(col_expressions, Expr(:(::), names(df)[i], eltype(df.columns[i])))
+        etype = eltype(df.columns[i])
+        push!(col_expressions, Expr(:(::), names(df)[i], etype <: Nullable ? DataValue{etype.parameters[1]} : etype))
         push!(df_columns_tuple_type.args, typeof(df.columns[i]))
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
@@ -46,8 +47,8 @@ end
 
 @generated function next{T,TS}(iter::EnumerableDataTable{T,TS}, state)
     constructor_call = Expr(:call, :($T))
-    for i in 1:length(iter.types[2].types)
-        push!(constructor_call.args, :(columns[$i][i]))
+    for (i,t) in enumerate(T.parameters)
+        push!(constructor_call.args, t<:DataValue ? :(isnull(columns[$i][i]) ? DataValue{$(t.parameters[1])}() : DataValue{$(t.parameters[1])}(get(columns[$i][i]))) : :(columns[$i][i]))
     end
 
     quote

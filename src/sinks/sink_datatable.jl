@@ -5,8 +5,12 @@ using NullableArrays
     n = length(columns.types)
     push_exprs = Expr(:block)
     for i in 1:n
-        ex = :( push!(columns[$i], i[$i]) )
-        push!(push_exprs.args, ex)
+        if columns.parameters[i] <: NullableArray
+            ex = :( push!(columns[$i], Nullable(i[$i])) )
+        else
+            ex = :( push!(columns[$i], i[$i]) )
+        end
+        push!(push_exprs.args, ex)        
     end
 
     quote
