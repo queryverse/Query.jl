@@ -41,7 +41,7 @@ end
 
 @test isa(q, DataTable)
 @test size(q)==(1,1)
-@test q[1,:Name]=="sally"
+@test get(q[1,:Name]==Nullable("sally"))
 
 source_dict = Dict("John"=>34., "Sally"=>56.)
 

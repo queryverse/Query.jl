@@ -30,7 +30,7 @@ function collect(enumerable::Enumerable, ::Type{DataTables.DataTable})
     for t in T.types
         if isa(t, TypeVar)
             push!(columns, Array(Any,0))
-        elseif t <: Nullable
+        elseif t <: DataValue
             push!(columns, NullableArray(t.parameters[1],0))
         else
             push!(columns, Array(t,0))
