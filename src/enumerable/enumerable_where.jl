@@ -18,16 +18,6 @@ function where(source::Enumerable, filter::Function, filter_expr::Expr)
     return EnumerableWhere{T,S,FunctionWrapper{Bool,Tuple{T}}}(source, filter)
 end
 
-macro where_internal(source, f)
-    q = Expr(:quote, f)
-    :(where($(esc(source)), $(esc(f)), $(esc(q))))
-end
-
-macro where(source, f)
-    q = Expr(:quote, f)
-    :(where(Query.query($(esc(source))), $(esc(f)), $(esc(q))))
-end
-
 function start{T,S,Q}(iter::EnumerableWhere{T,S,Q})
     s = start(iter.source)
     while !done(iter.source, s)
