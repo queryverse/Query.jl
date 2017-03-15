@@ -21,7 +21,13 @@ using NullableArrays
 end
 
 function collect(enumerable::Enumerable, ::Type{DataTables.DataTable})
-    T = eltype(enumerable)
+    return DataTables.DataTable(enumerable)
+end
+
+@traitfn function DataTables.DataTable{X; IsTypedIterable{X}}(x::X)
+    iter = get_typed_iterator(x)
+    
+    T = eltype(iter)
     if !(T<:NamedTuple)
         error("Can only collect a NamedTuple iterator into a DataFrame")
     end
@@ -37,7 +43,7 @@ function collect(enumerable::Enumerable, ::Type{DataTables.DataTable})
         end
     end
     df = DataTables.DataTable(columns, fieldnames(T))
-    _filldt((df.columns...), enumerable)
+    _filldt((df.columns...), iter)
     return df
 end
 
