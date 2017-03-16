@@ -32,12 +32,12 @@ function query_expression_translation_phase_B(qe)
 				clause.args[2] = Expr(:macrocall, Symbol("@NT"), clause.args[2].args...)
 				for (j,field_in_NT) in enumerate(clause.args[2].args[2:end])
 					if isa(field_in_NT, Expr) && field_in_NT.head==:(=)
-						clause.args[2].args[j+1] = Expr(:(=>), field_in_NT.args...)
+						clause.args[2].args[j+1] = Expr(:kw, field_in_NT.args...)
 					elseif isa(field_in_NT, Expr) && field_in_NT.head==:.
 						name_to_use = field_in_NT.args[2].args[1]
-						clause.args[2].args[j+1] = Expr(:(=>), name_to_use, field_in_NT)
+						clause.args[2].args[j+1] = Expr(:kw, name_to_use, field_in_NT)
 					elseif isa(field_in_NT, Symbol)
-						clause.args[2].args[j+1] = Expr(:(=>), field_in_NT, field_in_NT)
+						clause.args[2].args[j+1] = Expr(:kw, field_in_NT, field_in_NT)
 					end
 				end
 			end
@@ -129,7 +129,7 @@ function query_expression_translation_phase_4(qe)
 			e2 = qe[2].args[2].args[3]
 
 			f_collection_selector = Expr(:->, x1, e2)
-			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=>$x1,$x2=>$x2)))
+			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=$x1,$x2=$x2)))
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
@@ -140,7 +140,7 @@ function query_expression_translation_phase_4(qe)
 			y = qe[2].args[2].args[1]
 			f = qe[2].args[2].args[2]
 
-			f_selector = Expr(:->, x, :(@NT($x=>$x,$y=>$f)))
+			f_selector = Expr(:->, x, :(@NT($x=$x,$y=$f)))
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
 			qe[1].args[2].args[3] = :( Query.@select_internal($e,$(esc(f_selector))) )
@@ -177,7 +177,7 @@ function query_expression_translation_phase_4(qe)
 			k2 = qe[2].args[6]
 			f_outer_key = Expr(:->, x1, k1)
 			f_inner_key = Expr(:->, x2, k2)
-			f_result = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=>$x1,$x2=>$x2)) )
+			f_result = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=$x1,$x2=$x2)) )
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
@@ -208,7 +208,7 @@ function query_expression_translation_phase_4(qe)
 			g = qe[2].args[8]
 			f_outer_key = Expr(:->, x1, k1)
 			f_inner_key = Expr(:->, x2, k2)
-			f_result = Expr(:->, Expr(:tuple,x1,g), :(@NT($x1=>$x1,$g=>$g)) )
+			f_result = Expr(:->, Expr(:tuple,x1,g), :(@NT($x1=$x1,$g=$g)) )
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, g)
 			qe[1].args[2].args[3] = :( Query.@group_join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )

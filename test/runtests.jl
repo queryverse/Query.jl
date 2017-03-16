@@ -75,7 +75,7 @@ q = @from i in source_array begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_NameFriendcount{String,Int},1})
+@test isa(q,Array{NamedTuples._NT_Name_Friendcount{String,Int},1})
 @test length(q)==1
 @test q[1].Name=="John"
 @test q[1].Friendcount==3
@@ -289,11 +289,11 @@ end
 
 @test isa(q, Array{@NT(Key::Symbol,Value::Int),1})
 @test length(q)==5
-@test in(@NT(Key=>:a,Value=>1), q)
-@test in(@NT(Key=>:a,Value=>2), q)
-@test in(@NT(Key=>:a,Value=>3), q)
-@test in(@NT(Key=>:b,Value=>4), q)
-@test in(@NT(Key=>:b,Value=>5), q)
+@test in(@NT(Key=:a,Value=1), q)
+@test in(@NT(Key=:a,Value=2), q)
+@test in(@NT(Key=:a,Value=3), q)
+@test in(@NT(Key=:b,Value=4), q)
+@test in(@NT(Key=:b,Value=5), q)
 
 q = @from i in source_df begin
     @from j in source_df2
@@ -321,9 +321,9 @@ end
 
 @test isa(q, Array{@NT(Key::Symbol,Value::Int),1})
 @test length(q)==3
-@test in(@NT(Key=>:a,Value=>3), q)
-@test in(@NT(Key=>:b,Value=>4), q)
-@test in(@NT(Key=>:b,Value=>5), q)
+@test in(@NT(Key=:a,Value=3), q)
+@test in(@NT(Key=:b,Value=4), q)
+@test in(@NT(Key=:b,Value=5), q)
 
 source_df_groupby = DataFrame(name=["John", "Sally", "Kirk"], children=[3,2,2])
 
@@ -344,7 +344,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{DataValue{Int},NamedTuples._NT_namechildren{DataValue{String},DataValue{Int}}},1})
+@test isa(x, Array{Grouping{DataValue{Int},NamedTuples._NT_name_children{DataValue{String},DataValue{Int}}},1})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][1].name=="John";
@@ -381,15 +381,15 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_a_b_c{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_c_d{Float64,String},1}},1})
 @test length(q)==3
 @test q[1].a==1
 @test q[1].b==1.
-@test isa(q[1].c, Array{NamedTuples._NT_cd{Float64,String},1})
+@test isa(q[1].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[1].c)==0
 @test q[2].a==2
 @test q[2].b==2.
-@test isa(q[2].c, Array{NamedTuples._NT_cd{Float64,String},1})
+@test isa(q[2].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[2].c)==2
 @test q[2].c[1].c==2.
 @test q[2].c[1].d== "John"
@@ -397,7 +397,7 @@ end
 @test q[2].c[2].d== "Sally"
 @test q[3].a==3
 @test q[3].b==3.
-@test isa(q[3].c, Array{NamedTuples._NT_cd{Float64,String},1})
+@test isa(q[3].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[3].c)==0
 
 q = @from i in source_df2 begin
@@ -407,11 +407,11 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_abc{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_cd{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_a_b_c{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_c_d{Float64,String},1}},1})
 @test length(q)==1
 @test q[1].a==2
 @test q[1].b==2.
-@test isa(q[1].c, Array{NamedTuples._NT_cd{Float64,String},1})
+@test isa(q[1].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[1].c)==2
 @test q[1].c[1].c==2.
 @test q[1].c[1].d== "John"
