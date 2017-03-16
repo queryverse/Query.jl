@@ -11,7 +11,9 @@ immutable EnumerableDataTable{T, TS} <: Enumerable
     columns::TS
 end
 
-function query(df::DataTables.DataTable)
+@traitimpl HasCustomTypedIterator{DataTables.DataTable}
+
+function get_typed_iterator(df::DataTables.DataTable)
     col_expressions = Array{Expr,1}()
     df_columns_tuple_type = Expr(:curly, :Tuple)
     for i in 1:length(df.columns)
@@ -31,6 +33,10 @@ function query(df::DataTables.DataTable)
     e_df = t(df, (df.columns...))
 
     return e_df
+end
+
+function query(df::DataTables.DataTable)
+    return get_typed_iterator(df)
 end
 
 function length{T,TS}(iter::EnumerableDataTable{T,TS})
