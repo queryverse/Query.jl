@@ -52,7 +52,7 @@ function get_typed_iterator{S<:DataStreams.Data.Source}(source::S)
 end
 
 function query{S<:DataStreams.Data.Source}(source::S)
-    return get_typed_iterator(s)
+    return get_typed_iterator(source)
 end
 
 function length{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
