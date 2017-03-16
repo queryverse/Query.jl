@@ -8,6 +8,7 @@ Base.eltype{T,SO,CS,RS}(iter::EnumerableSelectMany{T,SO,CS,RS}) = T
 
 # TODO Make sure this is actually correct. We might have to be more selective,
 # i.e. only scan arguments for certain types of expression etc.
+expr_contains_ref_to(a, var_name) = false
 function expr_contains_ref_to(expr::Expr, var_name::Symbol)
     for sub_expr in expr.args
         if isa(sub_expr, Symbol)

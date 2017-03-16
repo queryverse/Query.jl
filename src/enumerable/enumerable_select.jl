@@ -12,16 +12,6 @@ function select(source::Enumerable, f::Function, f_expr::Expr)
     return EnumerableSelect{T,S,FunctionWrapper{T,Tuple{TS}}}(source, f)
 end
 
-macro select_internal(source, f)
-    q = Expr(:quote, f)
-    :(select($(esc(source)), $(esc(f)), $(esc(q))))
-end
-
-macro select(source, f)
-    q = Expr(:quote, f)
-    :(select(Query.query($(esc(source))), $(esc(f)), $(esc(q))))
-end
-
 function start{T,S,Q}(iter::EnumerableSelect{T,S,Q})
     s = start(iter.source)
     return s
