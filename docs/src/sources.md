@@ -86,7 +86,7 @@ println(result)
 
 # output
 
-NamedTuples._NT_NameFriendcount{String,Int64}[(Name => John, Friendcount => 3)]
+NamedTuples._NT_Name_Friendcount{String,Int64}[(Name = "John", Friendcount = 3)]
 ```
 
 ## DataStream
