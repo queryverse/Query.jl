@@ -29,7 +29,7 @@ end
     
     T = eltype(iter)
     if !(T<:NamedTuple)
-        error("Can only collect a NamedTuple iterator into a DataFrame")
+        error("Can only collect a NamedTuple iterator into a DataTable.")
     end
 
     columns = []
