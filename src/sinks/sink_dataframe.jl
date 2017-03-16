@@ -52,4 +52,18 @@ end
 
 @traitfn DataFrames.ModelFrame{X; IsTypedIterable{X}}(f::DataFrames.Formula, d::X; kwargs...) = DataFrames.ModelFrame(f, DataFrames.DataFrame(d); kwargs...)
 
+@traitfn function StatsBase.fit{T<:StatsBase.StatisticalModel, X; IsTypedIterable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
+    mf = DataFrames.ModelFrame(f, source, contrasts=contrasts)
+    mm = DataFrames.ModelMatrix(mf)
+    y = model_response(mf)
+    DataFrames.DataFrameStatisticalModel(fit(T, mm.m, y, args...; kwargs...), mf, mm)
+end
+
+@traitfn function StatsBase.fit{T<:StatsBase.RegressionModel, X; IsTypedIterable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
+    mf = DataFrames.ModelFrame(f, source, contrasts=contrasts)
+    mm = DataFrames.ModelMatrix(mf)
+    y = model_response(mf)
+    DataFrames.DataFrameRegressionModel(fit(T, mm.m, y, args...; kwargs...), mf, mm)
+end
+
 end
