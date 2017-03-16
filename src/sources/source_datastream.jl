@@ -7,7 +7,9 @@ immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC, TSC} <: Enumer
     schema::DataStreams.Data.Schema
 end
 
-function query{S<:DataStreams.Data.Source}(source::S)
+@traitimpl HasCustomTypedIterator{DataStreams.Data.Source}
+
+function get_typed_iterator{S<:DataStreams.Data.Source}(source::S)
     if !Data.streamtype(S, Data.Field)
         error("Only sources that support field-based streaming are supported by Query.")
     end
@@ -47,6 +49,10 @@ function query{S<:DataStreams.Data.Source}(source::S)
     e_df = t(source, schema)
 
     return e_df
+end
+
+function query{S<:DataStreams.Data.Source}(source::S)
+    return get_typed_iterator(source)
 end
 
 function length{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})

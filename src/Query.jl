@@ -4,6 +4,7 @@ using Requires
 using NamedTuples
 using DataStructures
 import FunctionWrappers: FunctionWrapper
+using SimpleTraits
 
 import Base.start
 import Base.next
@@ -17,6 +18,8 @@ import MacroTools
 import ChainRecursive
 
 export @from, @count, @where, @select, Grouping, null, @NT, DataValue
+
+include("traits.jl")
 
 include("operators.jl")
 

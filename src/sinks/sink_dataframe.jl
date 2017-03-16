@@ -20,7 +20,13 @@
 end
 
 function collect(enumerable::Enumerable, ::Type{DataFrames.DataFrame})
-    T = eltype(enumerable)
+    return DataFrames.DataFrame(enumerable)
+end
+
+@traitfn function DataFrames.DataFrame{X; IsTypedIterable{X}}(x::X)
+    iter = get_typed_iterator(x)
+
+    T = eltype(iter)
     if !(T<:NamedTuple)
         error("Can only collect a NamedTuple iterator into a DataFrame")
     end
@@ -36,12 +42,28 @@ function collect(enumerable::Enumerable, ::Type{DataFrames.DataFrame})
         end
     end
     df = DataFrames.DataFrame(columns, fieldnames(T))
-    _filldf((df.columns...), enumerable)
+    _filldf((df.columns...), iter)
     return df
 end
 
 function collect{TS,Provider}(source::Queryable{TS,Provider}, ::Type{DataFrames.DataFrame})
     collect(query(collect(source)), DataFrames.DataFrame)
+end
+
+@traitfn DataFrames.ModelFrame{X; IsTypedIterable{X}}(f::DataFrames.Formula, d::X; kwargs...) = DataFrames.ModelFrame(f, DataFrames.DataFrame(d); kwargs...)
+
+@traitfn function StatsBase.fit{T<:StatsBase.StatisticalModel, X; IsTypedIterable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
+    mf = DataFrames.ModelFrame(f, source, contrasts=contrasts)
+    mm = DataFrames.ModelMatrix(mf)
+    y = model_response(mf)
+    DataFrames.DataFrameStatisticalModel(fit(T, mm.m, y, args...; kwargs...), mf, mm)
+end
+
+@traitfn function StatsBase.fit{T<:StatsBase.RegressionModel, X; IsTypedIterable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
+    mf = DataFrames.ModelFrame(f, source, contrasts=contrasts)
+    mm = DataFrames.ModelMatrix(mf)
+    y = model_response(mf)
+    DataFrames.DataFrameRegressionModel(fit(T, mm.m, y, args...; kwargs...), mf, mm)
 end
 
 end
