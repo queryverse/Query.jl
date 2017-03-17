@@ -3,7 +3,6 @@ module Query
 using Requires
 using NamedTuples
 using DataStructures
-import FunctionWrappers: FunctionWrapper
 using SimpleTraits
 
 import Base.start

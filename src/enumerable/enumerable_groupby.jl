@@ -1,4 +1,4 @@
-immutable EnumerableGroupBySimple{T,TKey,TS,SO,ES} <: Enumerable
+immutable EnumerableGroupBySimple{T,TKey,TS,SO,ES<:Function} <: Enumerable
     source::SO
     elementSelector::ES
 end
@@ -27,7 +27,9 @@ function group_by(source::Enumerable, f_elementSelector::Function, elementSelect
 
     T = Grouping{TKey,TS}
 
-    return EnumerableGroupBySimple{T,TKey,TS,SO,FunctionWrapper{TKey,Tuple{TS}}}(source,f_elementSelector)
+    ES = typeof(f_elementSelector)
+
+    return EnumerableGroupBySimple{T,TKey,TS,SO,ES}(source,f_elementSelector)
 end
 
 # TODO This should be rewritten as a lazy iterator
@@ -55,7 +57,7 @@ function done{T,TKey,TS,SO,ES}(iter::EnumerableGroupBySimple{T,TKey,TS,SO,ES}, s
     return curr_index > length(results)
 end
 
-immutable EnumerableGroupBy{T,TKey,TR,SO,ES,RS} <: Enumerable
+immutable EnumerableGroupBy{T,TKey,TR,SO,ES<:Function,RS<:Function} <: Enumerable
     source::SO
     elementSelector::ES
     resultSelector::RS
@@ -75,7 +77,10 @@ function group_by(source::Enumerable, f_elementSelector::Function, elementSelect
 
     T = Grouping{TKey,TR}
 
-    return EnumerableGroupBy{T,TKey,TR,SO,FunctionWrapper{TKey,Tuple{TS}},FunctionWrapper{TR,Tuple{TS}}}(source,f_elementSelector,f_resultSelector)
+    ES = typeof(f_elementSelector)
+    RS = typeof(f_resultSelector)
+
+    return EnumerableGroupBy{T,TKey,TR,SO,ES,RS}(source,f_elementSelector,f_resultSelector)
 end
 
 # TODO This should be rewritten as a lazy iterator

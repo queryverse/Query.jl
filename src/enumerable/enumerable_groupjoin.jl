@@ -1,4 +1,4 @@
-immutable EnumerableGroupJoin{T,TKey,TI,SO,SI,OKS,IKS,RS} <: Enumerable
+immutable EnumerableGroupJoin{T,TKey,TI,SO,SI,OKS<:Function,IKS<:Function,RS<:Function} <: Enumerable
     outer::SO
     inner::SI
     outerKeySelector::OKS
@@ -25,7 +25,11 @@ function group_join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Fu
 
     T = Base.return_types(f_resultSelector, (TO,Array{TI,1}))[1]
 
-    return EnumerableGroupJoin{T,TKeyOuter,TI,SO,SI,FunctionWrapper{TKeyOuter,Tuple{TO}},FunctionWrapper{TKeyInner,Tuple{TI}},FunctionWrapper{T,Tuple{TO,Array{TI,1}}}}(outer,inner,f_outerKeySelector,f_innerKeySelector,f_resultSelector)
+    OKS = typeof(f_outerKeySelector)
+    IKS = typeof(f_innerKeySelector)
+    RS = typeof(f_resultSelector)
+
+    return EnumerableGroupJoin{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(outer,inner,f_outerKeySelector,f_innerKeySelector,f_resultSelector)
 end
 
 # TODO This should be changed to a lazy implementation
