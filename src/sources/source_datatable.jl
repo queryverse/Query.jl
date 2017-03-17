@@ -12,6 +12,7 @@ immutable EnumerableDataTable{T, TS} <: Enumerable
 end
 
 @traitimpl HasCustomTypedIterator{DataTables.DataTable}
+@traitimpl HasCustomTableIterator{DataTables.DataTable}
 
 function get_typed_iterator(df::DataTables.DataTable)
     col_expressions = Array{Expr,1}()
