@@ -8,6 +8,8 @@ end
 
 Base.eltype{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::EnumerableJoin{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}) = T
 
+Base.eltype{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::Type{EnumerableJoin{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}}) = T
+
 function join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Function, outerKeySelector::Expr, f_innerKeySelector::Function, innerKeySelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     TO = eltype(outer)
     TI = eltype(inner)

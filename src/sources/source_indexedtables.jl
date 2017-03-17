@@ -38,6 +38,8 @@ end
 
 Base.eltype{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}) = T
 
+Base.eltype{T,S<:NDSparse}(iter::Type{EnumerableIndexedTables{T,S}}) = T
+
 function start{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S})
     return 1
 end

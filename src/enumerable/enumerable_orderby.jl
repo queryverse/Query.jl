@@ -6,6 +6,8 @@ end
 
 Base.eltype{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}) = T
 
+Base.eltype{T,S,KS,TKS}(iter::Type{EnumerableOrderby{T,S,KS,TKS}}) = T
+
 function orderby(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
     TKS = Base.return_types(f, (T,))[1]
@@ -46,6 +48,8 @@ immutable EnumerableThenBy{T,S,KS,TKS} <: Enumerable
 end
 
 Base.eltype{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS}) = T
+
+Base.eltype{T,S,KS,TKS}(iter::Type{EnumerableThenBy{T,S,KS,TKS}}) = T
 
 function thenby(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)

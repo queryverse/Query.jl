@@ -5,6 +5,8 @@ end
 
 Base.eltype{T,S}(iter::EnumerableDefaultIfEmpty{T,S}) = T
 
+Base.eltype{T,S}(iter::Type{EnumerableDefaultIfEmpty{T,S}}) = T
+
 function default_if_empty{S}(source::S)
     T = eltype(source)
 
