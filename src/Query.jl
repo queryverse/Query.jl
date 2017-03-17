@@ -53,6 +53,7 @@ include("sinks/sink_dataframe.jl")
 include("sinks/sink_datatable.jl")
 include("sinks/sink_csvfile.jl")
 include("sinks/sink_datastream_source.jl")
+include("sinks/sink_statsmodels.jl")
 
 macro from(range::Expr, body::Expr)
 	if range.head!=:call || range.args[1]!=:in
