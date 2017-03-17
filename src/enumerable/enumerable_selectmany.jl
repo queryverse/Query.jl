@@ -6,6 +6,8 @@ end
 
 Base.eltype{T,SO,CS,RS}(iter::EnumerableSelectMany{T,SO,CS,RS}) = T
 
+Base.eltype{T,SO,CS,RS}(iter::Type{EnumerableSelectMany{T,SO,CS,RS}}) = T
+
 # TODO Make sure this is actually correct. We might have to be more selective,
 # i.e. only scan arguments for certain types of expression etc.
 function expr_contains_ref_to(expr::Expr, var_name::Symbol)

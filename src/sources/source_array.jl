@@ -5,6 +5,8 @@ end
 
 Base.eltype{T,S}(iter::EnumerableArray{T,S}) = T
 
+Base.eltype{T,S}(iter::Type{EnumerableArray{T,S}}) = T
+
 function query{TS,N}(source::Array{TS,N})
     return EnumerableArray{TS,Array{TS,N}}(source)
 end

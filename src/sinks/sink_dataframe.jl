@@ -23,7 +23,7 @@ function collect(enumerable::Enumerable, ::Type{DataFrames.DataFrame})
     return DataFrames.DataFrame(enumerable)
 end
 
-@traitfn function DataFrames.DataFrame{X; IsTypedIterable{X}}(x::X)
+@traitfn function DataFrames.DataFrame{X; IsIterableTable{X}}(x::X)
     iter = get_typed_iterator(x)
 
     T = eltype(iter)
@@ -50,16 +50,16 @@ function collect{TS,Provider}(source::Queryable{TS,Provider}, ::Type{DataFrames.
     collect(query(collect(source)), DataFrames.DataFrame)
 end
 
-@traitfn DataFrames.ModelFrame{X; IsTypedIterable{X}}(f::DataFrames.Formula, d::X; kwargs...) = DataFrames.ModelFrame(f, DataFrames.DataFrame(d); kwargs...)
+@traitfn DataFrames.ModelFrame{X; IsIterableTable{X}}(f::DataFrames.Formula, d::X; kwargs...) = DataFrames.ModelFrame(f, DataFrames.DataFrame(d); kwargs...)
 
-@traitfn function StatsBase.fit{T<:StatsBase.StatisticalModel, X; IsTypedIterable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
+@traitfn function StatsBase.fit{T<:StatsBase.StatisticalModel, X; IsIterableTable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
     mf = DataFrames.ModelFrame(f, source, contrasts=contrasts)
     mm = DataFrames.ModelMatrix(mf)
     y = model_response(mf)
     DataFrames.DataFrameStatisticalModel(fit(T, mm.m, y, args...; kwargs...), mf, mm)
 end
 
-@traitfn function StatsBase.fit{T<:StatsBase.RegressionModel, X; IsTypedIterable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
+@traitfn function StatsBase.fit{T<:StatsBase.RegressionModel, X; IsIterableTable{X}}(::Type{T}, f::DataFrames.Formula, source::X, args...; contrasts::Dict = Dict(), kwargs...)
     mf = DataFrames.ModelFrame(f, source, contrasts=contrasts)
     mm = DataFrames.ModelMatrix(mf)
     y = model_response(mf)

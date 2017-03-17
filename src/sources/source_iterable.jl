@@ -9,6 +9,8 @@ end
 
 Base.eltype{T,S}(iter::EnumerableIterable{T,S}) = T
 
+Base.eltype{T,S}(iter::Type{EnumerableIterable{T,S}}) = T
+
 function start{T,S}(iter::EnumerableIterable{T,S})
     return start(iter.source)
 end

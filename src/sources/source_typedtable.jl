@@ -9,6 +9,7 @@ immutable EnumerableTypedTable{T, TS} <: Enumerable
 end
 
 @traitimpl HasCustomTypedIterator{TypedTables.Table}
+@traitimpl HasCustomTableIterator{TypedTables.Table}
 
 function get_typed_iterator(df::TypedTables.Table)
     col_expressions = Array{Expr,1}()

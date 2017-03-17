@@ -8,6 +8,7 @@ immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC, TSC} <: Enumer
 end
 
 @traitimpl HasCustomTypedIterator{DataStreams.Data.Source}
+@traitimpl HasCustomTableIterator{DataStreams.Data.Source}
 
 function get_typed_iterator{S<:DataStreams.Data.Source}(source::S)
     if !Data.streamtype(S, Data.Field)

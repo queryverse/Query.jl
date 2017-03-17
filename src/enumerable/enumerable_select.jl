@@ -5,6 +5,8 @@ end
 
 Base.eltype{T,S,Q}(iter::EnumerableSelect{T,S,Q}) = T
 
+Base.eltype{T,S,Q}(iter::Type{EnumerableSelect{T,S,Q}}) = T
+
 function select(source::Enumerable, f::Function, f_expr::Expr)
     TS = eltype(source)
     T = Base.return_types(f, (TS,))[1]

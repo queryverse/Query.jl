@@ -6,6 +6,8 @@ end
 
 Base.eltype{T,S,Q}(iter::EnumerableWhere{T,S,Q}) = T
 
+Base.eltype{T,S,Q}(iter::Type{EnumerableWhere{T,S,Q}}) = T
+
 immutable EnumerableWhereState{T,S}
     done::Bool
     next_value::Nullable{T}
