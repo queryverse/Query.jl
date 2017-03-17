@@ -1,5 +1,5 @@
 # T is the type of the elements produced by this iterator
-immutable EnumerableWhere{T,S,Q} <: Enumerable
+immutable EnumerableWhere{T,S,Q<:Function} <: Enumerable
     source::S
     filter::Q
 end
@@ -17,7 +17,8 @@ end
 function where(source::Enumerable, filter::Function, filter_expr::Expr)
     T = eltype(source)
     S = typeof(source)
-    return EnumerableWhere{T,S,FunctionWrapper{Bool,Tuple{T}}}(source, filter)
+    Q = typeof(filter)
+    return EnumerableWhere{T,S,Q}(source, filter)
 end
 
 macro where_internal(source, f)

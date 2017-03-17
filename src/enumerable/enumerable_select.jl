@@ -1,4 +1,4 @@
-immutable EnumerableSelect{T, S, Q} <: Enumerable
+immutable EnumerableSelect{T, S, Q<:Function} <: Enumerable
     source::S
     f::Q
 end
@@ -11,7 +11,8 @@ function select(source::Enumerable, f::Function, f_expr::Expr)
     TS = eltype(source)
     T = Base.return_types(f, (TS,))[1]
     S = typeof(source)
-    return EnumerableSelect{T,S,FunctionWrapper{T,Tuple{TS}}}(source, f)
+    Q = typeof(f)
+    return EnumerableSelect{T,S,Q}(source, f)
 end
 
 macro select_internal(source, f)

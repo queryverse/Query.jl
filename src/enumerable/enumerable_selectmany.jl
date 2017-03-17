@@ -1,4 +1,4 @@
-immutable EnumerableSelectMany{T,SO,CS,RS} <: Enumerable
+immutable EnumerableSelectMany{T,SO,CS<:Function,RS<:Function} <: Enumerable
     source::SO
     collectionSelector::CS
     resultSelector::RS
@@ -54,7 +54,10 @@ function select_many(source::Enumerable, f_collectionSelector::Function, collect
     T = Base.return_types(f_resultSelector, (TS,TCE))[1]
     SO = typeof(source)
 
-    return EnumerableSelectMany{T,SO,FunctionWrapper{input_type_collection_selector,Tuple{TS}},FunctionWrapper{T,Tuple{TS,TCE}}}(source,f_collectionSelector,f_resultSelector)
+    CS = typeof(f_collectionSelector)
+    RS = typeof(f_resultSelector)
+
+    return EnumerableSelectMany{T,SO,CS,RS}(source,f_collectionSelector,f_resultSelector)
 end
 
 # TODO This should be changed to a lazy implementation
