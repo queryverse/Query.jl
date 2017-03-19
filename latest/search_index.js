@@ -309,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\nimmutable Person\n    Name::String\n    Friends::Vector{String}\nend\n\nsource = Array(Person,0)\npush!(source, Person(\"John\", [\"Sally\", \"Miles\", \"Frank\"]))\npush!(source, Person(\"Sally\", [\"Don\", \"Martin\"]))\n\nresult = @from i in source begin\n         @where length(i.Friends) > 2\n         @select {i.Name, Friendcount=length(i.Friends)}\n         @collect\nend\n\nprintln(result)\n\n# output\n\nNamedTuples._NT_Name_Friendcount{String,Int64}[(Name = \"John\", Friendcount = 3)]"
+    "text": "using Query, DataFrames\n\nimmutable Person\n    Name::String\n    Friends::Vector{String}\nend\n\nsource = Array{Person}(0)\npush!(source, Person(\"John\", [\"Sally\", \"Miles\", \"Frank\"]))\npush!(source, Person(\"Sally\", [\"Don\", \"Martin\"]))\n\nresult = @from i in source begin\n         @where length(i.Friends) > 2\n         @select {i.Name, Friendcount=length(i.Friends)}\n         @collect\nend\n\nprintln(result)\n\n# output\n\nNamedTuples._NT_Name_Friendcount{String,Int64}[(Name = \"John\", Friendcount = 3)]"
 },
 
 {
