@@ -25,7 +25,7 @@ function collect(enumerable::Enumerable, ::Type{DataTables.DataTable})
 end
 
 @traitfn function DataTables.DataTable{X; IsIterableTable{X}}(x::X)
-    iter = get_typed_iterator(x)
+    iter = getiterator(x)
     
     T = eltype(iter)
     if !(T<:NamedTuple)

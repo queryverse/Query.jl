@@ -24,7 +24,7 @@ function collect(enumerable::Enumerable, ::Type{DataFrames.DataFrame})
 end
 
 @traitfn function DataFrames.DataFrame{X; IsIterableTable{X}}(x::X)
-    iter = get_typed_iterator(x)
+    iter = getiterator(x)
 
     T = eltype(iter)
     if !(T<:NamedTuple)

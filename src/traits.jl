@@ -1,23 +1,19 @@
-@traitfn function get_typed_iterator{X; SimpleTraits.BaseTraits.IsIterable{X}}(x::X)
+@traitfn function getiterator{X; SimpleTraits.BaseTraits.IsIterator{X}}(x::X)
     return x
 end
 
-@traitdef IsTypedIterable{X}
-@traitdef HasCustomTypedIterator{X}
+@traitdef IsIterable{X}
 
-@generated function SimpleTraits.trait{X}(::Type{IsTypedIterable{X}})
-    method_exists(start, Tuple{X}) || istrait(HasCustomTypedIterator{X}) ? :(IsTypedIterable{X}) : :(Not{IsTypedIterable{X}})
+@generated function SimpleTraits.trait{X}(::Type{IsIterable{X}})
+    istrait(SimpleTraits.BaseTraits.IsIterator{X}) ? :(IsIterable{X}) : :(Not{IsIterable{X}})
 end
 
 @traitdef IsIterableTable{X}
-@traitdef HasCustomTableIterator{X}
 
 if VERSION >= v"0.6.0-"
     @generated function SimpleTraits.trait{X}(::Type{IsIterableTable{X}})
-        if istrait(IsTypedIterable{X})
-            if istrait(HasCustomTableIterator{X})
-                return :(IsIterableTable{X})
-            elseif Base.iteratoreltype(X)==Base.HasEltype()
+        if istrait(IsIterable{X})
+            if Base.iteratoreltype(X)==Base.HasEltype()
                 if Base.eltype(X)<: NamedTuple
                     return :(IsIterableTable{X})
                 elseif Base.eltype(X) == Any
@@ -29,6 +25,6 @@ if VERSION >= v"0.6.0-"
     end
 else
     @generated function SimpleTraits.trait{X}(::Type{IsIterableTable{X}})
-        istrait(IsTypedIterable{X}) && ( ( Base.iteratoreltype(X)==Base.HasEltype() && eltype(X)<: NamedTuple ) || istrait(HasCustomTableIterator{X}) ) ? :(IsIterableTable{X}) : :(Not{IsIterableTable{X}})
+        istrait(IsIterable{X}) && ( Base.iteratoreltype(X)==Base.HasEltype() && eltype(X)<: NamedTuple ) ? :(IsIterableTable{X}) : :(Not{IsIterableTable{X}})
     end
 end

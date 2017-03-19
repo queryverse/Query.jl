@@ -8,10 +8,10 @@ immutable EnumerableTypedTable{T, TS} <: Enumerable
     columns::TS
 end
 
-@traitimpl HasCustomTypedIterator{TypedTables.Table}
-@traitimpl HasCustomTableIterator{TypedTables.Table}
+@traitimpl IsIterable{TypedTables.Table}
+@traitimpl IsIterableTable{TypedTables.Table}
 
-function get_typed_iterator(df::TypedTables.Table)
+function getiterator(df::TypedTables.Table)
     col_expressions = Array{Expr,1}()
     df_columns_tuple_type = Expr(:curly, :Tuple)
     for i in 1:length(df.data)
@@ -34,7 +34,7 @@ function get_typed_iterator(df::TypedTables.Table)
 end
 
 function query(df::TypedTables.Table)
-    return get_typed_iterator(df)
+    return getiterator(df)
 end
 
 function length{T,TS}(iter::EnumerableTypedTable{T,TS})
