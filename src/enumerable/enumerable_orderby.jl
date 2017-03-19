@@ -29,7 +29,7 @@ end
 
 # TODO This should be changed to a lazy implementation
 function start{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS})
-    elements = Array(T,0)
+    elements = Array{T}(0)
     for i in iter.source
         push!(elements, i)
     end
@@ -96,7 +96,7 @@ function start{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS})
         return n1 < n2
     end
 
-    elements = Array(T,0)
+    elements = Array{T}(0)
     for i in source
         push!(elements, i)
     end

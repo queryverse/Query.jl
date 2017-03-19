@@ -17,7 +17,7 @@ immutable Mydata
 end
 
 function foo2(friends, age, children)
-    ret = Array(Mydata,0)
+    ret = Array{Mydata}(0)
     for i in 1:length(friends)
         if age[i]>5.
             push!(ret, Mydata(friends[i], age[i], children[i]))
@@ -27,7 +27,7 @@ function foo2(friends, age, children)
 end
 
 function foo3(friends, age, children)
-    ret = Array(Tuple{Int64, Float64, Int64},0)
+    ret = Array{Tuple{Int64, Float64, Int64}}(0)
     for i in 1:length(friends)
         if age[i]>5.
             push!(ret, (friends[i], age[i], children[i]))
@@ -37,7 +37,7 @@ function foo3(friends, age, children)
 end
 
 function foo4(friends, age, children)
-    ret = Array(@NT( friends::Int64, age::Float64, children::Int64 ),0)
+    ret = Array{@NT( friends::Int64, age::Float64, children::Int64 )}(0)
     for i in 1:length(friends)
         if age[i]>5.
             push!(ret, @NT(friends=>friends[i], age=>age[i], children=>children[i]))

@@ -85,7 +85,7 @@ function collect(::Type{QueryProviderSQLite}, source)
 		select_o = filter(i->isa(i,QueryableSelect),query_elements)[1]
 		f_el = select_o.f
 		# Get columns we need
-		col_names = Array(String,0)
+		col_names = Array{String}(0)
 		for i in 2:length(f_el.args[2].args)
 			col_name = string(f_el.args[2].args[i].args[2].args[2].value)
 			desired_name = string(f_el.args[2].args[i].args[1])

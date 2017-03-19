@@ -38,7 +38,7 @@ function start{T,TKey,TS,SO,ES}(iter::EnumerableGroupBySimple{T,TKey,TS,SO,ES})
     for i in iter.source
         key = iter.elementSelector(i)
         if !haskey(result, key)
-            result[key] = Grouping(key,Array(TS,0))
+            result[key] = Grouping(key,Array{TS}(0))
         end
         push!(result[key].elements,i)
     end
@@ -89,7 +89,7 @@ function start{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES})
     for i in iter.source
         key = iter.elementSelector(i)
         if !haskey(result, key)
-            result[key] = Grouping(key,Array(TR,0))
+            result[key] = Grouping(key,Array{TR}(0))
         end
         push!(result[key].elements,iter.resultSelector(i))
     end

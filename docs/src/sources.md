@@ -72,7 +72,7 @@ immutable Person
     Friends::Vector{String}
 end
 
-source = Array(Person,0)
+source = Array{Person}(0)
 push!(source, Person("John", ["Sally", "Miles", "Frank"]))
 push!(source, Person("Sally", ["Don", "Martin"]))
 

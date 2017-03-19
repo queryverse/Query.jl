@@ -34,13 +34,13 @@ end
 
 # TODO This should be changed to a lazy implementation
 function start{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::EnumerableGroupJoin{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS})
-    results = Array(T,0)
+    results = Array{T}(0)
 
     inner_dict = OrderedDict{TKeyOuter,Array{TI,1}}()
     for i in iter.inner
         key = iter.innerKeySelector(i)
         if !haskey(inner_dict, key)
-            inner_dict[key] = Array(TI,0)
+            inner_dict[key] = Array{TI}(0)
         end
         push!(inner_dict[key], i)
     end
@@ -50,7 +50,7 @@ function start{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::EnumerableGroupJoin{T,TKey
         if haskey(inner_dict,outerKey)
             g = inner_dict[outerKey]
         else
-            g = Array(TI,0)
+            g = Array{TI}(0)
         end
         push!(results, iter.resultSelector(i,g))
     end

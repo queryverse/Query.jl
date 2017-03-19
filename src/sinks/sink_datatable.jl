@@ -35,11 +35,11 @@ end
     columns = []
     for t in T.types
         if isa(t, TypeVar)
-            push!(columns, Array(Any,0))
+            push!(columns, Array{Any}(0))
         elseif t <: DataValue
             push!(columns, NullableArray(t.parameters[1],0))
         else
-            push!(columns, Array(t,0))
+            push!(columns, Array{t}(0))
         end
     end
     df = DataTables.DataTable(columns, fieldnames(T))
