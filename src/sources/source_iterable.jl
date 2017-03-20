@@ -2,9 +2,11 @@ immutable EnumerableIterable{T,S} <: Enumerable
     source::S
 end
 
-function query{S}(source::S)
-	T = eltype(source)
-    return EnumerableIterable{T,S}(source)
+@traitfn function query{X; IsIterable{X}}(source::X)
+    typed_source = getiterator(source)
+	T = eltype(typed_source)
+    S = typeof(typed_source)
+    return EnumerableIterable{T,S}(typed_source)
 end
 
 Base.eltype{T,S}(iter::EnumerableIterable{T,S}) = T

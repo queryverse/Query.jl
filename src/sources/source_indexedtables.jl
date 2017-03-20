@@ -1,7 +1,7 @@
 @require IndexedTables begin
 using IndexedTables: NDSparse
 
-immutable EnumerableIndexedTables{T, S<:NDSparse} <: Enumerable
+immutable NDSparseIterator{T, S<:NDSparse}
     source::S
 end
 
@@ -10,7 +10,9 @@ immutable IndexedTablesRow{TIndex,TValue}
     value::TValue
 end
 
-function query{S<:NDSparse}(source::S)
+@traitimpl IsIterable{IndexedTables.NDSparse}
+
+function getiterator{S<:NDSparse}(source::S)
     TValue = S.parameters[1]
     if S.parameters[3]<:NamedTuples.NamedTuple
         col_expressions = Array{Expr,1}()
@@ -27,24 +29,20 @@ function query{S<:NDSparse}(source::S)
         TIndex = S.parameters[2]
     end
 
-    e_df = EnumerableIndexedTables{IndexedTablesRow{TIndex,TValue},S}(source)
+    e_df = NDSparseIterator{IndexedTablesRow{TIndex,TValue},S}(source)
 
     return e_df
 end
 
-#function length{T, S<:DataStreams.Data.Source, TC}(iter::EnumerableDataStream{T,S,TC})
-#    return iter.schema.rows
-#end
+Base.eltype{T,S<:NDSparse}(iter::NDSparseIterator{T,S}) = T
 
-Base.eltype{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}) = T
+Base.eltype{T,S<:NDSparse}(iter::Type{NDSparseIterator{T,S}}) = T
 
-Base.eltype{T,S<:NDSparse}(iter::Type{EnumerableIndexedTables{T,S}}) = T
-
-function start{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S})
+function start{T,S<:NDSparse}(iter::NDSparseIterator{T,S})
     return 1
 end
 
-@generated function next{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}, state)
+@generated function next{T,S<:NDSparse}(iter::NDSparseIterator{T,S}, state)
     if T.parameters[1]<:NamedTuples.NamedTuple
         constructor_call = Expr(:call, :IndexedTablesRow, Expr(:call,T.parameters[1]),:(iter.source.data[row]))
         for i in 1:length(S.parameters[2].parameters)
@@ -66,7 +64,7 @@ end
     end
 end
 
-function done{T,S<:NDSparse}(iter::EnumerableIndexedTables{T,S}, state)
+function done{T,S<:NDSparse}(iter::NDSparseIterator{T,S}, state)
     return state>length(iter.source)
 end
 

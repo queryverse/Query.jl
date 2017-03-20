@@ -3,7 +3,7 @@ using DataArrays
 
 # T is the type of the elements produced
 # TS is a tuple type that stores the columns of the DataFrame
-immutable EnumerableDF{T, TS} <: Enumerable
+immutable DataFrameIterator{T, TS}
     df::DataFrames.DataFrame
     # This field hols a tuple with the columns of the DataFrame.
     # Having a tuple of the columns here allows the iterator
@@ -27,7 +27,7 @@ function getiterator(df::DataFrames.DataFrame)
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
 
-    t2 = :(Query.EnumerableDF{Float64,Float64})
+    t2 = :(Query.DataFrameIterator{Float64,Float64})
     t2.args[2] = t_expr
     t2.args[3] = df_columns_tuple_type
 
@@ -39,23 +39,19 @@ function getiterator(df::DataFrames.DataFrame)
     return e_df
 end
 
-function query(df::DataFrames.DataFrame)
-    return getiterator(df)
-end
-
-function length{T,TS}(iter::EnumerableDF{T,TS})
+function length{T,TS}(iter::DataFrameIterator{T,TS})
     return size(iter.df,1)
 end
 
-function eltype{T,TS}(iter::EnumerableDF{T,TS})
+function eltype{T,TS}(iter::DataFrameIterator{T,TS})
     return T
 end
 
-function start{T,TS}(iter::EnumerableDF{T,TS})
+function start{T,TS}(iter::DataFrameIterator{T,TS})
     return 1
 end
 
-@generated function next{T,TS}(iter::EnumerableDF{T,TS}, state)
+@generated function next{T,TS}(iter::DataFrameIterator{T,TS}, state)
     constructor_call = Expr(:call, :($T))
     for i in 1:length(iter.types[2].types)
         if iter.parameters[1].parameters[i] <: DataValue
@@ -73,7 +69,7 @@ end
     end
 end
 
-function done{T,TS}(iter::EnumerableDF{T,TS}, state)
+function done{T,TS}(iter::DataFrameIterator{T,TS}, state)
     return state>size(iter.df,1)
 end
 

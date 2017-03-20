@@ -2,7 +2,7 @@
 using DataStreams
 using WeakRefStrings
 
-immutable EnumerableDataStream{T, S<:DataStreams.Data.Source, TC, TSC} <: Enumerable
+immutable DataStreamIterator{T, S<:DataStreams.Data.Source, TC, TSC}
     source::S
     schema::DataStreams.Data.Schema
 end
@@ -38,7 +38,7 @@ function getiterator{S<:DataStreams.Data.Source}(source::S)
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
 
-    t2 = :(Query.EnumerableDataStream{Float64,Float64,Float64,Float64})
+    t2 = :(Query.DataStreamIterator{Float64,Float64,Float64,Float64})
     t2.args[2] = t_expr
     t2.args[3] = typeof(source)
     t2.args[4] = columns_tuple_type
@@ -52,19 +52,15 @@ function getiterator{S<:DataStreams.Data.Source}(source::S)
     return e_df
 end
 
-function query{S<:DataStreams.Data.Source}(source::S)
-    return getiterator(source)
-end
-
-function length{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
+function length{T, S<:DataStreams.Data.Source, TC,TSC}(iter::DataStreamIterator{T,S,TC,TSC})
     return iter.schema.rows
 end
 
-function eltype{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
+function eltype{T, S<:DataStreams.Data.Source, TC,TSC}(iter::DataStreamIterator{T,S,TC,TSC})
     return T
 end
 
-function start{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC})
+function start{T, S<:DataStreams.Data.Source, TC,TSC}(iter::DataStreamIterator{T,S,TC,TSC})
     return 1
 end
 
@@ -77,7 +73,7 @@ function _convertion_helper_for_datastreams(source, row, col, T)
     end
 end
 
-@generated function next{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC}, state)
+@generated function next{T, S<:DataStreams.Data.Source, TC,TSC}(iter::DataStreamIterator{T,S,TC,TSC}, state)
     constructor_call = Expr(:call, :($T))
     for i in 1:length(TC.types)
         if TC.types[i] <: String
@@ -100,7 +96,7 @@ end
     end
 end
 
-function done{T, S<:DataStreams.Data.Source, TC,TSC}(iter::EnumerableDataStream{T,S,TC,TSC}, state)
+function done{T, S<:DataStreams.Data.Source, TC,TSC}(iter::DataStreamIterator{T,S,TC,TSC}, state)
     return Data.isdone(iter.source,state,1)
 end
 

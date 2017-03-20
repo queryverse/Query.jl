@@ -3,7 +3,7 @@ using NullableArrays
 
 # T is the type of the elements produced
 # TS is a tuple type that stores the columns of the DataTable
-immutable EnumerableDataTable{T, TS} <: Enumerable
+immutable DataTableIterator{T, TS}
     df::DataTables.DataTable
     # This field hols a tuple with the columns of the DataTable.
     # Having a tuple of the columns here allows the iterator
@@ -24,7 +24,7 @@ function getiterator(df::DataTables.DataTable)
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
 
-    t2 = :(Query.EnumerableDataTable{Float64,Float64})
+    t2 = :(Query.DataTableIterator{Float64,Float64})
     t2.args[2] = t_expr
     t2.args[3] = df_columns_tuple_type
 
@@ -36,23 +36,19 @@ function getiterator(df::DataTables.DataTable)
     return e_df
 end
 
-function query(df::DataTables.DataTable)
-    return getiterator(df)
-end
-
-function length{T,TS}(iter::EnumerableDataTable{T,TS})
+function length{T,TS}(iter::DataTableIterator{T,TS})
     return size(iter.df,1)
 end
 
-function eltype{T,TS}(iter::EnumerableDataTable{T,TS})
+function eltype{T,TS}(iter::DataTableIterator{T,TS})
     return T
 end
 
-function start{T,TS}(iter::EnumerableDataTable{T,TS})
+function start{T,TS}(iter::DataTableIterator{T,TS})
     return 1
 end
 
-@generated function next{T,TS}(iter::EnumerableDataTable{T,TS}, state)
+@generated function next{T,TS}(iter::DataTableIterator{T,TS}, state)
     constructor_call = Expr(:call, :($T))
     for (i,t) in enumerate(T.parameters)
         push!(constructor_call.args, t<:DataValue ? :(isnull(columns[$i][i]) ? DataValue{$(t.parameters[1])}() : DataValue{$(t.parameters[1])}(get(columns[$i][i]))) : :(columns[$i][i]))
@@ -66,7 +62,7 @@ end
     end
 end
 
-function done{T,TS}(iter::EnumerableDataTable{T,TS}, state)
+function done{T,TS}(iter::DataTableIterator{T,TS}, state)
     return state>size(iter.df,1)
 end
 
