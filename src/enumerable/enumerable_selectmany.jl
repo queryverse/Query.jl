@@ -39,8 +39,14 @@ function select_many(source::Enumerable, f_collectionSelector::Function, collect
     # First detect whether the collectionSelector return value depends at all
     # on the value of the anonymous function argument
     anon_var = collectionSelector.args[1]
-    body = collectionSelector.args[2].args[2]
+    body = collectionSelector.args[2].args[2].args[2]
     crossJoin = !expr_contains_ref_to(body, anon_var)
+
+    println("CROSS JOIN OR NOT")
+    println(body)
+    println(anon_var)
+    println(crossJoin)
+    println(collectionSelector)
 
     if crossJoin
         inner_collection = f_collectionSelector(nothing)
@@ -48,6 +54,9 @@ function select_many(source::Enumerable, f_collectionSelector::Function, collect
         TCE = input_type_collection_selector.parameters[1]
     else
         input_type_collection_selector = Base.return_types(f_collectionSelector, (TS,))[1]
+        println("ASDFASDF")
+        println(collectionSelector)
+        println(input_type_collection_selector)
         TCE = typeof(input_type_collection_selector)==Union || input_type_collection_selector==Any ? Any : input_type_collection_selector.parameters[1]
     end
 

@@ -31,6 +31,7 @@ include("enumerable/enumerable_selectmany.jl")
 include("enumerable/enumerable_defaultifempty.jl")
 include("enumerable/enumerable_count.jl")
 include("enumerable/enumerable_convert2datavalue.jl")
+include("enumerable/enumerable_convert2nullable.jl")
 
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")
