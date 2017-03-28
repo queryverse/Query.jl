@@ -39,7 +39,7 @@ function select_many(source::Enumerable, f_collectionSelector::Function, collect
     # First detect whether the collectionSelector return value depends at all
     # on the value of the anonymous function argument
     anon_var = collectionSelector.args[1]
-    body = collectionSelector.args[2].args[2].args[2]
+    body = collectionSelector.args[2].args[2]
     crossJoin = !expr_contains_ref_to(body, anon_var)
 
     println("CROSS JOIN OR NOT")
