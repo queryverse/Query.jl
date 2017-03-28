@@ -25,7 +25,7 @@ function query_expression_translation_phase_B(qe)
 			# and then we don't escape things.
 			if isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:call && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query
 				clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
-			elseif !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)				
+			elseif !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
 				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 			end
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@from")

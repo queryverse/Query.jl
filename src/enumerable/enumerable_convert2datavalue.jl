@@ -55,7 +55,7 @@ end
         v = x[1]
         s_new = x[2]
         v_new = $constructor_call
-        return v_new, s_new        
+        return v_new, s_new
     end
 
     return q
