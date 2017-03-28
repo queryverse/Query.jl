@@ -35,7 +35,7 @@ end
     for t in T.types
         if isa(t, TypeVar)
             push!(columns, Array{Any}(0))
-        elseif t <: DataValue
+        elseif t <: Nullable
             push!(columns, DataArray(t.parameters[1],0))
         else
             push!(columns, Array{t}(0))
