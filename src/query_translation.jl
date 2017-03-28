@@ -406,7 +406,7 @@ function query_expression_translation_phase_C(qe)
 end
 
 function translate_query(body)
-	debug_output = true
+	debug_output = false
 
 	debug_output && println("AT START")
 	debug_output && println(body)
