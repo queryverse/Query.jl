@@ -132,6 +132,15 @@ function length{T<:AbstractString}(s::DataValue{T})
     end
 end
 
+import Base.*
+function *{T<:AbstractString}(s1::DataValue{T}, s2::DataValue{T})
+    if isnull(s1) || isnull(s2)
+        return DataValue{T}()
+    else
+        return DataValue{T}(get(s1)*get(s2))
+    end
+end
+
 # C# spec section 7.3.7
 
 for op in (:+, :-, :!, :~)
