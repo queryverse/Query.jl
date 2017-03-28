@@ -36,6 +36,7 @@ include("enumerable/enumerable_convert2nullable.jl")
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")
 include("queryable/queryable_where.jl")
+include("queryable/queryable_convert2nullable.jl")
 
 include("query_translation.jl")
 

@@ -20,7 +20,12 @@ function query_expression_translation_phase_B(qe)
 	while i<=length(qe)
 		clause = qe[i]
 		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
-			if !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
+			# Handle the case of a nested query. We are essentially detecting 
+			# here that the subquery starts with convert2nullable
+			# and then we don't escape things.
+			if isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:call && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query
+				clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
+			elseif !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)				
 				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 			end
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@from")
@@ -386,8 +391,16 @@ function query_expression_translation_phase_7(qe)
 	end
 end
 
-
 function query_expression_translation_phase_C(qe)
+	for i in 1:length(qe)
+		clause = qe[i]
+		if !(clause.head==:macrocall && clause.args[1]==Symbol("@collect"))
+			qe[i] = Expr(:call, Expr(:., :Query, QuoteNode(:convert2nullable)), clause)
+		end
+	end
+end
+
+function query_expression_translation_phase_D(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
@@ -444,6 +457,10 @@ function translate_query(body)
 	debug_output && println(body)
 
 	query_expression_translation_phase_C(body.args)
-	debug_output && println("AFTER B")
+	debug_output && println("AFTER C")
+	debug_output && println(body)
+
+	query_expression_translation_phase_D(body.args)
+	debug_output && println("AFTER D")
 	debug_output && println(body)
 end
