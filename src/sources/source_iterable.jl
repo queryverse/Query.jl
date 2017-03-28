@@ -6,7 +6,10 @@ end
     typed_source = getiterator(source)
 	T = eltype(typed_source)
     S = typeof(typed_source)
-    return EnumerableIterable{T,S}(typed_source)
+
+    source_enumerable = EnumerableIterable{T,S}(typed_source)
+
+    return convert2datavalue(source_enumerable)
 end
 
 Base.eltype{T,S}(iter::EnumerableIterable{T,S}) = T

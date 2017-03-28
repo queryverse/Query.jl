@@ -25,9 +25,7 @@ function getiterator{S<:DataStreams.Data.Source}(source::S)
         if schema.types[i] <: WeakRefString
             col_type = String
         elseif schema.types[i] <: Nullable && schema.types[i].parameters[1] <: WeakRefString
-            col_type = DataValue{String}
-        elseif schema.types[i] <: Nullable
-            col_type = DataValue{schema.types[i].parameters[1]}
+            col_type = Nullable{String}
         else
             col_type = schema.types[i]
         end
@@ -67,9 +65,9 @@ end
 function _convertion_helper_for_datastreams(source, row, col, T)
     v = Data.streamfrom(source, Data.Field, Nullable{T}, row, col)
     if isnull(v)
-        return DataValue{String}()
+        return Nullable{String}()
     else
-        return DataValue{String}(String(get(v)))
+        return Nullable{String}(String(get(v)))
     end
 end
 
@@ -78,10 +76,8 @@ end
     for i in 1:length(TC.types)
         if TC.types[i] <: String
             get_expression = :(Data.streamfrom(source, Data.Field, WeakRefString, row, $i))
-        elseif TC.types[i] <: DataValue && TSC.types[i].parameters[1] <: WeakRefString
+        elseif TC.types[i] <: Nullable && TSC.types[i].parameters[1] <: WeakRefString
             get_expression = :(_convertion_helper_for_datastreams(source, row, $i, TSC.types[$i].parameters[1]))
-        elseif TC.types[i] <: DataValue
-            get_expression = :(DataValue(Data.streamfrom(source, Data.Field, Nullable{$(TC.types[i].parameters[1])}, row, $i)))
         else
             get_expression = :(Data.streamfrom(source, Data.Field, $(TC.types[i]), row, $i))
         end

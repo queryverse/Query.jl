@@ -5,11 +5,7 @@ using NullableArrays
     n = length(columns.types)
     push_exprs = Expr(:block)
     for i in 1:n
-        if columns.parameters[i] <: NullableArray
-            ex = :( push!(columns[$i], Nullable(i[$i])) )
-        else
-            ex = :( push!(columns[$i], i[$i]) )
-        end
+        ex = :( push!(columns[$i], i[$i]) )
         push!(push_exprs.args, ex)        
     end
 
@@ -36,7 +32,7 @@ end
     for t in T.types
         if isa(t, TypeVar)
             push!(columns, Array{Any}(0))
-        elseif t <: DataValue
+        elseif t <: Nullable
             push!(columns, NullableArray(t.parameters[1],0))
         else
             push!(columns, Array{t}(0))

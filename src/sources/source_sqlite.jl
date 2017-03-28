@@ -29,7 +29,7 @@ function query(table::SQLiteTable)
     	         type_string[1:8]=="NVARCHAR" ? String :
     	         type_string=="DATETIME" ? DateTime : error("Unsupported column type")
     	if get(columns[i,:notnull])==0
-            eltype=DataValue{eltype}
+            eltype=Nullable{eltype}
     	end
         push!(col_expressions, Expr(:(::), get(columns[i,:name]), Type(eltype)))
     end
