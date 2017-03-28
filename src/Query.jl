@@ -4,6 +4,7 @@ using Requires
 using NamedTuples
 using DataStructures
 using SimpleTraits
+using IterableTables
 
 import Base.start
 import Base.next
@@ -15,8 +16,6 @@ import Base.join
 import Base.count
 
 export @from, @count, @where, @select, Grouping, null, @NT, DataValue
-
-include("traits.jl")
 
 include("operators.jl")
 
@@ -40,14 +39,8 @@ include("queryable/queryable_convert2nullable.jl")
 
 include("query_translation.jl")
 
-include("sources/source_array.jl")
 include("sources/source_iterable.jl")
-include("sources/source_dataframe.jl")
-include("sources/source_datatable.jl")
 include("sources/source_sqlite.jl")
-include("sources/source_typedtable.jl")
-include("sources/source_datastream.jl")
-include("sources/source_indexedtables.jl")
 
 include("sinks/sink_array.jl")
 include("sinks/sink_dict.jl")
@@ -55,7 +48,6 @@ include("sinks/sink_dataframe.jl")
 include("sinks/sink_datatable.jl")
 include("sinks/sink_csvfile.jl")
 include("sinks/sink_datastream_source.jl")
-include("sinks/sink_statsmodels.jl")
 
 macro from(range::Expr, body::Expr)
 	if range.head!=:call || range.args[1]!=:in
