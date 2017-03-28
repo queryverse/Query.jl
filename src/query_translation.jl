@@ -21,12 +21,12 @@ function query_expression_translation_phase_B(qe)
 		clause = qe[i]
 		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
 			if !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
-				clause.args[2].args[3] = :(Query.convert2datavalue(Query.query($(esc(clause.args[2].args[3])))))
+				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 			end
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@from")
-			clause.args[2].args[3] = :(Query.convert2datavalue(Query.query($(clause.args[2].args[3]))))
+			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
-			clause.args[2].args[3] = :(Query.convert2datavalue(Query.query($(esc(clause.args[2].args[3])))))
+			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@select")
 			if isa(clause.args[2], Expr) && clause.args[2].head==:cell1d
 				clause.args[2] = Expr(:macrocall, Symbol("@NT"), clause.args[2].args...)
