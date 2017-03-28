@@ -6,34 +6,6 @@ Base.eltype{T,S}(iter::EnumerableConvert2DataValue{T,S}) = T
 
 Base.eltype{T,S}(iter::Type{EnumerableConvert2DataValue{T,S}}) = T
 
-# function convert2datavalue(source::Enumerable)
-#     TS = eltype(source)
-#     if TS <: NamedTuple
-#         column_names = fieldnames(TS)
-#         column_types = []
-#         col_expressions = Array{Expr,1}()
-#         for (i,t) in enumerate(TS.types)
-#             if t <: Nullable
-#                 push!(column_types, DataValue{t.parameters[1]})
-#                 push!(col_expressions, Expr(:(::), column_names[i], DataValue{t.parameters[1]}))
-#             else
-#                 push!(column_types, t)
-#                 push!(col_expressions, Expr(:(::), column_names[i], t))
-#             end
-#         end
-
-#         t_expr = NamedTuples.make_tuple(col_expressions)
-#         T = eval(NamedTuples, t_expr)
-
-#         S = typeof(source)
-#         println("THIS IS WHERE WE ARE")
-#         println(T)
-#         return EnumerableConvert2DataValue{T,S}(source)
-#     else
-#         return source
-#     end
-# end
-
 @generated function convert2datavalue{S<:Enumerable}(source::S)
     TS = eltype(source)
     # TODO Right now this will only convert things if all the columns in
