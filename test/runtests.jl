@@ -623,6 +623,7 @@ end
     julia_exe = Base.julia_cmd()
 
     for file in example_files
+        println("Now testing $file")
         if success(`$julia_exe --check-bounds=yes $color $compilecache $file`)
             @test true
         else
