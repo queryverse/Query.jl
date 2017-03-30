@@ -134,17 +134,17 @@ Query.DataValue{Int32}[5,6,7,8,9]
 
 ## IndexedTables
 
-`NDSparse` data sources can be a source in a query. Individual rows are represented as a `NamedTuple` with two fields. The `index` field holds the index data for this row. If the source has named columns, the type of the `index` field is a `NamedTuple`, where the fieldnames correspond to the names of the index columns. If the source doesn't use named columns, the type of the `index` field is a regular tuple. The second field is named `value` and holds the value of the row in the original source. `NDSparse` sources are implemented as `Enumerable` data sources and can therefore be combined with any other `Enumerable` data source in a single query.
+`IndexedTable` data sources can be a source in a query. Individual rows are represented as a `NamedTuple` with two fields. The `index` field holds the index data for this row. If the source has named columns, the type of the `index` field is a `NamedTuple`, where the fieldnames correspond to the names of the index columns. If the source doesn't use named columns, the type of the `index` field is a regular tuple. The second field is named `value` and holds the value of the row in the original source. `IndexedTable` sources are implemented as `Enumerable` data sources and can therefore be combined with any other `Enumerable` data source in a single query.
 
 ### Example
 
 ```jldoctest
 using Query, IndexedTables
 
-source_ndsparsearray = NDSparse(Columns(city = [fill("New York",3); fill("Boston",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), [91,89,91,95,83,76])
+source_indexedtable = IndexedTable(Columns(city = [fill("New York",3); fill("Boston",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), Columns(value=[91,89,91,95,83,76]))
 
-q = @from i in source_ndsparsearray begin
-    @where i.index.city=="New York"
+q = @from i in source_indexedtable begin
+    @where i.city=="New York"
     @select i.value
     @collect
 end
