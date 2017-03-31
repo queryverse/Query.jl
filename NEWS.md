@@ -2,6 +2,10 @@ Query.jl v.next Release Notes
 =============================
 * Use DataValue instead of Nullable
 
+Query.jl v0.3.2 Release Notes
+=============================
+* Fix bug with nested lists of lists in DataFrame sources
+
 Query.jl v0.3.1 Release Notes
 =============================
 * Add DataTable source and sink support
