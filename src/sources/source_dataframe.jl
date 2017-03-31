@@ -52,7 +52,7 @@ end
     constructor_call = Expr(:call, :($T))
     for i in 1:length(iter.types[2].types)
         if iter.parameters[1].parameters[i] <: Nullable
-            push!(constructor_call.args, :(isna(columns[$i][i]) ? $(iter.parameters[1].parameters[i])() : columns[$i][i]))
+            push!(constructor_call.args, :(isna(columns[$i], i) ? $(iter.parameters[1].parameters[i])() : columns[$i][i]))
         else
             push!(constructor_call.args, :(columns[$i][i]))
         end
