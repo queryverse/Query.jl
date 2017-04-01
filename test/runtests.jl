@@ -603,6 +603,7 @@ end
         "../example/09-let.jl",
         "../example/10-orderby.jl",
         "../example/11-Datastream.jl",
+        "../example/12-IndexedTables.jl",
         "../example/13-selectmany.jl",
         "../example/14-groupby.jl",
         "../example/15-groupinto.jl",
@@ -615,8 +616,6 @@ end
         "../example/22-datastreams-sink.jl",
         "../example/23-dict-sink.jl",
         "../example/24-DataTable.jl"]
-
-    is_installed("IndexedTables") && push!(example_files, "../example/12-IndexedTables.jl")
 
     color = Base.have_color ? "--color=yes" : "--color=no"
     compilecache = "--compilecache=" * (Bool(Base.JLOptions().use_compilecache) ? "yes" : "no")
