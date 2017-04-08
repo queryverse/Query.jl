@@ -20,7 +20,7 @@ println(result)
 
 result = @from i in source begin
          @where length(i.Friends) > 2
-         @select {i.Name, Friendcount=>length(i.Friends)}
+         @select {i.Name, Friendcount=length(i.Friends)}
          @collect DataFrame
 end
 
