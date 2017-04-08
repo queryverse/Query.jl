@@ -18,7 +18,7 @@ df = DataFrame(columns, [:name, :age, :children])
 x = collect(i.name for i in Query.query(df) if i.age>30.)
 println(x)
 
-x = collect(@NT(Name=>i.name) for i in Query.query(df) if i.age>30.)
+x = collect(@NT(Name=i.name) for i in Query.query(df) if i.age>30.)
 println(x)
 
 x = collect(Query.query(x), DataFrame)
