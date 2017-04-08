@@ -29,8 +29,6 @@ include("enumerable/enumerable_where.jl")
 include("enumerable/enumerable_selectmany.jl")
 include("enumerable/enumerable_defaultifempty.jl")
 include("enumerable/enumerable_count.jl")
-include("enumerable/enumerable_convert2datavalue.jl")
-include("enumerable/enumerable_convert2nullable.jl")
 
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")
@@ -48,6 +46,10 @@ include("sinks/sink_dataframe.jl")
 include("sinks/sink_datatable.jl")
 include("sinks/sink_csvfile.jl")
 include("sinks/sink_datastream_source.jl")
+
+include("enumerable/enumerable_convert2datavalue.jl")
+include("enumerable/enumerable_convert2nullable.jl")
+
 
 macro from(range::Expr, body::Expr)
 	if range.head!=:call || range.args[1]!=:in
