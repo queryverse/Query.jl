@@ -2,7 +2,8 @@ immutable EnumerableIterable{T,S} <: Enumerable
     source::S
 end
 
-@traitfn function query{X; IsIterable{X}}(source::X)
+function query(source)
+    isiterable(source) || error()
     typed_source = getiterator(source)
 	T = eltype(typed_source)
     S = typeof(typed_source)
