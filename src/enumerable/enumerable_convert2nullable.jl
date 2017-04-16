@@ -6,8 +6,8 @@ Base.eltype{T,S}(iter::EnumerableConvert2Nullable{T,S}) = T
 
 Base.eltype{T,S}(iter::Type{EnumerableConvert2Nullable{T,S}}) = T
 
-@traitimpl IsIterable{EnumerableConvert2Nullable}
-@traitimpl IsIterableTable{EnumerableConvert2Nullable}
+IterableTables.isiterable(x::EnumerableConvert2Nullable) = true
+IterableTables.isiterabletable(x::EnumerableConvert2Nullable) = true
 
 function convert2nullable(source::Enumerable)
     TS = eltype(source)

@@ -3,7 +3,6 @@ module Query
 using Requires
 using NamedTuples
 using DataStructures
-using SimpleTraits
 using IterableTables
 
 import Base.start
