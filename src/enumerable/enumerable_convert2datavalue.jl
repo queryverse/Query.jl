@@ -2,9 +2,13 @@ immutable EnumerableConvert2DataValue{T, S} <: Enumerable
     source::S
 end
 
+Base.iteratorsize{T,S}(::Type{EnumerableConvert2DataValue{T,S}}) = Base.iteratorsize(S)
+
 Base.eltype{T,S}(iter::EnumerableConvert2DataValue{T,S}) = T
 
 Base.eltype{T,S}(iter::Type{EnumerableConvert2DataValue{T,S}}) = T
+
+Base.length{T,S}(iter::EnumerableConvert2DataValue{T,S}) = length(iter.source)
 
 @generated function convert2datavalue{S<:Enumerable}(source::S)
     TS = eltype(source)

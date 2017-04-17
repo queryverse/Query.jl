@@ -13,9 +13,13 @@ function query(source)
     return convert2datavalue(source_enumerable)
 end
 
+Base.iteratorsize{T,S}(::Type{EnumerableIterable{T,S}}) = Base.iteratorsize(S)
+
 Base.eltype{T,S}(iter::EnumerableIterable{T,S}) = T
 
 Base.eltype{T,S}(iter::Type{EnumerableIterable{T,S}}) = T
+
+Base.length{T,S}(iter::EnumerableIterable{T,S}) = length(iter.source)
 
 function start{T,S}(iter::EnumerableIterable{T,S})
     return start(iter.source)

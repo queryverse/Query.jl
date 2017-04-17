@@ -2,9 +2,13 @@ immutable EnumerableConvert2Nullable{T, S} <: Enumerable
     source::S
 end
 
+Base.iteratorsize{T,S}(::Type{EnumerableConvert2Nullable{T,S}}) = Base.iteratorsize(S)
+
 Base.eltype{T,S}(iter::EnumerableConvert2Nullable{T,S}) = T
 
 Base.eltype{T,S}(iter::Type{EnumerableConvert2Nullable{T,S}}) = T
+
+Base.length{T,S}(iter::EnumerableConvert2Nullable{T,S}) = length(iter.source)
 
 IterableTables.isiterable(x::EnumerableConvert2Nullable) = true
 IterableTables.isiterabletable(x::EnumerableConvert2Nullable) = true

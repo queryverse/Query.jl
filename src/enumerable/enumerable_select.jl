@@ -3,9 +3,13 @@ immutable EnumerableSelect{T, S, Q<:Function} <: Enumerable
     f::Q
 end
 
+Base.iteratorsize{T,S,Q}(::Type{EnumerableSelect{T,S,Q}}) = Base.iteratorsize(S)
+
 Base.eltype{T,S,Q}(iter::EnumerableSelect{T,S,Q}) = T
 
 Base.eltype{T,S,Q}(iter::Type{EnumerableSelect{T,S,Q}}) = T
+
+Base.length{T,S,Q}(iter::EnumerableSelect{T,S,Q}) = length(iter.source)
 
 function select(source::Enumerable, f::Function, f_expr::Expr)
     TS = eltype(source)

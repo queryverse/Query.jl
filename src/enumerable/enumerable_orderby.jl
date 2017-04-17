@@ -4,9 +4,13 @@ immutable EnumerableOrderby{T,S,KS<:Function,TKS} <: Enumerable
     descending::Bool
 end
 
+Base.iteratorsize{T,S,KS,TKS}(::Type{EnumerableOrderby{T,S,KS,TKS}}) = Base.iteratorsize(S)
+
 Base.eltype{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}) = T
 
 Base.eltype{T,S,KS,TKS}(iter::Type{EnumerableOrderby{T,S,KS,TKS}}) = T
+
+Base.length{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}) = length(iter.source)
 
 function orderby(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
@@ -56,6 +60,8 @@ end
 Base.eltype{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS}) = T
 
 Base.eltype{T,S,KS,TKS}(iter::Type{EnumerableThenBy{T,S,KS,TKS}}) = T
+
+Base.length{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS}) = length(iter.source)
 
 function thenby(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
