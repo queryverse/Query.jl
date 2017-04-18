@@ -160,6 +160,10 @@ for op in (:+, :-, :*, :/, :%, :&, :|, :^, :<<, :>>)
     end
 end
 
+/{T1<:Number,T2<:Integer}(a::DataValue{T1},b::DataValue{T2}) = isnull(a) || isnull(b) ? DataValue{Float64}() : DataValue{Float64}(get(a)/get(b))
+/{T1<:Number,T2<:Integer}(a::DataValue{T1},b::T2) = isnull(a) ? DataValue{Float64}() : DataValue{Float64}(get(a)/b)
+/{T1<:Number,T2<:Integer}(a::T1,b::DataValue{T2}) = isnull(b) ? DataValue{Float64}() : DataValue{Float64}(a/get(b))
+
 ^{T<:Number}(x::DataValue{T},p::Integer) = isnull(x) ? DataValue{T}() : DataValue(get(x)^p)
 
 =={T1,T2}(a::DataValue{T1},b::DataValue{T2}) = isnull(a) && isnull(b) ? true : !isnull(a) && !isnull(b) ? get(a)==get(b) : false
