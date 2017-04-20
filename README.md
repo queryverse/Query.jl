@@ -28,6 +28,10 @@ Pkg.add("Query")
 ## Getting started
 To get started, take a look at the [documentation](http://www.david-anthoff.com/Query.jl/stable/).
 
+## Getting help
+
+Please ask any usage question in the [Data Domain](https://discourse.julialang.org/c/domain/data) on the [julia Discourse forum](https://discourse.julialang.org/). If you find a bug or have an improvement suggestion for this package, please open an issue in this github repository.
+
 ## Highlights
 
 - Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.
