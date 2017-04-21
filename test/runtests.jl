@@ -615,7 +615,8 @@ end
         "../example/21-nulls.jl",
         "../example/22-datastreams-sink.jl",
         "../example/23-dict-sink.jl",
-        "../example/24-DataTable.jl"]
+        "../example/24-DataTable.jl",
+        "../example/25-MetadataTools.jl"]
 
     color = Base.have_color ? "--color=yes" : "--color=no"
     compilecache = "--compilecache=" * (Bool(Base.JLOptions().use_compilecache) ? "yes" : "no")
