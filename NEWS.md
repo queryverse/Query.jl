@@ -1,6 +1,8 @@
-Query.jl v.next Release Notes
+Query.jl v0.4.0 Release Notes
 =============================
 * Use DataValue instead of Nullable
+* Move much of the integration code into IterableTables.jl
+* Drop use of FunctionWrappers.jl
 
 Query.jl v0.3.2 Release Notes
 =============================
