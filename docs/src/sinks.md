@@ -25,9 +25,9 @@ println(x)
 Query.DataValue{String}["John","Sally","Kirk"]
 ```
 
-## DataFrame
+## DataFrame, DataTable and TypedTable
 
-The statement `@collect DataFrame` will materialize the query results into a new `DataFrame` instance. This statement only works if the last projection statement transformed the results into a `NamedTuple`, for example by using the `{}` syntax.
+The statement `@collect TableType` (with `TableType` being one of `DatFrame`, `DataTable` or `TypedTable`) will materialize the query results into a new instance of that type. This statement only works if the last projection statement transformed the results into a `NamedTuple`, for example by using the `{}` syntax.
 
 ### Example
 
@@ -87,6 +87,32 @@ The statement `@collect CsvFile(filename)` will write the results of the query i
 ## DataStram sink
 
 If a `DataStreams` sink is passed to the `@collect` statement, the results of the query will be written into that sink. The syntax for this is `@collect sink`, where `sink` can be any DataStreams sink instance. This statement only works if the last projection statement transformed the results into a `NamedTuple`, for example by using the `{}` syntax. Currently sinks of type `CSV` and `Feather` are regularly tested.
+
+### Example
+
+[TODO]
+
+## TimeArray
+
+The statement `@collect TimeArray` will materialize the query results into
+a new `TimeSeries.TimeArray` instance. This statement only works if the
+last projection statement transformed the results into a `NamedTuple`,
+for example by using the `{}` syntax, and this `NamedTuple` has one field
+named `timestamp` that is of a type that can be used as a time index in
+the `TimeArray` type.
+
+### Example
+
+[TODO]
+
+## IndexedTable
+
+The statement `@collect IndexedTable` will materialize the query results
+into a new `IndexedTables.IndexedTable` instance. This statement only
+works if the last projection statement transformed the results into a
+`NamedTuple`, for example by using the `{}` syntax. The last column of
+the result table will be the data column, all other columns will be index
+columns.
 
 ### Example
 
