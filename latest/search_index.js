@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Highlights",
     "category": "section",
-    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, DataStreams (including CSV, Feather, SQLite, ODBC), DataTables, IndexedTables, TimeSeries, TypedTables, DifferentialEquations (any DESolution), arrays any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, arrays, dictionaries or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
+    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, DataStreams (including CSV, Feather, SQLite, ODBC), DataTables, IndexedTables, TimeSeries, TypedTables, DifferentialEquations (any DESolution), arrays any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, DataTables, IndexedTables, TimeSeries, TypedTables, arrays, dictionaries or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
 },
 
 {
@@ -393,11 +393,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#DataFrame-1",
+    "location": "sinks.html#DataFrame,-DataTable-and-TypedTable-1",
     "page": "Data Sinks",
-    "title": "DataFrame",
+    "title": "DataFrame, DataTable and TypedTable",
     "category": "section",
-    "text": "The statement @collect DataFrame will materialize the query results into a new DataFrame instance. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax."
+    "text": "The statement @collect TableType (with TableType being one of DatFrame, DataTable or TypedTable) will materialize the query results into a new instance of that type. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax."
 },
 
 {
@@ -450,6 +450,38 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "sinks.html#Example-5",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "[TODO]"
+},
+
+{
+    "location": "sinks.html#TimeArray-1",
+    "page": "Data Sinks",
+    "title": "TimeArray",
+    "category": "section",
+    "text": "The statement @collect TimeArray will materialize the query results into a new TimeSeries.TimeArray instance. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax, and this NamedTuple has one field named timestamp that is of a type that can be used as a time index in the TimeArray type."
+},
+
+{
+    "location": "sinks.html#Example-6",
+    "page": "Data Sinks",
+    "title": "Example",
+    "category": "section",
+    "text": "[TODO]"
+},
+
+{
+    "location": "sinks.html#IndexedTable-1",
+    "page": "Data Sinks",
+    "title": "IndexedTable",
+    "category": "section",
+    "text": "The statement @collect IndexedTable will materialize the query results into a new IndexedTables.IndexedTable instance. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax. The last column of the result table will be the data column, all other columns will be index columns."
+},
+
+{
+    "location": "sinks.html#Example-7",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
