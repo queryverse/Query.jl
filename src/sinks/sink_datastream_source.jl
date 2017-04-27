@@ -1,12 +1,37 @@
-@require DataStreams begin
-using DataStreams
+datastreams_integration_is_loaded = false
 
-function collect{TSink<:Data.Sink}(enumerable::Enumerable, sink::TSink)
-    source = IterableTables.get_datastreams_source(enumerable)
+@require CSV begin
 
-    Data.stream!(source, sink)
-    
-    return sink
+if !datastreams_integration_is_loaded
+    include("sink_datastream_source_part2.jl")
+    datastreams_integration_is_loaded = true
+end
+
+end
+
+@require Feather begin
+
+if !datastreams_integration_is_loaded
+    include("sink_datastream_source_part2.jl")
+    datastreams_integration_is_loaded = true
+end
+
+end
+
+@require SQLite begin
+
+if !datastreams_integration_is_loaded
+    include("sink_datastream_source_part2.jl")
+    datastreams_integration_is_loaded = true
+end
+
+end
+
+@require ODBC begin
+
+if !datastreams_integration_is_loaded
+    include("sink_datastream_source_part2.jl")
+    datastreams_integration_is_loaded = true
 end
 
 end
