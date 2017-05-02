@@ -104,6 +104,21 @@ for op in (:lowercase,:uppercase,:reverse,:ucfirst,:lcfirst,:chop,:chomp)
     end
 end
 
+# Numbers
+
+for op in (:abs, :isnan, :isfinite, :isinf)
+    @eval begin
+        import Base.$(op)
+        function $op{T<:Number}(x::DataValue{T})
+            if isnull(x)
+                return DataValue{T}()
+            else
+                return DataValue($op(get(x)))
+            end
+        end
+    end
+end
+
 import Base.getindex
 function getindex{T<:AbstractString}(s::DataValue{T},i)
     if isnull(s)

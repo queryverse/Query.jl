@@ -63,6 +63,11 @@ using Base.Test
 @test ~DataValue(1) == DataValue(~1)
 @test ~DataValue{Int}() == DataValue{Int}()
 
+#abs
+@test DataValue(1) == abs(DataValue(1))
+@test DataValue(1) == abs(DataValue(-1))
+@test DataValue{Int}() == abs(DataValue{Int}())
+
 # TODO add ^, / back
 for op in (:+, :-, :*, :%, :&, :|, :<<, :>>)
     @eval begin
