@@ -30,12 +30,19 @@ function orderby_descending(source::Enumerable, f::Function, f_expr::Expr)
     return EnumerableOrderby{T,typeof(source),KS,TKS}(source, f, true)
 end
 
-
-# TODO This should be changed to a lazy implementation
 function start{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS})
-    elements = Array{T}(0)
-    for i in iter.source
-        push!(elements, i)
+    rows = Base.iteratorsize(typeof(iter))==Base.HasLength() ? length(iter) : 0
+
+    elements = Array{T}(rows)
+
+    if Base.iteratorsize(typeof(iter))==Base.HasLength()
+        for i in enumerate(iter.source)
+            elements[i[1]] = i[2]
+        end        
+    else
+        for i in iter.source
+            push!(elements, i)
+        end
     end
 
     sort!(elements, by=iter.keySelector, rev=iter.descending)
@@ -102,9 +109,18 @@ function start{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS})
         return n1 < n2
     end
 
-    elements = Array{T}(0)
-    for i in source
-        push!(elements, i)
+    rows = Base.iteratorsize(typeof(iter))==Base.HasLength() ? length(iter) : 0
+
+    elements = Array{T}(rows)
+
+    if Base.iteratorsize(typeof(iter))==Base.HasLength()
+        for i in enumerate(iter.source)
+            elements[i[1]] = i[2]
+        end        
+    else
+        for i in iter.source
+            push!(elements, i)
+        end
     end
 
     sort!(elements, by=keySelector, lt=lt)
