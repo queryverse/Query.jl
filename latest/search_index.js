@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Installation",
     "category": "section",
-    "text": "This package only works on julia 0.5 and newer. You can add it with:Pkg.add(\"Query\")"
+    "text": "You can add the package it with:Pkg.add(\"Query\")"
 },
 
 {
