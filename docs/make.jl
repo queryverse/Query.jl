@@ -31,5 +31,5 @@ deploydocs(
     make = nothing,
     target = "build",
     repo = "github.com/davidanthoff/Query.jl.git",
-    julia = "0.5"
+    julia = "0.6"
 )

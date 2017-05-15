@@ -1,3 +1,7 @@
+Query.jl v0.5.0 Release Notes
+=============================
+* Drop julia 0.5 support
+
 Query.jl v0.4.0 Release Notes
 =============================
 * Use DataValue instead of Nullable
