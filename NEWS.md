@@ -1,6 +1,7 @@
 Query.jl v0.5.0 Release Notes
 =============================
 * Drop julia 0.5 support
+* Use DataValues.jl package
 
 Query.jl v0.4.0 Release Notes
 =============================
