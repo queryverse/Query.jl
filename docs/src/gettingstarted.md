@@ -43,3 +43,20 @@ The Query package does not require data sources or sinks to have a table like st
 
 Missing values are represented as `DataValue` types from the
 [DataValues.jl](https://github.com/davidanthoff/DataValues.jl) package.
+Here are some usage tips.
+
+All arithmetic operators work automatically with missing values.
+If any of the arguments to an arithmetic operation is a missing value,
+the result will also be a missing value.
+
+All comparison operators, like `==` or `<` etc. also work with missing
+values. These operators always return either `true` or `false`.
+
+If you want to use a function that does not support missing values out
+of the box, you can *lift* that function using the `.` operator. This
+lifted function will propagate any missing values, i.e. if any of the
+arguments to such a lifted function is missing, the result will also be
+a missing value. For example, to apply the `log` function on a column
+that is of type `DataValue{Float64}`, i.e. a column that can have
+missing values, one would write `log.(i.a)`, assuming the column is named
+`a`. The return type of this call will be `DataValue{Float64}`.
