@@ -4,6 +4,7 @@ using Requires
 using NamedTuples
 using DataStructures
 using IterableTables
+using DataValues
 
 import Base.start
 import Base.next
@@ -14,9 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, @select, Grouping, null, @NT, DataValue
-
-include("operators.jl")
+export @from, @count, @where, @select, Grouping, @NT
 
 include("enumerable/enumerable.jl")
 include("enumerable/enumerable_groupby.jl")

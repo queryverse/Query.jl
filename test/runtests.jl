@@ -9,6 +9,7 @@ using CSV
 using SQLite
 using Feather
 using NullableArrays
+using DataValues
 using Base.Test
 
 immutable Person
@@ -549,10 +550,6 @@ q = collect(Query.@select(source_df, i->get(i.children)))
 
 include("test_indexedtables.jl")
 
-end
-
-@testset "Operators" begin
-include("test_operators.jl")
 end
 
 @testset "Examples" begin
