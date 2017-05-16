@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Missing values",
     "category": "section",
-    "text": "Missing values are represented as DataValue types. Query.jl currently provides a set of lifted methods for common operations on values that work with DataValue, but the eventual goal is to move all of that into its own package. DataValue is only used within Query.jl, the package can without problem work with data sources that use Nullable as their type to represent potentially missing values."
+    "text": "Missing values are represented as DataValue types from the DataValues.jl package. Here are some usage tips.All arithmetic operators work automatically with missing values. If any of the arguments to an arithmetic operation is a missing value, the result will also be a missing value.All comparison operators, like == or < etc. also work with missing values. These operators always return either true or false.If you want to use a function that does not support missing values out of the box, you can lift that function using the . operator. This lifted function will propagate any missing values, i.e. if any of the arguments to such a lifted function is missing, the result will also be a missing value. For example, to apply the log function on a column that is of type DataValue{Float64}, i.e. a column that can have missing values, one would write log.(i.a), assuming the column is named a. The return type of this call will be DataValue{Float64}."
 },
 
 {
