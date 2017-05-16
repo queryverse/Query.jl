@@ -25,7 +25,7 @@ println(result)
 # And the second part uses the Enumerable iterator part of Query.jl
 
 result = @from i in result begin
-         @select {Mangled=i.Name * i.Adr}
+         @select {Mangled=i.Name .* i.Adr}
          @collect DataFrame
 end
 
