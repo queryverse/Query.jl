@@ -65,7 +65,7 @@ end
 @test length(q)==1
 @test q[1]=="sally"
 
-source_array = Array(Person,0)
+source_array = Array{Person}(0)
 push!(source_array, Person("John", ["Sally", "Miles", "Frank"]))
 push!(source_array, Person("Sally", ["Don", "Martin"]))
 
@@ -431,7 +431,7 @@ end
 @test q[:Name]==["Peacock","Park","Johnson"]
 @test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
 
-q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "data", "airquality.feather")) begin
+q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "newdata", "airquality.feather")) begin
     @where i.Day==2
     @select i.Month
     @collect

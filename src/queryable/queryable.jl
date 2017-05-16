@@ -1,3 +1,3 @@
-abstract Queryable{T,Provider}
+abstract type Queryable{T,Provider} end
 
-abstract QueryProvider
+abstract type QueryProvider end
