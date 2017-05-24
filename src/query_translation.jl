@@ -391,15 +391,6 @@ function query_expression_translation_phase_7(qe)
 	end
 end
 
-function query_expression_translation_phase_C(qe)
-	for i in 1:length(qe)
-		clause = qe[i]
-		if !(clause.head==:macrocall && clause.args[1]==Symbol("@collect"))
-			qe[i] = Expr(:call, Expr(:., :Query, QuoteNode(:convert2nullable)), clause)
-		end
-	end
-end
-
 function query_expression_translation_phase_D(qe)
 	i = 1
 	while i<=length(qe)
@@ -454,10 +445,6 @@ function translate_query(body)
 
 	query_expression_translation_phase_7(body.args)
 	debug_output && println("AFTER 7")
-	debug_output && println(body)
-
-	query_expression_translation_phase_C(body.args)
-	debug_output && println("AFTER C")
 	debug_output && println(body)
 
 	query_expression_translation_phase_D(body.args)

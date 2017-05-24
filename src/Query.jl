@@ -31,7 +31,6 @@ include("enumerable/enumerable_count.jl")
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")
 include("queryable/queryable_where.jl")
-include("queryable/queryable_convert2nullable.jl")
 
 include("query_translation.jl")
 
@@ -43,10 +42,6 @@ include("sinks/sink_array.jl")
 include("sinks/sink_dict.jl")
 include("sinks/sink_csvfile.jl")
 include("sinks/sink_datastream_source.jl")
-
-include("enumerable/enumerable_convert2datavalue.jl")
-include("enumerable/enumerable_convert2nullable.jl")
-
 
 macro from(range::Expr, body::Expr)
 	if range.head!=:call || range.args[1]!=:in

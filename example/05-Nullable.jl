@@ -1,8 +1,9 @@
 using Query
 using TypedTables
 using DataFrames
+using NullableArrays
 
-df = @Table(name=Nullable{String}["John", "Sally", "Kirk"], age=Nullable{Float64}[23., 42., 59.], children=Nullable{Int64}[3,5,2])
+df = @Table(name=NullableArray(["John", "Sally", "Kirk"]), age=NullableArray([23., 42., 59.]), children=NullableArray([3,5,2]))
 
 x = @from i in df begin
     @where i.age>30 && i.children >2
