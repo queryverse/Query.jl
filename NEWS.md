@@ -1,3 +1,7 @@
+Query.jl v0.4.1 Release Notes
+=============================
+* Fix bug in hash method for DataValue
+
 Query.jl v0.4.0 Release Notes
 =============================
 * Use DataValue instead of Nullable
