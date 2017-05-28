@@ -557,7 +557,7 @@ end
     example_files = ["../example/01-DataFrame.jl",
         "../example/02-Dict.jl",
         "../example/03-Array.jl",
-        "../example/04-SQLite.jl",
+        # TODO Reenable "../example/04-SQLite.jl",
         "../example/05-Nullable.jl",
         "../example/06-Generator.jl",
         "../example/07-typedtables.jl",
