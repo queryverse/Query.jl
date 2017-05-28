@@ -71,7 +71,7 @@ Base.isnull(x::DataValue) = !x.hasvalue
 
 const DataValuehash_seed = UInt === UInt64 ? 0x932e0143e51d0171 : 0xe51d0171
 
-function hash(x::DataValue, h::UInt)
+function Base.hash(x::DataValue, h::UInt)
     if isnull(x)
         return h + DataValuehash_seed
     else
