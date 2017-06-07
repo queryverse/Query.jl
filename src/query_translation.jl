@@ -13,6 +13,16 @@ function query_expression_translation_phase_A(qe)
 		end
 		i+=1
 	end
+
+	for i in 1:length(qe)
+		qe[i] = postwalk(qe[i]) do x
+			if x isa Expr && x.head==:call && x.args[1]==:(..)
+				return :(map(i->i.$(x.args[3]),$(x.args[2])))
+			else
+				return x
+			end
+		end
+	end
 end
 
 function query_expression_translation_phase_B(qe)
