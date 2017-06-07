@@ -15,7 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, @select, Grouping, @NT
+export @from, @query, @count, @where, @select, Grouping, @NT
 
 include("enumerable/enumerable.jl")
 include("enumerable/enumerable_groupby.jl")
@@ -59,6 +59,16 @@ macro from(range::Expr, body::Expr)
 	translate_query(body)
 
 	return body.args[1]
+end
+
+macro query(range::Symbol, body::Expr)
+	if body.head!=:block
+		error()
+	end
+
+	f_arg = gensym()
+	x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), Expr(:call, esc(:in), esc(range), f_arg), esc(body)))
+	return x
 end
 
 macro orderby_internal(source, f)
