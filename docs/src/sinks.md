@@ -105,6 +105,19 @@ the `TimeArray` type.
 
 [TODO]
 
+## Temporal
+
+The statement `@collect TS` will materialize the query results into
+a new `Temporal.TS` instance. This statement only works if the
+last projection statement transformed the results into a `NamedTuple`,
+for example by using the `{}` syntax, and this `NamedTuple` has one field
+named `Index` that is of a type that can be used as a time index in
+the `TS` type.
+
+### Example
+
+[TODO]
+
 ## IndexedTable
 
 The statement `@collect IndexedTable` will materialize the query results
