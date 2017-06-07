@@ -15,7 +15,7 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @count, @where, @select, Grouping, @NT
+export @from, @query, @count, @where, @select, Grouping, @NT
 
 include("enumerable/enumerable.jl")
 include("enumerable/enumerable_groupby.jl")
@@ -31,7 +31,6 @@ include("enumerable/enumerable_count.jl")
 include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")
 include("queryable/queryable_where.jl")
-include("queryable/queryable_convert2nullable.jl")
 
 include("query_translation.jl")
 
@@ -43,10 +42,6 @@ include("sinks/sink_array.jl")
 include("sinks/sink_dict.jl")
 include("sinks/sink_csvfile.jl")
 include("sinks/sink_datastream_source.jl")
-
-include("enumerable/enumerable_convert2datavalue.jl")
-include("enumerable/enumerable_convert2nullable.jl")
-
 
 macro from(range::Expr, body::Expr)
 	if range.head!=:call || range.args[1]!=:in
@@ -64,6 +59,16 @@ macro from(range::Expr, body::Expr)
 	translate_query(body)
 
 	return body.args[1]
+end
+
+macro query(range::Symbol, body::Expr)
+	if body.head!=:block
+		error()
+	end
+
+	f_arg = gensym()
+	x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), Expr(:call, esc(:in), esc(range), f_arg), esc(body)))
+	return x
 end
 
 macro orderby_internal(source, f)

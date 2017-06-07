@@ -10,7 +10,7 @@ function query(source)
 
     source_enumerable = EnumerableIterable{T,S}(typed_source)
 
-    return convert2datavalue(source_enumerable)
+    return source_enumerable
 end
 
 Base.iteratorsize{T,S}(::Type{EnumerableIterable{T,S}}) = Base.iteratorsize(S)
