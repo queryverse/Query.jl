@@ -550,6 +550,7 @@ q = collect(Query.@select(source_df, i->get(i.children)))
 @test q==[3,5,2]
 
 include("test_indexedtables.jl")
+include("test_pipesyntax.jl")
 
 end
 
