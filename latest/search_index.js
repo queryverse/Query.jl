@@ -81,6 +81,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "gettingstarted.html#Piping-data-through-a-query-1",
+    "page": "Getting Started",
+    "title": "Piping data through a query",
+    "category": "section",
+    "text": "Queries can also be intgrated into data pipelines that are constructed via the |> operator. Such queries are started with the @query macro instead of the @from macro. The main difference between those two macros is that the @query macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the @query macro looks like this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx |> @query(i, begin\n         @where i.age>50\n         @select {i.name, i.children}\n     end) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │Note how the range variable i is the first argument to the @query macro, and then the second argument is a begin...end block that contains the query operators for the query. Note also that it is recommended to use parenthesis () to call the @query macro, otherwise any continuing pipe operator will not work."
+},
+
+{
     "location": "querycommands.html#",
     "page": "Query Commands",
     "title": "Query Commands",
