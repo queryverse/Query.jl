@@ -90,7 +90,7 @@ end
 
 # TODO This should be rewritten as a lazy iterator
 function start{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES})
-    result = Dict{TKey,Grouping{TKey,TR}}()
+    result = OrderedDict{TKey,Grouping{TKey,TR}}()
     for i in iter.source
         key = iter.elementSelector(i)
         let key=key
