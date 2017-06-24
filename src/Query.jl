@@ -32,6 +32,8 @@ include("queryable/queryable.jl")
 include("queryable/queryable_select.jl")
 include("queryable/queryable_where.jl")
 
+include("backends/juliadb/juliadb.jl")
+
 include("query_translation.jl")
 
 include("sources/source_iterable.jl")
