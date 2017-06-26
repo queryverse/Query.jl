@@ -53,7 +53,7 @@ using Query, DataFrames, StatsBase, RCall
                        id6 = sample(1:(N/K),N),
                        v1 = sample(1:5,N),
                        v2 = sample(1:5,N),
-                       v3 = sample(round(rand(100),4),N))
+                       v3 = sample(round.(rand(100),4),N))
 
         return df
     end
@@ -62,7 +62,7 @@ using Query, DataFrames, StatsBase, RCall
 
         t1 = @from i in df begin
                  @group i by i.id1 into g
-                 @select r=sum(g..v1)
+                 @select {r=sum(g..v1)}
                  @collect DataFrame 
             end
         return nothing
