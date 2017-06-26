@@ -45,15 +45,12 @@ using Query, DataFrames, StatsBase, RCall
 
     function createData(N::Int,K::Int)
 
-        N = 1_000
-        K = 100
-
         df = DataFrame(id1 = sample(["id$x" for x in 1:K],N),
                        id2 = sample(["id$x" for x in 1:K],N),
-                       id3 = sample(["id$x" for x in 1:(N/K)],N*K),
+                       id3 = sample(["id$x" for x in 1:(N/K)],N),
                        id4 = sample(1:K,N),
                        id5 = sample(1:K,N),
-                       id6 = sample(1:(N/K),N*K),
+                       id6 = sample(1:(N/K),N),
                        v1 = sample(1:5,N),
                        v2 = sample(1:5,N),
                        v3 = sample(round(rand(100),4),N))
@@ -77,11 +74,14 @@ using Query, DataFrames, StatsBase, RCall
         # warm up
         bench1(d_)
 
+        # timings
+        ti = Dict()
+
         # get real data
         d = createData(N,K)
         # measure
-        t1 = @elapsed bench1(d)
-
+        ti[:sum1] = @elapsed bench1(d)
+        return ti
     end
 
 
