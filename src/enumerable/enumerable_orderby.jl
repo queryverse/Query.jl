@@ -14,7 +14,7 @@ Base.length{T,S,KS,TKS}(iter::EnumerableOrderby{T,S,KS,TKS}) = length(iter.sourc
 
 function orderby(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
-    TKS = Base.return_types(f, (T,))[1]
+    TKS = Base._return_type(f, Tuple{T,})
 
     KS = typeof(f)
 
@@ -23,7 +23,7 @@ end
 
 function orderby_descending(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
-    TKS = Base.return_types(f, (T,))[1]
+    TKS = Base._return_type(f, Tuple{T,})
 
     KS = typeof(f)
 
@@ -72,14 +72,14 @@ Base.length{T,S,KS,TKS}(iter::EnumerableThenBy{T,S,KS,TKS}) = length(iter.source
 
 function thenby(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
-    TKS = Base.return_types(f, (T,))[1]
+    TKS = Base._return_type(f, Tuple{T,})
     KS = typeof(f)
     return EnumerableThenBy{T,typeof(source),KS,TKS}(source, f, false)
 end
 
 function thenby_descending(source::Enumerable, f::Function, f_expr::Expr)
     T = eltype(source)
-    TKS = Base.return_types(f, (T,))[1]
+    TKS = Base._return_type(f, Tuple{T,})
     KS = typeof(f)
     return EnumerableThenBy{T,typeof(source),KS,TKS}(source, f, true)
 end

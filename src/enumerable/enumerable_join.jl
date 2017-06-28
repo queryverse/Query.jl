@@ -13,8 +13,8 @@ Base.eltype{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::Type{EnumerableJoin{T,TKeyOut
 function join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Function, outerKeySelector::Expr, f_innerKeySelector::Function, innerKeySelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     TO = eltype(outer)
     TI = eltype(inner)
-    TKeyOuter = Base.return_types(f_outerKeySelector, (TO,))[1]
-    TKeyInner = Base.return_types(f_innerKeySelector, (TI,))[1]
+    TKeyOuter = Base._return_type(f_outerKeySelector, Tuple{TO,})
+    TKeyInner = Base._return_type(f_innerKeySelector, Tuple{TI,})
 
     if TKeyOuter!=TKeyInner
         error("The keys in the join clause have different types, $TKeyOuter and $TKeyInner.")
@@ -23,7 +23,7 @@ function join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Function
     SO = typeof(outer)
     SI = typeof(inner)
 
-    T = Base.return_types(f_resultSelector, (TO,TI))[1]
+    T = Base._return_type(f_resultSelector, Tuple{TO,TI})
 
     OKS = typeof(f_outerKeySelector)
     IKS = typeof(f_innerKeySelector)

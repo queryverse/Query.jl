@@ -21,7 +21,7 @@ Base.eltype{T,TKey,TS,SO,ES}(iter::Type{EnumerableGroupBySimple{T,TKey,TS,SO,ES}
 
 function group_by(source::Enumerable, f_elementSelector::Function, elementSelector::Expr)
     TS = eltype(source)
-    TKey = Base.return_types(f_elementSelector, (TS,))[1]
+    TKey = Base._return_type(f_elementSelector, Tuple{TS,})
 
     SO = typeof(source)
 
@@ -69,11 +69,11 @@ Base.eltype{T,TKey,TR,SO,ES}(iter::Type{EnumerableGroupBy{T,TKey,TR,SO,ES}}) = T
 
 function group_by(source::Enumerable, f_elementSelector::Function, elementSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     TS = eltype(source)
-    TKey = Base.return_types(f_elementSelector, (TS,))[1]
+    TKey = Base._return_type(f_elementSelector, Tuple{TS,})
 
     SO = typeof(source)
 
-    TR = Base.return_types(f_resultSelector, (TS,))[1]
+    TR = Base._return_type(f_resultSelector, Tuple{TS,})
 
     T = Grouping{TKey,TR}
 
