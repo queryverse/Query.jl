@@ -9,7 +9,8 @@ immutable Grouping{TKey,T} <: AbstractArray{T,1}
 end
 
 import Base.size
-size{TKey,T}(A::Grouping{TKey,T}) = size(A.elements)
+size{TKey,T}(A::Grouping{TKey,T}) = (length(A.elements),)
+Base.IndexStyle(::Type{<:Grouping}) = IndexLinear()
 import Base.getindex
 getindex{TKey,T}(A::Grouping{TKey,T},i) = A.elements[i]
 import Base.length
@@ -63,6 +64,10 @@ immutable EnumerableGroupBy{T,TKey,TR,SO,ES<:Function,RS<:Function} <: Enumerabl
     resultSelector::RS
 end
 
+IterableTables.iteratorsize2(::Type{<:EnumerableGroupBy}) = IterableTables.HasLengthAfterStart()
+
+Base.length(iter::EnumerableGroupBy, state) = length(state[1])
+
 Base.eltype{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES}) = T
 
 Base.eltype{T,TKey,TR,SO,ES}(iter::Type{EnumerableGroupBy{T,TKey,TR,SO,ES}}) = T
@@ -85,25 +90,33 @@ end
 
 # TODO This should be rewritten as a lazy iterator
 function start{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES})
-    result = OrderedDict{TKey,T}()
+    result = OrderedDict{TKey,Grouping{TKey,TR}}()
     for i in iter.source
         key = iter.elementSelector(i)
-        if !haskey(result, key)
-            result[key] = Grouping(key,Array{TR}(0))
-        end
-        push!(result[key].elements,iter.resultSelector(i))
+        let key=key
+            g = get!(result, key) do
+                return Grouping{TKey, TR}(key,Array{TR,1}(0))
+            end
+            push!(g.elements,iter.resultSelector(i))
+        end        
     end
-    return collect(values(result)),1
+    dict_iterator = values(result)
+    return dict_iterator,start(dict_iterator)
 end
 
 function next{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES}, state)
-    results = state[1]
-    curr_index = state[2]
-    return results[curr_index], (results, curr_index+1)
+    dict_iterator = state[1]
+    dict_iterator_state = state[2]
+
+    x = next(dict_iterator, dict_iterator_state)
+    v = x[1]
+    dict_iterator_state_new = x[2]
+
+    return v, (dict_iterator, dict_iterator_state_new)
 end
 
 function done{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES}, state)
-    results = state[1]
-    curr_index = state[2]
-    return curr_index > length(results)
+    dict_iterator = state[1]
+    dict_iterator_state = state[2]    
+    return done(dict_iterator, dict_iterator_state)
 end
