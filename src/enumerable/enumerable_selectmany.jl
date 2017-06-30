@@ -47,11 +47,11 @@ function select_many(source::Enumerable, f_collectionSelector::Function, collect
         input_type_collection_selector = typeof(inner_collection)
         TCE = input_type_collection_selector.parameters[1]
     else
-        input_type_collection_selector = Base.return_types(f_collectionSelector, (TS,))[1]
+        input_type_collection_selector = Base._return_type(f_collectionSelector, Tuple{TS,})
         TCE = typeof(input_type_collection_selector)==Union || input_type_collection_selector==Any ? Any : input_type_collection_selector.parameters[1]
     end
 
-    T = Base.return_types(f_resultSelector, (TS,TCE))[1]
+    T = Base._return_type(f_resultSelector, Tuple{TS,TCE})
     SO = typeof(source)
 
     CS = typeof(f_collectionSelector)

@@ -13,7 +13,7 @@ Base.length{T,S,Q}(iter::EnumerableSelect{T,S,Q}) = length(iter.source)
 
 function select(source::Enumerable, f::Function, f_expr::Expr)
     TS = eltype(source)
-    T = Base.return_types(f, (TS,))[1]
+    T = Base._return_type(f, Tuple{TS,})
     S = typeof(source)
     Q = typeof(f)
     return EnumerableSelect{T,S,Q}(source, f)
