@@ -28,12 +28,12 @@ end
 
 macro where(source, f)
     q = Expr(:quote, f)
-    :(where(Query.query($(esc(source))), $(esc(f)), $(esc(q))))
+    helper_namedtuples_replacement( :(where(Query.query($(esc(source))), $(esc(f)), $(esc(q)))) )
 end
 
 macro where(f)
     q = Expr(:quote, f)
-    :( i -> where(Query.query(i), $(esc(f)), $(esc(q))))
+    helper_namedtuples_replacement( :( i -> where(Query.query(i), $(esc(f)), $(esc(q)))) )
 end
 
 
