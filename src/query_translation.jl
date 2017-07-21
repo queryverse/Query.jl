@@ -1,3 +1,26 @@
+function helper_namedtuples_replacement(ex)
+	return MacroTools.postwalk(ex) do x
+		if x isa Expr && x.head==:cell1d
+			new_ex = Expr(:macrocall, Symbol("@NT"), x.args...)
+
+			for (j,field_in_NT) in enumerate(new_ex.args[2:end])
+				if isa(field_in_NT, Expr) && field_in_NT.head==:(=)
+					new_ex.args[j+1] = Expr(:kw, field_in_NT.args...)
+				elseif isa(field_in_NT, Expr) && field_in_NT.head==:.
+					name_to_use = field_in_NT.args[2].args[1]
+					new_ex.args[j+1] = Expr(:kw, name_to_use, field_in_NT)
+				elseif isa(field_in_NT, Symbol)
+					new_ex.args[j+1] = Expr(:kw, field_in_NT, field_in_NT)
+				end
+			end
+
+			return new_ex
+		else
+			return x
+		end
+	end
+end
+
 function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)
@@ -18,6 +41,7 @@ end
 function query_expression_translation_phase_B(qe)
 	i = 1
 	while i<=length(qe)
+		qe[i] = helper_namedtuples_replacement(qe[i])
 		clause = qe[i]
 		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
 			# Handle the case of a nested query. We are essentially detecting 
@@ -32,20 +56,6 @@ function query_expression_translation_phase_B(qe)
 			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
 		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
 			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
-		elseif clause.head==:macrocall && clause.args[1]==Symbol("@select")
-			if isa(clause.args[2], Expr) && clause.args[2].head==:cell1d
-				clause.args[2] = Expr(:macrocall, Symbol("@NT"), clause.args[2].args...)
-				for (j,field_in_NT) in enumerate(clause.args[2].args[2:end])
-					if isa(field_in_NT, Expr) && field_in_NT.head==:(=)
-						clause.args[2].args[j+1] = Expr(:kw, field_in_NT.args...)
-					elseif isa(field_in_NT, Expr) && field_in_NT.head==:.
-						name_to_use = field_in_NT.args[2].args[1]
-						clause.args[2].args[j+1] = Expr(:kw, name_to_use, field_in_NT)
-					elseif isa(field_in_NT, Symbol)
-						clause.args[2].args[j+1] = Expr(:kw, field_in_NT, field_in_NT)
-					end
-				end
-			end
 		end
 		i+=1
 	end
