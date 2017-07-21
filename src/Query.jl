@@ -15,7 +15,9 @@ import Base.eltype
 import Base.join
 import Base.count
 
-export @from, @query, @count, @where, @select, Grouping, @NT
+export @from, @query, @count, Grouping, @NT
+
+export @select, @where, @groupby
 
 include("enumerable/enumerable.jl")
 include("enumerable/enumerable_groupby.jl")
