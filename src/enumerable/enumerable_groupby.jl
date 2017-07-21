@@ -121,3 +121,9 @@ macro group_by_internal_simple(source,elementSelector)
 	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector))))
 end
 
+macro groupby(source, elementSelector, resultSelector)
+ 	q_elementSelector = Expr(:quote, elementSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(group_by(Query.query($(esc(source))), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
