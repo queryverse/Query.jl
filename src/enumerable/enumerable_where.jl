@@ -27,13 +27,15 @@ macro where_internal(source, f)
 end
 
 macro where(source, f)
-    q = Expr(:quote, f)
-    helper_namedtuples_replacement( :(where(Query.query($(esc(source))), $(esc(f)), $(esc(q)))) )
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    helper_namedtuples_replacement( :(where(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) )
 end
 
 macro where(f)
-    q = Expr(:quote, f)
-    helper_namedtuples_replacement( :( i -> where(Query.query(i), $(esc(f)), $(esc(q)))) )
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
+    helper_namedtuples_replacement( :( i -> where(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) )
 end
 
 

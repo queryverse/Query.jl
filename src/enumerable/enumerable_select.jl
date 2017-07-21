@@ -25,13 +25,15 @@ macro select_internal(source, f)
 end
 
 macro select(source, f)
-    q = Expr(:quote, f)
-    helper_namedtuples_replacement( :(select(Query.query($(esc(source))), $(esc(f)), $(esc(q)))) )
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    helper_namedtuples_replacement( :(select(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) )
 end
 
 macro select(f)
-    q = Expr(:quote, f)
-    helper_namedtuples_replacement( :( i-> select(Query.query(i), $(esc(f)), $(esc(q))) ) )
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    helper_namedtuples_replacement( :( i-> select(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q))) ) )
 end
 
 function start{T,S,Q}(iter::EnumerableSelect{T,S,Q})

@@ -21,6 +21,22 @@ function helper_namedtuples_replacement(ex)
 	end
 end
 
+function helper_replace_anon_func_syntax(ex)
+	if !(isa(ex, Expr) && ex.head==:->)
+		new_symb = gensym()
+		new_ex = MacroTools.postwalk(ex) do x
+			if isa(x, Symbol) && x==:_
+				return new_symb
+			else
+				return x
+			end
+		end
+		return :($new_symb -> $(new_ex) )
+	else
+		return ex
+	end
+end
+
 function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)

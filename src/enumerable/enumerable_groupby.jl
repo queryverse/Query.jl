@@ -122,15 +122,21 @@ macro group_by_internal_simple(source,elementSelector)
 end
 
 macro groupby(source, elementSelector, resultSelector)
- 	q_elementSelector = Expr(:quote, elementSelector)
-	q_resultSelector = Expr(:quote, resultSelector)
+    elementSelector_as_anonym_func = helper_replace_anon_func_syntax(elementSelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
 
-	helper_namedtuples_replacement( :(group_by(Query.query($(esc(source))), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector)))) )
+ 	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
+	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+	helper_namedtuples_replacement( :(group_by(Query.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) )
 end
 
 macro groupby(elementSelector, resultSelector)
- 	q_elementSelector = Expr(:quote, elementSelector)
-	q_resultSelector = Expr(:quote, resultSelector)
+    elementSelector_as_anonym_func = helper_replace_anon_func_syntax(elementSelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
 
-	helper_namedtuples_replacement( :( i -> group_by(Query.query(i), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector)))) )
+ 	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
+	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+	helper_namedtuples_replacement( :( i -> group_by(Query.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) )
 end
