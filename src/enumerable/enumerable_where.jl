@@ -31,6 +31,12 @@ macro where(source, f)
     :(where(Query.query($(esc(source))), $(esc(f)), $(esc(q))))
 end
 
+macro where(f)
+    q = Expr(:quote, f)
+    :( i -> where(Query.query(i), $(esc(f)), $(esc(q))))
+end
+
+
 function start{T,S,Q}(iter::EnumerableWhere{T,S,Q})
     s = start(iter.source)
     while !done(iter.source, s)

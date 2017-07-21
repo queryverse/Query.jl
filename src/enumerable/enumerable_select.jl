@@ -29,6 +29,11 @@ macro select(source, f)
     :(select(Query.query($(esc(source))), $(esc(f)), $(esc(q))))
 end
 
+macro select(f)
+    q = Expr(:quote, f)
+    :( i-> select(Query.query(i), $(esc(f)), $(esc(q))) )
+end
+
 function start{T,S,Q}(iter::EnumerableSelect{T,S,Q})
     s = start(iter.source)
     return s

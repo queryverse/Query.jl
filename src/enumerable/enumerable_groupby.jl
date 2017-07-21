@@ -127,3 +127,10 @@ macro groupby(source, elementSelector, resultSelector)
 
 	:(group_by(Query.query($(esc(source))), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
 end
+
+macro groupby(elementSelector, resultSelector)
+ 	q_elementSelector = Expr(:quote, elementSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:( i -> group_by(Query.query(i), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
