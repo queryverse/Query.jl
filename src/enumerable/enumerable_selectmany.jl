@@ -83,3 +83,10 @@ function done{T,SO,CS,RS}(iter::EnumerableSelectMany{T,SO,CS,RS},state)
     curr_index = state[2]
     return curr_index > length(results)
 end
+
+macro select_many_internal(source,collectionSelector,resultSelector)
+	q_collectionSelector = Expr(:quote, collectionSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(select_many($(esc(source)), $(esc(collectionSelector)), $(esc(q_collectionSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end

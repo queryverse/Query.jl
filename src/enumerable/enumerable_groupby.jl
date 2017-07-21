@@ -107,3 +107,17 @@ function done{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES}, state)
     curr_index = state[2]
     return curr_index > length(results)
 end
+
+macro group_by_internal(source,elementSelector,resultSelector)
+	q_elementSelector = Expr(:quote, elementSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
+
+macro group_by_internal_simple(source,elementSelector)
+	q_elementSelector = Expr(:quote, elementSelector)
+
+	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector))))
+end
+
