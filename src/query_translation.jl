@@ -1,5 +1,5 @@
 function helper_namedtuples_replacement(ex)
-	return MacroTools.postwalk(ex) do x
+	return postwalk(ex) do x
 		if x isa Expr && x.head==:cell1d
 			new_ex = Expr(:macrocall, Symbol("@NT"), x.args...)
 
@@ -24,7 +24,7 @@ end
 function helper_replace_anon_func_syntax(ex)
 	if !(isa(ex, Expr) && ex.head==:->)
 		new_symb = gensym()
-		new_ex = MacroTools.postwalk(ex) do x
+		new_ex = postwalk(ex) do x
 			if isa(x, Symbol) && x==:_
 				return new_symb
 			else
