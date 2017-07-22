@@ -5,7 +5,7 @@ using NamedTuples
 using DataStructures
 using IterableTables
 using DataValues
-import MacroTools
+using MacroTools: postwalk
 
 import Base.start
 import Base.next

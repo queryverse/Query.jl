@@ -1,5 +1,5 @@
 function helper_namedtuples_replacement(ex)
-	return MacroTools.postwalk(ex) do x
+	return postwalk(ex) do x
 		if x isa Expr && x.head==:cell1d
 			new_ex = Expr(:macrocall, Symbol("@NT"), x.args...)
 
@@ -24,7 +24,7 @@ end
 function helper_replace_anon_func_syntax(ex)
 	if !(isa(ex, Expr) && ex.head==:->)
 		new_symb = gensym()
-		new_ex = MacroTools.postwalk(ex) do x
+		new_ex = postwalk(ex) do x
 			if isa(x, Symbol) && x==:_
 				return new_symb
 			else
@@ -51,6 +51,16 @@ function query_expression_translation_phase_A(qe)
 			insert!(qe,i+1,nested_from)
 		end
 		i+=1
+	end
+
+	for i in 1:length(qe)
+		qe[i] = postwalk(qe[i]) do x
+			if x isa Expr && x.head==:call && x.args[1]==:(..)
+				return :(map(i->i.$(x.args[3]),$(x.args[2])))
+			else
+				return x
+			end
+		end
 	end
 end
 
