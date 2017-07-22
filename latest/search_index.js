@@ -241,6 +241,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "querycommands.html#Split-Apply-Combine-(a.k.a.-dplyr)-1",
+    "page": "Query Commands",
+    "title": "Split-Apply-Combine (a.k.a. dplyr)",
+    "category": "section",
+    "text": "Query.jl provides special syntax to summarise data in a Query.Grouping as above. Summarising here is synonymous to aggregating or collapsing the dataset over a certain grouping variable. Summarising thus requires an aggregating function like mean, maximum, or any other function that takes a vector and returns a scalar. The special syntax is @select new_var = agg_fun(g..var), where agg_fun is your aggregation function (e.g. mean), g is your grouping, and var is the relevant column that you want to summarise."
+},
+
+{
+    "location": "querycommands.html#Example-9",
+    "page": "Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# Output\n\n2×4 DataFrames.DataFrame\n│ Row │ group │ mage │ oldest │ youngest │\n├─────┼───────┼──────┼────────┼──────────┤\n│ 1   │ a     │ 20.0 │ 30.0   │ 10.0     │\n│ 2   │ b     │ 23.0 │ 33.0   │ 13.0     │\n"
+},
+
+{
     "location": "querycommands.html#Range-variables-1",
     "page": "Query Commands",
     "title": "Range variables",
@@ -249,7 +265,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-9",
+    "location": "querycommands.html#Example-10",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
