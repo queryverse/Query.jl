@@ -47,11 +47,11 @@ function select_many(source::Enumerable, f_collectionSelector::Function, collect
         input_type_collection_selector = typeof(inner_collection)
         TCE = input_type_collection_selector.parameters[1]
     else
-        input_type_collection_selector = Base.return_types(f_collectionSelector, (TS,))[1]
+        input_type_collection_selector = Base._return_type(f_collectionSelector, Tuple{TS,})
         TCE = typeof(input_type_collection_selector)==Union || input_type_collection_selector==Any ? Any : input_type_collection_selector.parameters[1]
     end
 
-    T = Base.return_types(f_resultSelector, (TS,TCE))[1]
+    T = Base._return_type(f_resultSelector, Tuple{TS,TCE})
     SO = typeof(source)
 
     CS = typeof(f_collectionSelector)
@@ -82,4 +82,11 @@ function done{T,SO,CS,RS}(iter::EnumerableSelectMany{T,SO,CS,RS},state)
     results = state[1]
     curr_index = state[2]
     return curr_index > length(results)
+end
+
+macro select_many_internal(source,collectionSelector,resultSelector)
+	q_collectionSelector = Expr(:quote, collectionSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(select_many($(esc(source)), $(esc(collectionSelector)), $(esc(q_collectionSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
 end

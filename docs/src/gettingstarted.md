@@ -60,3 +60,36 @@ a missing value. For example, to apply the `log` function on a column
 that is of type `DataValue{Float64}`, i.e. a column that can have
 missing values, one would write `log.(i.a)`, assuming the column is named
 `a`. The return type of this call will be `DataValue{Float64}`.
+
+## Piping data through a query
+
+Queries can also be intgrated into data pipelines that are constructed via
+the `|>` operator. Such queries are started with the `@query` macro instead of
+the `@from` macro. The main difference between those two macros is that the
+`@query` macro does not take an argument for the data source, instead the
+data source needs to be piped into the query. In practice the syntax for
+the `@query` macro looks like this:
+```julia
+using Query, DataFrames
+
+df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
+
+x |> @query(i, begin
+         @where i.age>50
+         @select {i.name, i.children}
+     end) |> DataFrame
+
+println(x)
+
+# output
+
+1×2 DataFrames.DataFrame
+│ Row │ name   │ children │
+├─────┼────────┼──────────┤
+│ 1   │ "Kirk" │ 2        │
+```
+Note how the range variable `i` is the first argument to the `@query` macro,
+and then the second argument is a `begin`...`end` block that contains the
+query operators for the query. Note also that it is recommended to use
+parenthesis `()` to call the `@query` macro, otherwise any continuing pipe
+operator will not work.

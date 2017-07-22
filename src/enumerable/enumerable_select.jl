@@ -13,7 +13,7 @@ Base.length{T,S,Q}(iter::EnumerableSelect{T,S,Q}) = length(iter.source)
 
 function select(source::Enumerable, f::Function, f_expr::Expr)
     TS = eltype(source)
-    T = Base.return_types(f, (TS,))[1]
+    T = Base._return_type(f, Tuple{TS,})
     S = typeof(source)
     Q = typeof(f)
     return EnumerableSelect{T,S,Q}(source, f)
@@ -25,8 +25,15 @@ macro select_internal(source, f)
 end
 
 macro select(source, f)
-    q = Expr(:quote, f)
-    :(select(Query.query($(esc(source))), $(esc(f)), $(esc(q))))
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    helper_namedtuples_replacement( :(select(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) )
+end
+
+macro select(f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    helper_namedtuples_replacement( :( i-> select(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q))) ) )
 end
 
 function start{T,S,Q}(iter::EnumerableSelect{T,S,Q})

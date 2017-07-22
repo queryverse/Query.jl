@@ -13,8 +13,8 @@ Base.eltype{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::Type{EnumerableGroupJoin{T,TK
 function group_join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Function, outerKeySelector::Expr, f_innerKeySelector::Function, innerKeySelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     TO = eltype(outer)
     TI = eltype(inner)
-    TKeyOuter = Base.return_types(f_outerKeySelector, (TO,))[1]
-    TKeyInner = Base.return_types(f_innerKeySelector, (TI,))[1]
+    TKeyOuter = Base._return_type(f_outerKeySelector, Tuple{TO,})
+    TKeyInner = Base._return_type(f_innerKeySelector, Tuple{TI,})
 
     if TKeyOuter!=TKeyInner
         error("The keys in the join clause have different types, $TKeyOuter and $TKeyInner.")
@@ -23,7 +23,7 @@ function group_join(outer::Enumerable, inner::Enumerable, f_outerKeySelector::Fu
     SO = typeof(outer)
     SI = typeof(inner)
 
-    T = Base.return_types(f_resultSelector, (TO,Array{TI,1}))[1]
+    T = Base._return_type(f_resultSelector, Tuple{TO,Array{TI,1}})
 
     OKS = typeof(f_outerKeySelector)
     IKS = typeof(f_innerKeySelector)
@@ -68,4 +68,12 @@ function done{T,TKeyOuter,TI,SO,SI,OKS,IKS,RS}(iter::EnumerableGroupJoin{T,TKeyO
     results = state[1]
     curr_index = state[2]
     return curr_index > length(results)
+end
+
+macro group_join_internal(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
+	q_outerKeySelector = Expr(:quote, outerKeySelector)
+	q_innerKeySelector = Expr(:quote, innerKeySelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(group_join($(esc(outer)), $(esc(inner)), $(esc(outerKeySelector)), $(esc(q_outerKeySelector)), $(esc(innerKeySelector)),$(esc(q_innerKeySelector)), $(esc(resultSelector)),$(esc(q_resultSelector))))
 end

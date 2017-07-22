@@ -1,3 +1,7 @@
+Query.jl v0.6.0 Realease Notes
+==============================
+* Add @query macro for pipe syntax
+
 Query.jl v0.5.0 Release Notes
 =============================
 * Fix remaining julia 0.6 compat problems

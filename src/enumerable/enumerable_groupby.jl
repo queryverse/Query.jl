@@ -21,7 +21,7 @@ Base.eltype{T,TKey,TS,SO,ES}(iter::Type{EnumerableGroupBySimple{T,TKey,TS,SO,ES}
 
 function group_by(source::Enumerable, f_elementSelector::Function, elementSelector::Expr)
     TS = eltype(source)
-    TKey = Base.return_types(f_elementSelector, (TS,))[1]
+    TKey = Base._return_type(f_elementSelector, Tuple{TS,})
 
     SO = typeof(source)
 
@@ -69,11 +69,11 @@ Base.eltype{T,TKey,TR,SO,ES}(iter::Type{EnumerableGroupBy{T,TKey,TR,SO,ES}}) = T
 
 function group_by(source::Enumerable, f_elementSelector::Function, elementSelector::Expr, f_resultSelector::Function, resultSelector::Expr)
     TS = eltype(source)
-    TKey = Base.return_types(f_elementSelector, (TS,))[1]
+    TKey = Base._return_type(f_elementSelector, Tuple{TS,})
 
     SO = typeof(source)
 
-    TR = Base.return_types(f_resultSelector, (TS,))[1]
+    TR = Base._return_type(f_resultSelector, Tuple{TS,})
 
     T = Grouping{TKey,TR}
 
@@ -106,4 +106,37 @@ function done{T,TKey,TR,SO,ES}(iter::EnumerableGroupBy{T,TKey,TR,SO,ES}, state)
     results = state[1]
     curr_index = state[2]
     return curr_index > length(results)
+end
+
+macro group_by_internal(source,elementSelector,resultSelector)
+	q_elementSelector = Expr(:quote, elementSelector)
+	q_resultSelector = Expr(:quote, resultSelector)
+
+	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector)), $(esc(resultSelector)), $(esc(q_resultSelector))))
+end
+
+macro group_by_internal_simple(source,elementSelector)
+	q_elementSelector = Expr(:quote, elementSelector)
+
+	:(group_by($(esc(source)), $(esc(elementSelector)), $(esc(q_elementSelector))))
+end
+
+macro groupby(source, elementSelector, resultSelector)
+    elementSelector_as_anonym_func = helper_replace_anon_func_syntax(elementSelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
+
+ 	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
+	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+	helper_namedtuples_replacement( :(group_by(Query.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) )
+end
+
+macro groupby(elementSelector, resultSelector)
+    elementSelector_as_anonym_func = helper_replace_anon_func_syntax(elementSelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
+
+ 	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
+	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+	helper_namedtuples_replacement( :( i -> group_by(Query.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) )
 end

@@ -480,18 +480,17 @@ q = @from i in source_df begin
     @collect Feather.Sink("test-output.feather")
 end
 Data.close!(q)
-# TODO Reenable these tests once the Feather bug is fixed
-# df_loaded_from_feather = Feather.read("test-output.feather")
-# @test size(source_df) == size(df_loaded_from_feather)
-# @test source_df[1,:name] == get(df_loaded_from_feather[1,:name])
-# @test source_df[2,:name] == get(df_loaded_from_feather[2,:name])
-# @test source_df[3,:name] == get(df_loaded_from_feather[3,:name])
-# @test source_df[1,:age] == get(df_loaded_from_feather[1,:age])
-# @test source_df[2,:age] == get(df_loaded_from_feather[2,:age])
-# @test source_df[3,:age] == get(df_loaded_from_feather[3,:age])
-# @test source_df[1,:children] == get(df_loaded_from_feather[1,:children])
-# @test source_df[2,:children] == get(df_loaded_from_feather[2,:children])
-# @test source_df[3,:children] == get(df_loaded_from_feather[3,:children])
+df_loaded_from_feather = Feather.read("test-output.feather")
+@test size(source_df) == size(df_loaded_from_feather)
+@test source_df[1,:name] == get(df_loaded_from_feather[1,:name])
+@test source_df[2,:name] == get(df_loaded_from_feather[2,:name])
+@test source_df[3,:name] == get(df_loaded_from_feather[3,:name])
+@test source_df[1,:age] == get(df_loaded_from_feather[1,:age])
+@test source_df[2,:age] == get(df_loaded_from_feather[2,:age])
+@test source_df[3,:age] == get(df_loaded_from_feather[3,:age])
+@test source_df[1,:children] == get(df_loaded_from_feather[1,:children])
+@test source_df[2,:children] == get(df_loaded_from_feather[2,:children])
+@test source_df[3,:children] == get(df_loaded_from_feather[3,:children])
 
 q = Query.collect(Query.default_if_empty(DataValue{String}[]))
 @test length(q)==1
@@ -558,7 +557,7 @@ end
     example_files = ["../example/01-DataFrame.jl",
         "../example/02-Dict.jl",
         "../example/03-Array.jl",
-        # TODO Reenable "../example/04-SQLite.jl",
+        "../example/04-SQLite.jl",
         "../example/05-Nullable.jl",
         "../example/06-Generator.jl",
         "../example/07-typedtables.jl",
