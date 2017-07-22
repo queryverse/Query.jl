@@ -283,6 +283,37 @@ println(x)
 │ 2   │ 2   │ 2     │
 ```
 
+## Split-Apply-Combine (a.k.a. `dplyr`)
+
+`Query.jl` provides special syntax to summarise data in a `Query.Grouping` as above. *Summarising* here is synonymous to *aggregating* or *collapsing* the dataset over a certain grouping variable. Summarising thus requires an aggregating function like `mean`, `maximum`, or any other function that takes a vector and returns a scalar. The special syntax is `@select new_var = agg_fun(g..var)`, where `agg_fun` is your aggregation function (e.g. `mean`), `g` is your grouping, and `var` is the relevant column that you want to summarise.
+
+#### Example
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]), 
+     age=vcat([10., 20., 30.],[10., 20., 30.].+3), 
+     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])
+
+x = @from i in df begin
+    @group i by i.state into g
+    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}
+    @collect DataFrame
+end
+
+println(x)
+
+# Output
+
+2×4 DataFrames.DataFrame
+│ Row │ group │ mage │ oldest │ youngest │
+├─────┼───────┼──────┼────────┼──────────┤
+│ 1   │ a     │ 20.0 │ 30.0   │ 10.0     │
+│ 2   │ b     │ 23.0 │ 33.0   │ 13.0     │
+
+```
+
 ## Range variables
 
 The `@let` statement introduces new range variables in a query expression. The syntax for the range statement is `@let <range variable> = <value selector>`. `<range variable>` specifies the name of the new range variable and `<value selector>` is any julia expression that returns the value that should be assigned to the new range variable.
