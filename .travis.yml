@@ -9,7 +9,6 @@ notifications:
   email: false
 matrix:
   allow_failure:
-    - julia: 0.6
     - julia: nightly
 branches:
   only:
