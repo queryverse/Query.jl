@@ -22,7 +22,7 @@ println(x)
 
 # output
 
-Query.DataValue{String}["John","Sally","Kirk"]
+DataValues.DataValue{String}["John", "Sally", "Kirk"]
 ```
 
 ## DataFrame, DataTable and TypedTable

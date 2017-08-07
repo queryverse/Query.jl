@@ -82,7 +82,7 @@ println(x)
 
 # output
 
-[1,4,9]
+[1, 4, 9]
 ```
 One of the most common patterns in Query is to transform elements into [named tuples](https://github.com/blackrock/NamedTuples.jl) with a `@select` statement. There are two ways to create a [named tuples](https://github.com/blackrock/NamedTuples.jl) in Query: a) using the standard syntax from the [NamedTuples](https://github.com/blackrock/NamedTuples.jl) package, or b) an experimental syntax that *only* works in a Query `@select` statement. The experimental syntax is based on curly brackets `{}`. An example that highlights all options of the experimental syntax is this:
 
@@ -256,7 +256,7 @@ println(x)
 
 # output
 
-Query.Grouping{Query.DataValue{Int64},Query.DataValue{String}}[Query.DataValue{String}["John"],Query.DataValue{String}["Sally","Kirk"]]
+Query.Grouping{DataValues.DataValue{Int64},DataValues.DataValue{String}}[DataValues.DataValue{String}["John"], DataValues.DataValue{String}["Sally", "Kirk"]]
 ```
 
 This is an example of a `@group` statement with an `into` clause:
@@ -304,7 +304,7 @@ end
 
 println(x)
 
-# Output
+# output
 
 2×4 DataFrames.DataFrame
 │ Row │ group │ mage │ oldest │ youngest │
