@@ -1,4 +1,5 @@
 using Query
+using IterableTables
 using DataFrames
 using DataTables
 using DataArrays

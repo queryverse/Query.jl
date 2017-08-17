@@ -3,6 +3,7 @@ module Query
 using Requires
 using NamedTuples
 using DataStructures
+using TableTraits
 using IterableTables
 using DataValues
 using MacroTools: postwalk

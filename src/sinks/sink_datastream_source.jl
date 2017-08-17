@@ -1,4 +1,5 @@
 @require DataStreams begin
+using IterableTables
 using DataStreams
 
 function collect{TSink<:Data.Sink}(enumerable::Enumerable, sink::TSink)
