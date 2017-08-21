@@ -1,3 +1,11 @@
+# Query.jl v0.7.0 Realease Notes
+* Add a..b syntax
+* Fix some performance problems
+* Fixed eltype detection
+* Enable use of {} syntax everywhere
+* Add experimental @select, @where and @groupby standalone macros
+* Migrate to TableTraits.jl
+
 # Query.jl v0.6.0 Realease Notes
 * Add @query macro for pipe syntax
 
