@@ -149,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "The following example transforms each element from the source by squaring it.using Query\n\ndata = [1,2,3]\n\nx = @from i in data begin\n    @select i^2\n    @collect\nend\n\nprintln(x)\n\n# output\n\n[1,4,9]One of the most common patterns in Query is to transform elements into named tuples with a @select statement. There are two ways to create a named tuples in Query: a) using the standard syntax from the NamedTuples package, or b) an experimental syntax that only works in a Query @select statement. The experimental syntax is based on curly brackets {}. An example that highlights all options of the experimental syntax is this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, Age=i.age}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ name    │ Age  │\n├─────┼─────────┼──────┤\n│ 1   │ \"John\"  │ 23.0 │\n│ 2   │ \"Sally\" │ 42.0 │\n│ 3   │ \"Kirk\"  │ 59.0 │The elements of the new named tuple are separated by commas ,. One can specify an explicit name for an individual element of a named tuple using the = syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn't have to specify a name explicitly, instead the {} syntax automatically infers the name."
+    "text": "The following example transforms each element from the source by squaring it.using Query\n\ndata = [1,2,3]\n\nx = @from i in data begin\n    @select i^2\n    @collect\nend\n\nprintln(x)\n\n# output\n\n[1, 4, 9]One of the most common patterns in Query is to transform elements into named tuples with a @select statement. There are two ways to create a named tuples in Query: a) using the standard syntax from the NamedTuples package, or b) an experimental syntax that only works in a Query @select statement. The experimental syntax is based on curly brackets {}. An example that highlights all options of the experimental syntax is this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, Age=i.age}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ name    │ Age  │\n├─────┼─────────┼──────┤\n│ 1   │ \"John\"  │ 23.0 │\n│ 2   │ \"Sally\" │ 42.0 │\n│ 3   │ \"Kirk\"  │ 59.0 │The elements of the new named tuple are separated by commas ,. One can specify an explicit name for an individual element of a named tuple using the = syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn't have to specify a name explicitly, instead the {} syntax automatically infers the name."
 },
 
 {
@@ -237,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.Grouping{Query.DataValue{Int64},Query.DataValue{String}}[Query.DataValue{String}[\"John\"],Query.DataValue{String}[\"Sally\",\"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=g.key,Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key │ Count │\n├─────┼─────┼───────┤\n│ 1   │ 3   │ 1     │\n│ 2   │ 2   │ 2     │"
+    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.Grouping{DataValues.DataValue{Int64},DataValues.DataValue{String}}[DataValues.DataValue{String}[\"John\"], DataValues.DataValue{String}[\"Sally\", \"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=g.key,Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key │ Count │\n├─────┼─────┼───────┤\n│ 1   │ 3   │ 1     │\n│ 2   │ 2   │ 2     │"
 },
 
 {
@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# Output\n\n2×4 DataFrames.DataFrame\n│ Row │ group │ mage │ oldest │ youngest │\n├─────┼───────┼──────┼────────┼──────────┤\n│ 1   │ a     │ 20.0 │ 30.0   │ 10.0     │\n│ 2   │ b     │ 23.0 │ 33.0   │ 13.0     │\n"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ group │ mage │ oldest │ youngest │\n├─────┼───────┼──────┼────────┼──────────┤\n│ 1   │ a     │ 20.0 │ 30.0   │ 10.0     │\n│ 2   │ b     │ 23.0 │ 33.0   │ 13.0     │\n"
 },
 
 {
@@ -349,7 +349,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "This example reads a CSV file:using Query, DataStreams, CSV\n\nq = @from i in CSV.Source(joinpath(Pkg.dir(\"Query\"),\"example\", \"data.csv\")) begin\n    @where i.Children > 2\n    @select i.Name\n    @collect\nend\n\nprintln(q)\n\n# output\n\nQuery.DataValue{String}[\"John\",\"Kirk\"]This example reads a Feather file:using Query, DataStreams, Feather\n\nq = @from i in Feather.Source(joinpath(Pkg.dir(\"Feather\"),\"test\", \"data\", \"airquality.feather\")) begin\n    @where i.Day==2\n    @select i.Month\n    @collect\nend\n\nprintln(q)\n\n# output\n\nWARNING: This Feather file is old and will not be readable beyond the 0.3.0 release\nQuery.DataValue{Int32}[5,6,7,8,9]"
+    "text": "This example reads a CSV file:using Query, DataStreams, CSV\n\nq = @from i in CSV.Source(joinpath(Pkg.dir(\"Query\"),\"example\", \"data.csv\")) begin\n    @where i.Children > 2\n    @select i.Name\n    @collect\nend\n\nprintln(q)\n\n# output\n\nDataValues.DataValue{String}[\"John\", \"Kirk\"]This example reads a Feather file:using Query, DataStreams, Feather\n\nq = @from i in Feather.Source(joinpath(Pkg.dir(\"Feather\"),\"test\", \"data\", \"airquality.feather\")) begin\n    @where i.Day==2\n    @select i.Month\n    @collect\nend\n\nprintln(q)\n\n# output\n\nWARNING: This Feather file is old and will not be readable beyond the 0.3.0 release\nDataValues.DataValue{Int32}[5, 6, 7, 8, 9]"
 },
 
 {
@@ -365,7 +365,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, IndexedTables\n\nsource_indexedtable = IndexedTable(Columns(city = [fill(\"New York\",3); fill(\"Boston\",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), Columns(value=[91,89,91,95,83,76]))\n\nq = @from i in source_indexedtable begin\n    @where i.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91,89,91]"
+    "text": "using Query, IndexedTables\n\nsource_indexedtable = IndexedTable(Columns(city = [fill(\"New York\",3); fill(\"Boston\",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), Columns(value=[91,89,91,95,83,76]))\n\nq = @from i in source_indexedtable begin\n    @where i.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91, 89, 91]"
 },
 
 {
@@ -413,7 +413,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i.name\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.DataValue{String}[\"John\",\"Sally\",\"Kirk\"]"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i.name\n    @collect\nend\n\nprintln(x)\n\n# output\n\nDataValues.DataValue{String}[\"John\", \"Sally\", \"Kirk\"]"
 },
 
 {
