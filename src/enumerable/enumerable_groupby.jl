@@ -145,4 +145,14 @@ macro groupby(elementSelector, resultSelector)
         helper_replace_field_extraction_syntax
 end
 
+macro groupby(elementSelector)
+    elementSelector_as_anonym_func = helper_replace_anon_func_syntax(elementSelector)
+    resultSelector_as_anonym_func = :(i->i)
+
+ 	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
+	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+    return :( i -> group_by(Query.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
 end
