@@ -128,7 +128,9 @@ macro groupby(source, elementSelector, resultSelector)
  	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-	helper_namedtuples_replacement( :(group_by(Query.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) )
+    return :(group_by(Query.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
 end
 
 macro groupby(elementSelector, resultSelector)
@@ -138,5 +140,9 @@ macro groupby(elementSelector, resultSelector)
  	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-	helper_namedtuples_replacement( :( i -> group_by(Query.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) )
+    return :( i -> group_by(Query.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
 end

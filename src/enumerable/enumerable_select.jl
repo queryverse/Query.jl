@@ -27,13 +27,17 @@ end
 macro select(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
-    helper_namedtuples_replacement( :(select(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) )
+    return :(select(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
 end
 
 macro select(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
-    helper_namedtuples_replacement( :( i-> select(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q))) ) )
+    return :( i-> select(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q))) ) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
 end
 
 function start{T,S,Q}(iter::EnumerableSelect{T,S,Q})
