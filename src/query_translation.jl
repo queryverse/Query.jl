@@ -37,6 +37,16 @@ function helper_replace_anon_func_syntax(ex)
 	end
 end
 
+function helper_replace_field_extraction_syntax(ex)
+	return postwalk(ex) do x
+		if x isa Expr && x.head==:call && x.args[1]==:(..)
+			return :(map(i->i.$(x.args[3]),$(x.args[2])))
+		else
+			return x
+		end
+	end
+end
+
 function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)
@@ -54,13 +64,7 @@ function query_expression_translation_phase_A(qe)
 	end
 
 	for i in 1:length(qe)
-		qe[i] = postwalk(qe[i]) do x
-			if x isa Expr && x.head==:call && x.args[1]==:(..)
-				return :(map(i->i.$(x.args[3]),$(x.args[2])))
-			else
-				return x
-			end
-		end
+		qe[i] = helper_replace_field_extraction_syntax(qe[i])
 	end
 end
 
