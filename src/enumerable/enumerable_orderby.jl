@@ -155,3 +155,67 @@ macro thenby_descending_internal(source, f)
 	q = Expr(:quote, f)
     :(thenby_descending($(esc(source)), $(esc(f)), $(esc(q))))
 end
+
+macro orderby(source, f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    return :(orderby(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro orderby(f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
+    return :( i -> orderby(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro orderby_descending(source, f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    return :(orderby_descending(Query.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro orderby_descending(f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
+    return :( i -> orderby_descending(Query.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro thenby(source, f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    return :(thenby($(esc(source)), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro thenby(f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
+    return :( i -> thenby(i, $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro thenby_descending(source, f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, f_as_anonym_func)
+    return :(thenby_descending($(esc(source)), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro thenby_descending(f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
+    return :( i -> thenby_descending(i, $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end

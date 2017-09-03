@@ -19,7 +19,8 @@ import Base.count
 
 export @from, @query, @count, Grouping, @NT
 
-export @select, @where, @groupby
+export @select, @where, @groupby, @orderby, @orderby_descending,
+	@thenby, @thenby_descending
 
 include("enumerable/enumerable.jl")
 include("enumerable/enumerable_groupby.jl")
