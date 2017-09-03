@@ -23,6 +23,7 @@ makedocs(
 		"Query Commands" => "querycommands.md",
 		"Data Sources" => "sources.md",
 		"Data Sinks" => "sinks.md",
+		"Experimental Features" => "experimental.md",
 		"Internals" => "internals.md"]
 )
 
