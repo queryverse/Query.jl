@@ -14,7 +14,7 @@ Here is an example that demonstrates their use:
 ```julia
 using Query, DataFrames
 
-df = DataFrame(a=[1,1,2,3], b=[4,5,6, 8])
+df = DataFrame(a=[1,1,2,3], b=[4,5,6,8])
 
 df2 = df |>
     @groupby(_.a) |>
@@ -65,7 +65,7 @@ the source and returns `true` if that element should be retained, and
 ### The `@groupby` command
 
 There are two versions of the `@groupby` command. The simple version has
-the form `@groupby(source, key_selector)`. `source` can be any any source
+the form `@groupby(source, key_selector)`. `source` can be any source
 that can be queried. `key_selector` must be an anonymous function that
 returns a value for each element of `source` by which the source elements
 should be grouped.
@@ -76,9 +76,23 @@ variant. `element_selector` must be an anonymous function that is applied
 to each element of the `source` before that element is placed into a group,
 i.e. this is a projection function.
 
-### The `@orderby` command
+### The `@orderby`, `@orderby_descending`, `@thenby` and `@thenby_descending` command
 
-[TODO]
+There are four commands that are used to sort data. Any sorting has to
+start with either a `@orderby` or `@orderby_descending` command. `@thenby`
+and `@thenby_descending` commands can only directly follow a previous sorting
+command. They specify how ties in the previous sorting condition are to be
+resolved.
+
+The general sorting command form is `@orderby(source, key_selector)`.
+`source` can be any source than can be queried. `key_selector` must be an
+anonymous function that returns a value for each element of `source`. The
+elements of the source are then sorted is ascending order by the value
+returned from the `key_selector` function. The `@orderby_descending`
+command works in the same way, but sorts things in descending order. The
+`@thenby` and `@thenby_descending` command only accept the return value
+of any of the four sorting commands as their `source`, otherwise they have
+the same syntax as the `@orderby` and `@orderby_descending` commands.
 
 ## The `..` syntax
 
