@@ -100,6 +100,25 @@ The syntax `a..b` is translated into `map(i->i.b, a)` in any query
 expression. This is especially helpful when computing some reduction of
 a given column of a grouped table.
 
+For example, the following command groups a table by column `a`, and then
+computes the mean of the `b` column for each group:
+
+```julia
+using DataFrames, Query
+
+df = DataFrame(a=[1,1,2,3], b=[4,5,6,8])
+
+@from i in df begin
+    @group i by i.a into g
+    @select {a=i.key, b=mean(g..b)}
+    @collect DataFrame
+end
+```
+
+The `@group` command here creates a list of tables, i.e. `g` will hold
+a full table for each group. The syntax `g..b` then extracts a single
+column from that table.
+
 ## The `_` syntax
 
 This syntax only works in the standalone query commands. Instead of writing
