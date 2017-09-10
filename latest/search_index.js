@@ -541,7 +541,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "Experimental features",
     "category": "section",
-    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @select, @where, @groupby and @orderby (and various variants) commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6, 8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @select({a=_.key, b=mean(_..b)}) |>\n    @where(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
+    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @select, @where, @groupby and @orderby (and various variants) commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @select({a=_.key, b=mean(_..b)}) |>\n    @where(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
 },
 
 {
@@ -573,15 +573,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "The @groupby command",
     "category": "section",
-    "text": "There are two versions of the @groupby command. The simple version has the form @groupby(source, key_selector). source can be any any source that can be queried. key_selector must be an anonymous function that returns a value for each element of source by which the source elements should be grouped.The second variant has the form @groupby(source, key_selector, element_selector). The definition of source and key_selector is the same as in the simple variant. element_selector must be an anonymous function that is applied to each element of the source before that element is placed into a group, i.e. this is a projection function."
+    "text": "There are two versions of the @groupby command. The simple version has the form @groupby(source, key_selector). source can be any source that can be queried. key_selector must be an anonymous function that returns a value for each element of source by which the source elements should be grouped.The second variant has the form @groupby(source, key_selector, element_selector). The definition of source and key_selector is the same as in the simple variant. element_selector must be an anonymous function that is applied to each element of the source before that element is placed into a group, i.e. this is a projection function."
 },
 
 {
-    "location": "experimental.html#The-@orderby-command-1",
+    "location": "experimental.html#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1",
     "page": "Experimental Features",
-    "title": "The @orderby command",
+    "title": "The @orderby, @orderby_descending, @thenby and @thenby_descending command",
     "category": "section",
-    "text": "[TODO]"
+    "text": "There are four commands that are used to sort data. Any sorting has to start with either a @orderby or @orderby_descending command. @thenby and @thenby_descending commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.The general sorting command form is @orderby(source, key_selector). source can be any source than can be queried. key_selector must be an anonymous function that returns a value for each element of source. The elements of the source are then sorted is ascending order by the value returned from the key_selector function. The @orderby_descending command works in the same way, but sorts things in descending order. The @thenby and @thenby_descending command only accept the return value of any of the four sorting commands as their source, otherwise they have the same syntax as the @orderby and @orderby_descending commands."
 },
 
 {
@@ -589,7 +589,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "The .. syntax",
     "category": "section",
-    "text": "The syntax a..b is translated into map(i->i.b, a) in any query expression. This is especially helpful when computing some reduction of a given column of a grouped table."
+    "text": "The syntax a..b is translated into map(i->i.b, a) in any query expression. This is especially helpful when computing some reduction of a given column of a grouped table.For example, the following command groups a table by column a, and then computes the mean of the b column for each group:using DataFrames, Query\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\n@from i in df begin\n    @group i by i.a into g\n    @select {a=i.key, b=mean(g..b)}\n    @collect DataFrame\nendThe @group command here creates a list of tables, i.e. g will hold a full table for each group. The syntax g..b then extracts a single column from that table."
 },
 
 {
