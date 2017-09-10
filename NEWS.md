@@ -1,6 +1,7 @@
 # Query.jl v0.7.1 Realease Notes
 * Enable a..b syntax in @select, @where and @groupby standalone macros
 * Add single argument @groupby standalone version
+* Add @orderby, @orderby_descending, @thenby and @thenby_descending standalone macros
 * Add "Experimental" documentation section
 
 # Query.jl v0.7.0 Realease Notes
