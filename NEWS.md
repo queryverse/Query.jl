@@ -1,3 +1,6 @@
+# Query.jl v0.7.2 Realease Notes
+* Fix bug in group implementation
+
 # Query.jl v0.7.1 Realease Notes
 * Enable a..b syntax in @select, @where and @groupby standalone macros
 * Add single argument @groupby standalone version
