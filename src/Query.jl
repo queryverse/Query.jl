@@ -59,7 +59,7 @@ macro from(range::Expr, body::Expr)
 
 	body.args = filter(i->i.head!=:line,body.args)
 
-	insert!(body.args,1,:( @from $(range.args[2]) in $(range.args[3]) ))
+	insert!(body.args, 1, Expr(:macrocall, Symbol("@from"), range))
 
 	translate_query(body)
 
