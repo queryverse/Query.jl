@@ -1,3 +1,16 @@
+struct QueryException <: Exception
+	msg::String
+	context::Any
+	QueryException(msg::AbstractString, context=nothing) = new(msg, context)
+end
+
+function Base.showerror(io::IO, ex::QueryException)
+	print(io, "QueryException: $(ex.msg)")
+	if ex.context !== nothing
+		print(io, " at $(ex.context)")
+	end
+end
+
 function helper_namedtuples_replacement(ex)
 	return postwalk(ex) do x
 		if x isa Expr && x.head==:cell1d
@@ -105,9 +118,7 @@ function query_expression_translation_phase_1(qe)
 
 			translate_query(sub_query)
 
-			if length(sub_query.args)>1
-				error("Subquery too long")
-			end
+			length(sub_query.args)==1 || throw(QueryException("@group ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
 			for i=group_into_index:-1:2
@@ -122,9 +133,7 @@ function query_expression_translation_phase_1(qe)
 
 			translate_query(sub_query)
 
-			if length(sub_query.args)>1
-				error("Subquery too long")
-			end
+			length(sub_query.args)==1 || throw(QueryException("@select ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
 			for i=select_into_index:-1:2
@@ -320,9 +329,7 @@ function query_expression_translation_phase_5(qe)
 		clause = qe[i]
 		if ismacro(clause, "@select")
 			from_clause = qe[i-1]
-			if !ismacro(from_clause, "@from")
-				error("Error in phase 5")
-			end
+			ismacro(from_clause, "@from") || throw(QueryException("Phase 5: expected @from before @select", from_clause))
 			range_var = from_clause.args[2].args[2]
 			source = from_clause.args[2].args[3]
 			if clause.args[2]==range_var
@@ -390,7 +397,7 @@ function find_names_to_put_in_scope(ex::Expr)
 		elseif isa(child_ex, Expr) && child_ex.head==:.
 			push!(names,(ex.args[1],child_ex.args[2].value))
 		else
-			error()
+			throw(QueryException("identifier expected", child_ex))
 		end
 	end
 	return names
