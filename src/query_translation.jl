@@ -38,11 +38,7 @@ function helper_replace_anon_func_syntax(ex)
 	if !(isa(ex, Expr) && ex.head==:->)
 		new_symb = gensym()
 		new_ex = postwalk(ex) do x
-			if isa(x, Symbol) && x==:_
-				return new_symb
-			else
-				return x
-			end
+			isa(x, Symbol) && x==:_ ? new_symb : x
 		end
 		return :($new_symb -> $(new_ex) )
 	else
@@ -51,12 +47,8 @@ function helper_replace_anon_func_syntax(ex)
 end
 
 function helper_replace_field_extraction_syntax(ex)
-	return postwalk(ex) do x
-		if x isa Expr && x.head==:call && x.args[1]==:(..)
-			return :(map(i->i.$(x.args[3]),$(x.args[2])))
-		else
-			return x
-		end
+	postwalk(ex) do x
+		iscall(x, :(..)) ? :(map(i->i.$(x.args[3]), $(x.args[2]))) : x
 	end
 end
 
@@ -76,7 +68,7 @@ function query_expression_translation_phase_A(qe)
 		i+=1
 	end
 
-	for i in 1:length(qe)
+	for i in eachindex(qe)
 		qe[i] = helper_replace_field_extraction_syntax(qe[i])
 	end
 end
@@ -90,10 +82,11 @@ function query_expression_translation_phase_B(qe)
 			# Handle the case of a nested query. We are essentially detecting 
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
-			if isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:call && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query
-				clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
-			elseif !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
-				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+			subq = clause.args[2].args[3]
+			if isa(subq, Expr) && subq.head==:call && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:Query
+				clause.args[2].args[3] = :(Query.query($(subq)))
+			elseif !(isa(subq, Expr) && subq.head==:macrocall && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:Query)
+				clause.args[2].args[3] = :(Query.query($(esc(subq))))
 			end
 		elseif ismacro(clause, "@from")
 			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
@@ -121,9 +114,7 @@ function query_expression_translation_phase_1(qe)
 			length(sub_query.args)==1 || throw(QueryException("@group ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
-			for i=group_into_index:-1:2
-				deleteat!(qe,i)
-			end
+			deleteat!(qe, 2:group_into_index)
 		elseif length(qe)>=2 && ismacro(qe[1], "@from") && select_into_index>0
 			x = qe[select_into_index].args[4]
 
@@ -136,9 +127,7 @@ function query_expression_translation_phase_1(qe)
 			length(sub_query.args)==1 || throw(QueryException("@select ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
-			for i=select_into_index:-1:2
-				deleteat!(qe,i)
-			end
+			deleteat!(qe, 2:select_into_index)
 		else
 			done = true
 		end
@@ -432,9 +421,7 @@ end
 
 function query_expression_translation_phase_7(qe)
 	for clause in qe
-		if isa(clause, Expr)
-			find_and_translate_transparent_identifier(clause)
-		end
+		isa(clause, Expr) && find_and_translate_transparent_identifier(clause)
 	end
 end
 
