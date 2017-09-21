@@ -20,6 +20,27 @@ end
 
 @testset "Queries" begin
 
+    @testset "Utilities" begin
+        @test !Query.ismacro(Symbol("@from"), "@from")
+        @test !Query.ismacro(:(a == 1), "@from")
+        @test Query.ismacro(:(@from 1), "@from")
+        @test Query.ismacro(:(@from(1)), "@from")
+        @test !Query.ismacro(:(@from 1), "@for")
+        @test !Query.ismacro(:(@from,1), "@from")
+        @test Query.ismacro(:(@from 1 2 3), "@from", 3)
+        @test !Query.ismacro(:(@from 1 2 3 4), "@from", 3)
+        @test !Query.ismacro(:(map(1)), :map)
+
+        @test !Query.iscall(Symbol("@from"), :map)
+        @test !Query.iscall(:(a == 1), :map)
+        @test !Query.iscall(:(@from 1), Symbol("@from"))
+        @test !Query.iscall(:(@from(1)), Symbol("@from"))
+        @test Query.iscall(:(map(1)), :map)
+        @test !Query.iscall(:(map,1), :map)
+        @test Query.iscall(:(map(1,2,3)), :map, 3)
+        @test !Query.iscall(:(map(1,2,3,4)), :map, 3)
+    end
+
 source_df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
 q = @from i in source_df begin
