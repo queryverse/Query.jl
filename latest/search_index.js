@@ -293,7 +293,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "DataFrame",
     "category": "section",
-    "text": "DataFrames are probably the most common data source in Query. They are implemented as an Enumerable data source type, and can therefore be combined with any other Enumerable data source type within one query. The range variable in a query that has a DataFrame as its source is a NamedTuple that has fields for each column of the DataFrame. The implementation of DataFrame sources gets around all problems of type stability that are sometimes associated with the DataFrames package."
+    "text": "DataFrames are probably the most common data source in Query. They are implemented as an Enumerable data source type, and can therefore be combined with any other Enuermable data source type within one query. The range variable in a query that has a DataFrame as its source is a NamedTuple that has fields for each column of the DataFrame. The implementation of DataFrame sources gets around all problems of type stability that are sometimes associated with the DataFrames package."
 },
 
 {
