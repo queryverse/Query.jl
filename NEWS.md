@@ -1,13 +1,13 @@
-# Query.jl v0.7.2 Realease Notes
+# Query.jl v0.7.2 Release Notes
 * Fix bug in group implementation
 
-# Query.jl v0.7.1 Realease Notes
+# Query.jl v0.7.1 Release Notes
 * Enable a..b syntax in @select, @where and @groupby standalone macros
 * Add single argument @groupby standalone version
 * Add @orderby, @orderby_descending, @thenby and @thenby_descending standalone macros
 * Add "Experimental" documentation section
 
-# Query.jl v0.7.0 Realease Notes
+# Query.jl v0.7.0 Release Notes
 * Add a..b syntax
 * Fix some performance problems
 * Fixed eltype detection
@@ -15,7 +15,7 @@
 * Add experimental @select, @where and @groupby standalone macros
 * Migrate to TableTraits.jl
 
-# Query.jl v0.6.0 Realease Notes
+# Query.jl v0.6.0 Release Notes
 * Add @query macro for pipe syntax
 
 # Query.jl v0.5.0 Release Notes
