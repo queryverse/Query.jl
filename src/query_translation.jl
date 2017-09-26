@@ -1,3 +1,16 @@
+struct QueryException <: Exception
+	msg::String
+	context::Any
+	QueryException(msg::AbstractString, context=nothing) = new(msg, context)
+end
+
+function Base.showerror(io::IO, ex::QueryException)
+	print(io, "QueryException: $(ex.msg)")
+	if ex.context !== nothing
+		print(io, " at $(ex.context)")
+	end
+end
+
 function helper_namedtuples_replacement(ex)
 	return postwalk(ex) do x
 		if x isa Expr && x.head==:cell1d
@@ -25,11 +38,7 @@ function helper_replace_anon_func_syntax(ex)
 	if !(isa(ex, Expr) && ex.head==:->)
 		new_symb = gensym()
 		new_ex = postwalk(ex) do x
-			if isa(x, Symbol) && x==:_
-				return new_symb
-			else
-				return x
-			end
+			isa(x, Symbol) && x==:_ ? new_symb : x
 		end
 		return :($new_symb -> $(new_ex) )
 	else
@@ -38,12 +47,8 @@ function helper_replace_anon_func_syntax(ex)
 end
 
 function helper_replace_field_extraction_syntax(ex)
-	return postwalk(ex) do x
-		if x isa Expr && x.head==:call && x.args[1]==:(..)
-			return :(map(i->i.$(x.args[3]),$(x.args[2])))
-		else
-			return x
-		end
+	postwalk(ex) do x
+		iscall(x, :(..)) ? :(map(i->i.$(x.args[3]), $(x.args[2]))) : x
 	end
 end
 
@@ -51,7 +56,7 @@ function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
-		if clause.head==:macrocall && clause.args[1]==Symbol("@left_outer_join")
+		if ismacro(clause, "@left_outer_join")
 			clause.args[1] = Symbol("@join")
 			temp_name = gensym()
 			x1 = clause.args[2].args[2]
@@ -63,7 +68,7 @@ function query_expression_translation_phase_A(qe)
 		i+=1
 	end
 
-	for i in 1:length(qe)
+	for i in eachindex(qe)
 		qe[i] = helper_replace_field_extraction_syntax(qe[i])
 	end
 end
@@ -73,18 +78,19 @@ function query_expression_translation_phase_B(qe)
 	while i<=length(qe)
 		qe[i] = helper_namedtuples_replacement(qe[i])
 		clause = qe[i]
-		if i==1 && clause.head==:macrocall && clause.args[1]==Symbol("@from")
+		if i==1 && ismacro(clause, "@from")
 			# Handle the case of a nested query. We are essentially detecting 
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
-			if isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:call && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query
-				clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
-			elseif !(isa(clause.args[2].args[3], Expr) && clause.args[2].args[3].head==:macrocall && isa(clause.args[2].args[3].args[1],Expr) && clause.args[2].args[3].args[1].head==:. && clause.args[2].args[3].args[1].args[1]==:Query)
-				clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
+			subq = clause.args[2].args[3]
+			if isa(subq, Expr) && subq.head==:call && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:Query
+				clause.args[2].args[3] = :(Query.query($(subq)))
+			elseif !(isa(subq, Expr) && subq.head==:macrocall && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:Query)
+				clause.args[2].args[3] = :(Query.query($(esc(subq))))
 			end
-		elseif clause.head==:macrocall && clause.args[1]==Symbol("@from")
+		elseif ismacro(clause, "@from")
 			clause.args[2].args[3] = :(Query.query($(clause.args[2].args[3])))
-		elseif clause.head==:macrocall && clause.args[1]==Symbol("@join")
+		elseif ismacro(clause, "@join")
 			clause.args[2].args[3] = :(Query.query($(esc(clause.args[2].args[3]))))
 		end
 		i+=1
@@ -94,9 +100,9 @@ end
 function query_expression_translation_phase_1(qe)
 	done = false
 	while !done
-		group_into_index = findfirst(i->i.head==:macrocall && i.args[1]==Symbol("@group") && length(i.args)==6 && i.args[5]==:into,qe)
-		select_into_index = findfirst(i->i.head==:macrocall && i.args[1]==Symbol("@select") && length(i.args)==4 && i.args[3]==:into,qe)
-		if length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && group_into_index>0
+		group_into_index = findfirst(i->ismacro(i, "@group", 5) && i.args[5]==:into, qe)
+		select_into_index = findfirst(i->ismacro(i, "@select", 3) && i.args[3]==:into, qe)
+		if length(qe)>=2 && ismacro(qe[1], "@from") && group_into_index>0
 			x = qe[group_into_index].args[6]
 
 			sub_query = Expr(:block, qe[1:group_into_index]...)
@@ -105,15 +111,11 @@ function query_expression_translation_phase_1(qe)
 
 			translate_query(sub_query)
 
-			if length(sub_query.args)>1
-				error("Subquery too long")
-			end
+			length(sub_query.args)==1 || throw(QueryException("@group ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
-			for i=group_into_index:-1:2
-				deleteat!(qe,i)
-			end
-		elseif length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && select_into_index>0
+			deleteat!(qe, 2:group_into_index)
+		elseif length(qe)>=2 && ismacro(qe[1], "@from") && select_into_index>0
 			x = qe[select_into_index].args[4]
 
 			sub_query = Expr(:block, qe[1:select_into_index]...)
@@ -122,14 +124,10 @@ function query_expression_translation_phase_1(qe)
 
 			translate_query(sub_query)
 
-			if length(sub_query.args)>1
-				error("Subquery too long")
-			end
+			length(sub_query.args)==1 || throw(QueryException("@select ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
-			for i=select_into_index:-1:2
-				deleteat!(qe,i)
-			end
+			deleteat!(qe, 2:select_into_index)
 		else
 			done = true
 		end
@@ -139,7 +137,7 @@ end
 function query_expression_translation_phase_3(qe)
 	done = false
 	while !done
-		if length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@select") && qe[1].args[2].args[2]==qe[2].args[2]
+		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@select") && qe[1].args[2].args[2]==qe[2].args[2]
 			x = qe[1].args[2].args[2]
 			e = qe[1].args[2].args[3]
 
@@ -154,7 +152,7 @@ end
 function query_expression_translation_phase_4(qe)
 	done = false
 	while !done
-		if length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@from") && qe[3].head==:macrocall && qe[3].args[1]==Symbol("@select")
+		if length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from") && ismacro(qe[3], "@select")
 			x1 = qe[1].args[2].args[2]
 			x2 = qe[2].args[2].args[2]
 			e1 = qe[1].args[2].args[3]
@@ -167,7 +165,7 @@ function query_expression_translation_phase_4(qe)
 			qe[1] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@from")
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from")
 			x1 = qe[1].args[2].args[2]
 			x2 = qe[2].args[2].args[2]
 			e1 = qe[1].args[2].args[3]
@@ -179,7 +177,7 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@let")
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@let")
 			x = qe[1].args[2].args[2]
 			e = qe[1].args[2].args[3]
 			y = qe[2].args[2].args[1]
@@ -190,7 +188,7 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
 			qe[1].args[2].args[3] = :( Query.@select_internal($e,$(esc(f_selector))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@where")
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@where")
 			x = qe[1].args[2].args[2]
 			e = qe[1].args[2].args[3]
 			f = qe[2].args[2]
@@ -199,7 +197,7 @@ function query_expression_translation_phase_4(qe)
 
 			qe[1].args[2].args[3] = :( Query.@where_internal($e,$(esc(f_condition))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==6 && qe[3].head==:macrocall && qe[3].args[1]==Symbol("@select")
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 5) && ismacro(qe[3], "@select")
 			outer = qe[1].args[2].args[3]
 			inner = qe[2].args[2].args[3]
 			outer_range_var = qe[1].args[2].args[2]
@@ -213,7 +211,7 @@ function query_expression_translation_phase_4(qe)
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==6
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 5)
 			e1 = qe[1].args[2].args[3]
 			e2 = qe[2].args[2].args[3]
 			x1 = qe[1].args[2].args[2]
@@ -227,7 +225,7 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
 			qe[1].args[2].args[3] = :( Query.@join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==8 && qe[3].head==:macrocall && qe[3].args[1]==Symbol("@select")
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 7) && ismacro(qe[3], "@select")
 			e1 = qe[1].args[2].args[3]
 			e2 = qe[2].args[2].args[3]
 			x1 = qe[1].args[2].args[2]
@@ -243,7 +241,7 @@ function query_expression_translation_phase_4(qe)
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@join") && length(qe[2].args)==8
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 7)
 			e1 = qe[1].args[2].args[3]
 			e2 = qe[2].args[2].args[3]
 			x1 = qe[1].args[2].args[2]
@@ -258,16 +256,16 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, g)
 			qe[1].args[2].args[3] = :( Query.@group_join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@orderby")
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@orderby")
 			e = qe[1].args[2].args[3]
 			x = qe[1].args[2].args[2]
 			ks = []
 			if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:tuple
 				for sort_clause in qe[2].args[2].args
-					if isa(sort_clause, Expr) && sort_clause.head==:call && sort_clause.args[1]==:descending
+					if isa(sort_clause, Expr) && iscall(sort_clause, :descending)
 						k = sort_clause.args[2]
 						direction = :descending
-					elseif isa(sort_clause, Expr) && sort_clause.head==:call && sort_clause.args[1]==:ascending
+					elseif isa(sort_clause, Expr) && iscall(sort_clause, :ascending)
 						k = sort_clause.args[2]
 						direction = :ascending
 					else
@@ -277,10 +275,10 @@ function query_expression_translation_phase_4(qe)
 					push!(ks, (k, direction))
 				end
 			else
-				if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:call && qe[2].args[2].args[1]==:descending
+				if isa(qe[2].args[2], Expr) && iscall(qe[2].args[2], :descending)
 					k = qe[2].args[2].args[2]
 					direction = :descending
-				elseif isa(qe[2].args[2], Expr) && qe[2].args[2].head==:call && qe[2].args[2].args[1]==:ascending
+				elseif isa(qe[2].args[2], Expr) && iscall(qe[2].args[2], :ascending)
 					k = qe[2].args[2].args[2]
 					direction = :ascending
 				else
@@ -318,11 +316,9 @@ function query_expression_translation_phase_5(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
-		if clause.head==:macrocall && clause.args[1]==Symbol("@select")
+		if ismacro(clause, "@select")
 			from_clause = qe[i-1]
-			if from_clause.head!=:macrocall || from_clause.args[1]!=Symbol("@from")
-				error("Error in phase 5")
-			end
+			ismacro(from_clause, "@from") || throw(QueryException("Phase 5: expected @from before @select", from_clause))
 			range_var = from_clause.args[2].args[2]
 			source = from_clause.args[2].args[3]
 			if clause.args[2]==range_var
@@ -341,7 +337,7 @@ end
 function query_expression_translation_phase_6(qe)
 	done = false
 	while !done
-		if length(qe)>=2 && qe[1].head==:macrocall && qe[1].args[1]==Symbol("@from") && qe[2].head==:macrocall && qe[2].args[1]==Symbol("@group")
+		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@group")
 			e = qe[1].args[2].args[3]
 			x = qe[1].args[2].args[2]
 			v = qe[2].args[2]
@@ -390,7 +386,7 @@ function find_names_to_put_in_scope(ex::Expr)
 		elseif isa(child_ex, Expr) && child_ex.head==:.
 			push!(names,(ex.args[1],child_ex.args[2].value))
 		else
-			error()
+			throw(QueryException("identifier expected", child_ex))
 		end
 	end
 	return names
@@ -425,9 +421,7 @@ end
 
 function query_expression_translation_phase_7(qe)
 	for clause in qe
-		if isa(clause, Expr)
-			find_and_translate_transparent_identifier(clause)
-		end
+		isa(clause, Expr) && find_and_translate_transparent_identifier(clause)
 	end
 end
 
@@ -435,7 +429,7 @@ function query_expression_translation_phase_D(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
-		if clause.head==:macrocall && clause.args[1]==Symbol("@collect")
+		if ismacro(clause, "@collect")
 			previous_clause = qe[i-1]
 			if length(clause.args)==1
 				qe[i-1] = :( collect($previous_clause) )
