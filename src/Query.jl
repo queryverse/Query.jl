@@ -46,7 +46,6 @@ include("sources/source_sqlite.jl")
 include("sinks/sink_type.jl")
 include("sinks/sink_array.jl")
 include("sinks/sink_dict.jl")
-include("sinks/sink_csvfile.jl")
 include("sinks/sink_datastream_source.jl")
 
 macro from(range::Expr, body::Expr)
