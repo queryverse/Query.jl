@@ -514,11 +514,11 @@ df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df[2,:children] == get(df_loaded_from_feather[2,:children])
 @test source_df[3,:children] == get(df_loaded_from_feather[3,:children])
 
-q = Query.collect(Query.default_if_empty(DataValue{String}[]))
+q = Query.collect(QueryOperators.default_if_empty(DataValue{String}[]))
 @test length(q)==1
 @test isnull(q[1])
 
-q = Query.collect(Query.default_if_empty(DataValue{String}["John", "Sally"]))
+q = Query.collect(QueryOperators.default_if_empty(DataValue{String}["John", "Sally"]))
 @test length(q)==2
 @test q==DataValue{String}["John", "Sally"]
 

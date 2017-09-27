@@ -2,11 +2,11 @@ module Query
 
 using Requires
 using NamedTuples
-using DataStructures
 using TableTraits
 using IterableTables
 using DataValues
 using MacroTools: postwalk
+using QueryOperators
 
 import Base.start
 import Base.next
@@ -17,34 +17,34 @@ import Base.eltype
 import Base.join
 import Base.count
 
+import QueryOperators: Enumerable
+import QueryOperators: Queryable
+import QueryOperators: QueryProvider
+import QueryOperators: @count_internal
+import QueryOperators: @group_by_internal
+import QueryOperators: @group_by_internal_simple
+import QueryOperators: @group_join_internal
+import QueryOperators: @join_internal
+import QueryOperators: @orderby_internal
+import QueryOperators: @orderby_descending_internal
+import QueryOperators: @thenby_internal
+import QueryOperators: @thenby_descending_internal
+import QueryOperators: @select_internal
+import QueryOperators: @select_many_internal
+import QueryOperators: @where_internal
+
 export @from, @query, @count, Grouping, @NT
 
 export @select, @where, @groupby, @orderby, @orderby_descending,
 	@thenby, @thenby_descending
 
-include("enumerable/enumerable.jl")
-include("enumerable/enumerable_groupby.jl")
-include("enumerable/enumerable_join.jl")
-include("enumerable/enumerable_groupjoin.jl")
-include("enumerable/enumerable_orderby.jl")
-include("enumerable/enumerable_select.jl")
-include("enumerable/enumerable_where.jl")
-include("enumerable/enumerable_selectmany.jl")
-include("enumerable/enumerable_defaultifempty.jl")
-include("enumerable/enumerable_count.jl")
-
-include("queryable/queryable.jl")
-include("queryable/queryable_select.jl")
-include("queryable/queryable_where.jl")
-
 include("query_utils.jl")
 include("query_translation.jl")
+include("standalone_query_macros.jl")
 
-include("sources/source_iterable.jl")
 include("sources/source_sqlite.jl")
 
 include("sinks/sink_type.jl")
-include("sinks/sink_array.jl")
 include("sinks/sink_dict.jl")
 include("sinks/sink_datastream_source.jl")
 
