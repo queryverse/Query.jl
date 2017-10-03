@@ -3,5 +3,5 @@ function collect{T}(enumerable::Enumerable, ::Type{T})
 end
 
 function collect{T, TS,Provider}(source::Queryable{TS,Provider}, ::Type{T})
-    collect(query(collect(source)), T)
+    collect(QueryOperators.query(collect(source)), T)
 end

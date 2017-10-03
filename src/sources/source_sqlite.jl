@@ -19,7 +19,7 @@ end
 type QueryProviderSQLite <: QueryProvider
 end
 
-function query(table::SQLiteTable)
+function QueryOperators.query(table::SQLiteTable)
 	columns = SQLite.columns(table.db, table.tablename)
 
     col_expressions = Array{Expr,1}()
@@ -56,10 +56,10 @@ function collect(::Type{QueryProviderSQLite}, source)
         current_source = current_source.source
     end
 
-    where_count = count(i->isa(i,QueryableWhere),query_elements)
+    where_count = count(i->isa(i,QueryOperators.QueryableWhere),query_elements)
     where_clause = ""
     if where_count==1
-    	where_o = filter(i->isa(i,QueryableWhere),query_elements)[1]
+    	where_o = filter(i->isa(i,QueryOperators.QueryableWhere),query_elements)[1]
     	filter_el = where_o.filter
     	if filter_el.head!=:(->)
     		error()
@@ -79,10 +79,10 @@ function collect(::Type{QueryProviderSQLite}, source)
     	error("At most one where clause is supported.")
     end
 
-    select_count = count(i->isa(i,QueryableSelect),query_elements)
+    select_count = count(i->isa(i,QueryOperators.QueryableSelect),query_elements)
     select_clause = "*"
     if select_count==1
-		select_o = filter(i->isa(i,QueryableSelect),query_elements)[1]
+		select_o = filter(i->isa(i,QueryOperators.QueryableSelect),query_elements)[1]
 		f_el = select_o.f
 		# Get columns we need
 		col_names = Array{String}(0)
@@ -102,7 +102,7 @@ function collect(::Type{QueryProviderSQLite}, source)
     println(sql_query)
     df = SQLite.query(root.db, sql_query)
 
-    collect(query(df))
+    collect(QueryOperators.query(df))
 end
 
 end
