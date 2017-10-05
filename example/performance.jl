@@ -10,7 +10,7 @@ function foo_b(df)
     return collect(@select(@where(df,i->i.age>5.), i->@NT(Friends=>i.friends, Children=>i.children)))
 end
 
-immutable Mydata
+struct Mydata
     friends::Int64
     age::Float64
     children::Int64

@@ -2,8 +2,6 @@ using Query
 using DataFrames
 using Base.Test
 
-
-
 @testset "a..b Syntax (dplyr API)" begin
 
     df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]), 

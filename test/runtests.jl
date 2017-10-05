@@ -1,7 +1,6 @@
 using Query
 using IterableTables
 using DataFrames
-using DataTables
 using DataArrays
 using TypedTables
 using NamedTuples
@@ -10,10 +9,9 @@ using CSV
 using SQLite
 using Feather
 using NullableArrays
-using DataValues
 using Base.Test
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end
@@ -52,18 +50,6 @@ end
 @test isa(q, DataFrame)
 @test size(q)==(1,1)
 @test q[1,:Name]=="sally"
-
-source_dt = DataTable(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
-
-q = @from i in source_dt begin
-    @where i.age>30. && i.children > 2
-    @select {Name=lowercase(i.name)}
-    @collect DataTable
-end
-
-@test isa(q, DataTable)
-@test size(q)==(1,1)
-@test get(q[1,:Name]==Nullable("sally"))
 
 source_dict = Dict("John"=>34., "Sally"=>56.)
 
@@ -117,7 +103,7 @@ source_typedtable = @Table(name=NullableArray(["John", "Sally", "Kirk"]), age=Nu
 
 q = @from i in source_typedtable begin
     @where i.age>30 && i.children>2
-    @select {Name=lowercase(get(i.name))}
+    @select {Name=lowercase(i.name)}
     @collect DataFrame
 end
 
@@ -129,7 +115,7 @@ source_df2 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 source_typedtable2 = @Table(c=[2.,4.,2.], d=["John", "Jim","Sally"])
 
 q = @from i in source_df2 begin
-    @join j in source_typedtable2 on get(i.a) equals convert(Int,j.c)
+    @join j in source_typedtable2 on i.a equals convert(Int,j.c)
     @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
@@ -151,7 +137,7 @@ q = @from i in source_df2 begin
     @join j in (@from i in source_typedtable2 begin
                     @where i.c<3.
                     @select i
-                end) on get(i.a) equals convert(Int,j.c)
+                end) on i.a equals convert(Int,j.c)
     @select {i.a,i.b,j.c,j.d,e="Name: $(j.d)"}
     @collect DataFrame
 end
@@ -189,7 +175,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{String},1})
+@test isa(q, Array{String,1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -199,7 +185,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{String},1})
+@test isa(q, Array{String,1})
 @test length(q)==3
 @test q==["kirk", "sally", "john"]
 
@@ -209,7 +195,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{String},1})
+@test isa(q, Array{String,1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -226,7 +212,7 @@ end
 
 
 # We need to use a typed const here, otherwise type inference stands no chance
-const closure_var_1::Int = 1
+const closure_var_1 = 1
 
 q = @from i in source_df begin
     @let k = i.children + closure_var_1
@@ -237,7 +223,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{Int},1})
+@test isa(q, Array{Int,1})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -276,9 +262,9 @@ end
 @test q[2].Name=="Sally"
 @test q[2].Friends==["Don", "Martin"]
 
-q = @from i in CSV.Source("data.csv") begin
+q = @from i in CSV.Source("data.csv", types=Dict(1=>String)) begin
     @where i.Children > 2
-    @select get(i.Name)
+    @select i.Name
     @collect
 end
 
@@ -354,7 +340,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{DataValue{Int},DataValue{String}}})
+@test isa(x, Array{Grouping{Int,String}})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][:]==["John"]
@@ -366,7 +352,7 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{DataValue{Int},NamedTuples._NT_name_children{DataValue{String},DataValue{Int}}},1})
+@test isa(x, Array{Grouping{Int,NamedTuples._NT_name_children{String,Int}},1})
 @test length(x)==2
 @test x[1].key==3
 @test x[1][1].name=="John";
@@ -398,41 +384,41 @@ end
 @test q[1,:Name]=="sally"
 
 q = @from i in source_df2 begin
-    @join j in source_typedtable2 on get(i.a) equals convert(Int,j.c) into k
+    @join j in source_typedtable2 on i.a equals convert(Int,j.c) into k
     @select {i.a,i.b,c=k}
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_a_b_c{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_c_d{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_a_b_c{Int,Float64,Array{NamedTuples._NT_c_d{Float64,String},1}},1})
 @test length(q)==3
-@test get(q[1].a) == 1
-@test get(q[1].b)==1.
+@test q[1].a == 1
+@test q[1].b==1.
 @test isa(q[1].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[1].c)==0
-@test get(q[2].a)==2
-@test get(q[2].b)==2.
+@test q[2].a==2
+@test q[2].b==2.
 @test isa(q[2].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[2].c)==2
 @test q[2].c[1].c==2.
 @test q[2].c[1].d== "John"
 @test q[2].c[2].c==2.
 @test q[2].c[2].d== "Sally"
-@test get(q[3].a)==3
-@test get(q[3].b)==3.
+@test q[3].a==3
+@test q[3].b==3.
 @test isa(q[3].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[3].c)==0
 
 q = @from i in source_df2 begin
-    @join j in source_typedtable2 on get(i.a) equals convert(Int,j.c) into k
+    @join j in source_typedtable2 on i.a equals convert(Int,j.c) into k
     @where length(k)>0
     @select {i.a,i.b,c=k}
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_a_b_c{DataValue{Int},DataValue{Float64},Array{NamedTuples._NT_c_d{Float64,String},1}},1})
+@test isa(q,Array{NamedTuples._NT_a_b_c{Int,Float64,Array{NamedTuples._NT_c_d{Float64,String},1}},1})
 @test length(q)==1
-@test get(q[1].a)==2
-@test get(q[1].b)==2.
+@test q[1].a==2
+@test q[1].b==2.
 @test isa(q[1].c, Array{NamedTuples._NT_c_d{Float64,String},1})
 @test length(q[1].c)==2
 @test q[1].c[1].c==2.
@@ -453,13 +439,14 @@ end
 @test q[:Name]==["Peacock","Park","Johnson"]
 @test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
 
+#TODO
 q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "newdata", "airquality.feather")) begin
     @where i.Day==2
     @select i.Month
     @collect
 end
 
-@test isa(q, Array{Query.DataValue{Int32},1})
+@test isa(q, Array{Query.Int32,1})
 @test q==[5,6,7,8,9]
 
 source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
@@ -490,13 +477,14 @@ df_loaded_from_csv = CSV.read("test-output.csv")
 @test source_df[1,:name] == get(df_loaded_from_csv[1,:name])
 @test source_df[2,:name] == get(df_loaded_from_csv[2,:name])
 @test source_df[3,:name] == get(df_loaded_from_csv[3,:name])
-@test source_df[1,:age] == get(df_loaded_from_csv[1,:age])
-@test source_df[2,:age] == get(df_loaded_from_csv[2,:age])
-@test source_df[3,:age] == get(df_loaded_from_csv[3,:age])
-@test source_df[1,:children] == get(df_loaded_from_csv[1,:children])
-@test source_df[2,:children] == get(df_loaded_from_csv[2,:children])
-@test source_df[3,:children] == get(df_loaded_from_csv[3,:children])
+@test source_df[1,:age] == df_loaded_from_csv[1,:age]
+@test source_df[2,:age] == df_loaded_from_csv[2,:age]
+@test source_df[3,:age] == df_loaded_from_csv[3,:age]
+@test source_df[1,:children] == df_loaded_from_csv[1,:children]
+@test source_df[2,:children] == df_loaded_from_csv[2,:children]
+@test source_df[3,:children] == df_loaded_from_csv[3,:children]
 
+# TODO
 q = @from i in source_df begin
     @select i
     @collect Feather.Sink("test-output.feather")
@@ -514,17 +502,19 @@ df_loaded_from_feather = Feather.read("test-output.feather")
 @test source_df[2,:children] == get(df_loaded_from_feather[2,:children])
 @test source_df[3,:children] == get(df_loaded_from_feather[3,:children])
 
-q = Query.collect(QueryOperators.default_if_empty(DataValue{String}[]))
+@test_throws ErrorException Query.collect(QueryOperators.default_if_empty(String[]))
+
+q = Query.collect(QueryOperators.default_if_empty(Union{String, Null}[]))
 @test length(q)==1
 @test isnull(q[1])
 
-q = Query.collect(QueryOperators.default_if_empty(DataValue{String}["John", "Sally"]))
+q = Query.collect(QueryOperators.default_if_empty(Union{String, Null}["John", "Sally"]))
 @test length(q)==2
-@test q==DataValue{String}["John", "Sally"]
+@test q==String["John", "Sally"]
 
-
-source_df3 = DataFrame(c=[2,4,2], d=["John", "Jim","Sally"])
-q = @from i in source_df2 begin
+source_df23 = DataFrame(a=Union{Int, Null}[1,2,3], b=Union{Float64, Null}[1.,2.,3.])
+source_df3 = DataFrame(c=Union{Int, Null}[2,4,2], d=Union{String, Null}["John", "Jim","Sally"])
+q = @from i in source_df23 begin
     @left_outer_join j in source_df3 on i.a equals j.c
     @select {i.a,i.b,j.c,j.d}
     @collect DataFrame
@@ -534,17 +524,17 @@ end
 @test size(q)==(4,4)
 @test q[:a]==[1,2,2,3]
 @test q[:b]==[1.,2.,2.,3.]
-@test isna(q[1,:c])
+@test isnull(q[1,:c])
 @test q[2,:c]==2
 @test q[3,:c]==2
-@test isna(q[4,:c])
-@test isna(q[1,:d])
+@test isnull(q[4,:c])
+@test isnull(q[1,:d])
 @test q[2,:d]=="John"
 @test q[3,:d]=="Sally"
-@test isna(q[4,:d])
+@test isnull(q[4,:d])
 
 q = @from i in source_df begin
-    @select get(i.name)=>get(i.children)
+    @select i.name=>i.children
     @collect Dict
 end
 
@@ -565,7 +555,7 @@ q = collect(@where(source_df, i->i.age>30. && i.children > 2), DataFrame)
 @test q[1,:age]==42.
 @test q[1,:children]==5
 
-q = collect(Query.@select(source_df, i->get(i.children)))
+q = collect(Query.@select(source_df, i->i.children))
 
 @test isa(q, Array{Int,1})
 @test q==[3,5,2]
