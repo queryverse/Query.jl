@@ -357,7 +357,6 @@ function query_expression_translation_phase_5(qe)
 			if clause.args[2]==range_var
 				qe[i-1] = source
 			else
-				# TODO: turn into generated function
 				func_call = Expr(:->, range_var, clause.args[2])
 				qe[i-1] = :( Query.@select_internal($source, $(esc(func_call))) )
 			end
@@ -478,7 +477,7 @@ function query_expression_translation_phase_D(qe)
 end
 
 function translate_query(body)
-	debug_output = true
+	debug_output = false
 
 	debug_output && println("AT START")
 	debug_output && println(body)
