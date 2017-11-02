@@ -4,7 +4,7 @@ using StatsBase, RCall, Query, DataFrames, DataFramesMeta, DataTables
 using IndexedTables
 using IndexedTables.Table
 
-function R_bench(N,K)
+function R_datatable(N,K)
 
     R"""
     library(data.table)
@@ -37,6 +37,45 @@ function R_bench(N,K)
     timings$mean7_9_by_id4_2 <- system.time( DT[, lapply(.SD, mean), keyby=id4, .SDcols=7:9] )[3]
     timings$sum7_9_by_id6_1 <- system.time( DT[, lapply(.SD, sum), keyby=id6, .SDcols=7:9] )[3]
     timings$sum7_9_by_id6_2 <- system.time( DT[, lapply(.SD, sum), keyby=id6, .SDcols=7:9] )[3]
+    """
+    @rget timings
+    return timings
+end
+
+
+function R_dplyr(N,K)
+
+    R"""
+    library(dplyr)
+    N <- $N
+    K <- $K
+    # copied from 
+    # https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping
+    set.seed(1)
+    DF <- data.frame(
+      id1 = sample(sprintf("id%03d",1:K), N, TRUE),      # large groups (char)
+      id2 = sample(sprintf("id%03d",1:K), N, TRUE),      # large groups (char)
+      id3 = sample(sprintf("id%010d",1:(N/K)), N, TRUE), # small groups (char)
+      id4 = sample(K, N, TRUE),                          # large groups (int)
+      id5 = sample(K, N, TRUE),                          # large groups (int)
+      id6 = sample(N/K, N, TRUE),                        # small groups (int)
+      v1 =  sample(5, N, TRUE),                          # int in range [1,5]
+      v2 =  sample(5, N, TRUE),                          # int in range [1,5]
+      v3 =  sample(round(runif(100,max=100),4), N, TRUE) # numeric e.g. 23.5749
+    )
+
+    timings <- list()
+
+    timings$sum1             <- system.time( DF %>% group_by(id1) %>% summarise(sum(v1)) )[3]
+    timings$sum2             <- system.time( DF %>% group_by(id1) %>% summarise(sum(v1)) )[3]
+    timings$sum3             <- system.time( DF %>% group_by(id1,id2) %>% summarise(sum(v1)) )[3]
+    timings$sum4             <- system.time( DF %>% group_by(id1,id2) %>% summarise(sum(v1)) )[3]
+    timings$sum_mean1        <- system.time( DF %>% group_by(id3) %>% summarise(sum(v1),mean(v3)) )[3]
+    timings$sum_mean2        <- system.time( DF %>% group_by(id3) %>% summarise(sum(v1),mean(v3)) )[3]
+    timings$mean7_9_by_id4_1 <- system.time( DF %>% group_by(id4) %>% summarise_at(c("v1","v2","v3"),mean) )[3]
+    timings$mean7_9_by_id4_2 <- system.time( DF %>% group_by(id4) %>% summarise_at(c("v1","v2","v3"),mean) )[3]
+    timings$sum7_9_by_id6_1  <- system.time( DF %>% group_by(id6) %>% summarise_at(c("v1","v2","v3"),sum) )[3]
+    timings$sum7_9_by_id6_2  <- system.time( DF %>% group_by(id6) %>% summarise_at(c("v1","v2","v3"),sum) )[3]
     """
     @rget timings
     return timings
@@ -328,15 +367,18 @@ function run_benches(N=1_000_000;K=100)
     gc()
 
 
-    # get R time
-    R = R_bench(N,K)
+    # get R data.table time
+    R = R_datatable(N,K)
+
+    # get R dplyr time
+    Rdplyr = R_dplyr(N,K)
 
     # get
     k = collect(keys(query_df))
-    out = DataFrame(bench = k,Query_DF = [query_df[kk] for kk in k],Query_DT= [query_dt[kk] for kk in k],Query_idxT= [query_di[kk] for kk in k],DataFramesMeta=[meta[kk] for kk in k], Rdatatable=[R[kk] for kk in k])
+    out = DataFrame(bench = k,Query_DF = [query_df[kk] for kk in k],Query_DT= [query_dt[kk] for kk in k],Query_idxT= [query_di[kk] for kk in k],DataFramesMeta=[meta[kk] for kk in k], Rdplyr=[Rdplyr[kk] for kk in k], Rdatatable=[R[kk] for kk in k])
     sort!(out,cols=:bench)
     rel = deepcopy(out)
-    rel = @transform(rel,Query_DF = :Query_DF./:Rdatatable, Query_DT = :Query_DT./:Rdatatable, Query_idxT = :Query_idxT./:Rdatatable, DataFramesMeta = :DataFramesMeta ./ :Rdatatable, Rdatatable = 1.0)
+    rel = @transform(rel,Query_DF = :Query_DF./:Rdatatable, Query_DT = :Query_DT./:Rdatatable, Query_idxT = :Query_idxT./:Rdatatable, DataFramesMeta = :DataFramesMeta ./ :Rdatatable, Rdplyr = :Rdplyr ./ :Rdatatable, Rdatatable = 1.0)
     return (out,rel)
 end
 
