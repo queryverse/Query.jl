@@ -21,23 +21,4 @@ using DataTables
             @collect DataTable
         end
     end   
-
-    # @benchgroup "Query.jl vs R data.table" begin
-    #     include(joinpath(dirname(@__FILE__),"Rdatatable.jl"))  
-    #     N = 100_000_000
-    #     K = 100
-    #     Rtime = Rdatatable.R_bench(N,K)
-    #     df = Rdatatable.createData(N,K)
-
-        
-
-
-        
-
-    # end
-
-    # @benchgroup "Query.jl vs DataFramesMeta.jl" begin
-    #     info("Query.jl vs DataFramesMeta.jl is pending")
-    # end
-
 end
