@@ -1,4 +1,4 @@
-module Rdatatable 
+module Rdatatable
 
 using StatsBase, RCall, Query, DataFrames, DataFramesMeta, DataTables
 using IndexedTables
@@ -10,7 +10,7 @@ function R_datatable(N,K)
     library(data.table)
     N <- $N
     K <- $K
-    # copied from 
+    # copied from
     # https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping
     set.seed(1)
     DT <- data.table(
@@ -49,7 +49,7 @@ function R_dplyr(N,K)
     library(dplyr)
     N <- $N
     K <- $K
-    # copied from 
+    # copied from
     # https://github.com/Rdatatable/data.table/wiki/Benchmarks-%3A-Grouping
     set.seed(1)
     DF <- data.frame(
@@ -133,52 +133,52 @@ function benches(df::DataFrame)
     ti[:sum1] = @elapsed @from i in df begin
                              @group i by i.id1 into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum2] = @elapsed @from i in df begin
                              @group i by i.id1 into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum3] = @elapsed @from i in df begin
                              @group i by (i.id1,i.id2) into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum4] = @elapsed @from i in df begin
                              @group i by (i.id1,i.id2) into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum_mean1] = @elapsed @from i in df begin
                              @group i by i.id3 into g
                              @select {s=sum(g..v1),m=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum_mean2] = @elapsed @from i in df begin
                              @group i by i.id3 into g
                              @select {s=sum(g..v1),m=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:mean7_9_by_id4_1] = @elapsed @from i in df begin
                              @group i by i.id4 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:mean7_9_by_id4_2] = @elapsed @from i in df begin
                              @group i by i.id4 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum7_9_by_id6_1] = @elapsed @from i in df begin
                              @group i by i.id6 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum7_9_by_id6_2] = @elapsed @from i in df begin
                              @group i by i.id6 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     return ti
 end
@@ -190,52 +190,52 @@ function benches(df::DataTable)
     ti[:sum1] = @elapsed @from i in df begin
                              @group i by i.id1 into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum2] = @elapsed @from i in df begin
                              @group i by i.id1 into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum3] = @elapsed @from i in df begin
                              @group i by (i.id1,i.id2) into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum4] = @elapsed @from i in df begin
                              @group i by (i.id1,i.id2) into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum_mean1] = @elapsed @from i in df begin
                              @group i by i.id3 into g
                              @select {s=sum(g..v1),m=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum_mean2] = @elapsed @from i in df begin
                              @group i by i.id3 into g
                              @select {s=sum(g..v1),m=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:mean7_9_by_id4_1] = @elapsed @from i in df begin
                              @group i by i.id4 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:mean7_9_by_id4_2] = @elapsed @from i in df begin
                              @group i by i.id4 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum7_9_by_id6_1] = @elapsed @from i in df begin
                              @group i by i.id6 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum7_9_by_id6_2] = @elapsed @from i in df begin
                              @group i by i.id6 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     return ti
 end
@@ -247,52 +247,52 @@ function benches(df::IndexedTable)
     ti[:sum1] = @elapsed @from i in df begin
                              @group i by i.id1 into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum2] = @elapsed @from i in df begin
                              @group i by i.id1 into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum3] = @elapsed @from i in df begin
                              @group i by (i.id1,i.id2) into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum4] = @elapsed @from i in df begin
                              @group i by (i.id1,i.id2) into g
                              @select {r=sum(g..v1)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum_mean1] = @elapsed @from i in df begin
                              @group i by i.id3 into g
                              @select {s=sum(g..v1),m=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum_mean2] = @elapsed @from i in df begin
                              @group i by i.id3 into g
                              @select {s=sum(g..v1),m=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:mean7_9_by_id4_1] = @elapsed @from i in df begin
                              @group i by i.id4 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:mean7_9_by_id4_2] = @elapsed @from i in df begin
                              @group i by i.id4 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum7_9_by_id6_1] = @elapsed @from i in df begin
                              @group i by i.id6 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     ti[:sum7_9_by_id6_2] = @elapsed @from i in df begin
                              @group i by i.id6 into g
                              @select {m7=mean(g..v1),m8=mean(g..v2),m9=mean(g..v3)}
-                             @collect DataFrame 
+                             @collect DataFrame
                          end
     return ti
 end
@@ -304,7 +304,7 @@ function DfMeta_benches(df::DataFrame)
 
     ti[:sum1] = @elapsed @linq df |>
                     @by(:id1,r = sum(:v1))
-   
+
     ti[:sum2] = @elapsed @linq df |>
                     @by(:id1,r = sum(:v1))
 
