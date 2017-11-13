@@ -2,7 +2,7 @@ DataFrames
 DataArrays
 DataTables
 TypedTables
-SQLite
+# SQLite
 DataStreams
 CSV
 JSON

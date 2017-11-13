@@ -7,7 +7,7 @@ using TypedTables
 using NamedTuples
 using DataStreams
 using CSV
-using SQLite
+# using SQLite
 using Feather
 using NullableArrays
 using DataValues
@@ -440,18 +440,18 @@ end
 @test q[1].c[2].c==2.
 @test q[1].c[2].d== "Sally"
 
-sqlite_db = SQLite.DB(joinpath(Pkg.dir("SQLite"), "test", "Chinook_Sqlite.sqlite"))
+# sqlite_db = SQLite.DB(joinpath(Pkg.dir("SQLite"), "test", "Chinook_Sqlite.sqlite"))
 
-q = @from i in SQLite.Source(sqlite_db,"SELECT * FROM Employee") begin
-    @where i.ReportsTo==2
-    @select {Name=i.LastName, Adr=i.Address}
-    @collect DataFrame
-end
+# q = @from i in SQLite.Source(sqlite_db,"SELECT * FROM Employee") begin
+#     @where i.ReportsTo==2
+#     @select {Name=i.LastName, Adr=i.Address}
+#     @collect DataFrame
+# end
 
-@test isa(q, DataFrame)
-@test size(q)==(3,2)
-@test q[:Name]==["Peacock","Park","Johnson"]
-@test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
+# @test isa(q, DataFrame)
+# @test size(q)==(3,2)
+# @test q[:Name]==["Peacock","Park","Johnson"]
+# @test q[:Adr]==["1111 6 Ave SW", "683 10 Street SW", "7727B 41 Ave"]
 
 q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "newdata", "airquality.feather")) begin
     @where i.Day==2
@@ -580,7 +580,7 @@ end
     example_files = ["../example/01-DataFrame.jl",
         "../example/02-Dict.jl",
         "../example/03-Array.jl",
-        "../example/04-SQLite.jl",
+        # "../example/04-SQLite.jl",
         "../example/05-Nullable.jl",
         "../example/06-Generator.jl",
         "../example/07-typedtables.jl",
