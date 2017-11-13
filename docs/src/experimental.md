@@ -38,7 +38,7 @@ df = df |> @groupby(_.a)
 ```
 or
 ```julia
-df = @groupbe(df, _.a)
+df = @groupby(df, _.a)
 ```
 both forms are equivalent.
 
