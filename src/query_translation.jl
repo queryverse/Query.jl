@@ -141,7 +141,7 @@ function query_expression_translation_phase_3(qe)
 			x = qe[1].args[2].args[2]
 			e = qe[1].args[2].args[3]
 
-			qe[1] = :( Query.@select_internal($e,x->x) )
+			qe[1] = :( Query.@map_internal($e,x->x) )
 			deleteat!(qe,2)
 		else
 			done = true
@@ -186,7 +186,7 @@ function query_expression_translation_phase_4(qe)
 			f_selector = Expr(:->, x, :(@NT($x=$x,$y=$f)))
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
-			qe[1].args[2].args[3] = :( Query.@select_internal($e,$(esc(f_selector))) )
+			qe[1].args[2].args[3] = :( Query.@map_internal($e,$(esc(f_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@where")
 			x = qe[1].args[2].args[2]
@@ -195,7 +195,7 @@ function query_expression_translation_phase_4(qe)
 
 			f_condition = Expr(:->, x, f)
 
-			qe[1].args[2].args[3] = :( Query.@where_internal($e,$(esc(f_condition))) )
+			qe[1].args[2].args[3] = :( Query.@filter_internal($e,$(esc(f_condition))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 5) && ismacro(qe[3], "@select")
 			outer = qe[1].args[2].args[3]
@@ -325,7 +325,7 @@ function query_expression_translation_phase_5(qe)
 				qe[i-1] = source
 			else
 				func_call = Expr(:->, range_var, clause.args[2])
-				qe[i-1] = :( Query.@select_internal($source, $(esc(func_call))) )
+				qe[i-1] = :( Query.@map_internal($source, $(esc(func_call))) )
 			end
 			deleteat!(qe,i)
 		else

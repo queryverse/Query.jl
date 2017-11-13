@@ -29,13 +29,13 @@ import QueryOperators: @orderby_internal
 import QueryOperators: @orderby_descending_internal
 import QueryOperators: @thenby_internal
 import QueryOperators: @thenby_descending_internal
-import QueryOperators: @select_internal
+import QueryOperators: @map_internal
 import QueryOperators: @select_many_internal
-import QueryOperators: @where_internal
+import QueryOperators: @filter_internal
 
 export @from, @query, @count, Grouping, @NT
 
-export @select, @where, @groupby, @orderby, @orderby_descending,
+export @map, @filter, @groupby, @orderby, @orderby_descending,
 	@thenby, @thenby_descending
 
 include("query_utils.jl")

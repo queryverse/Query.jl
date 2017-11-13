@@ -3,7 +3,7 @@ using IterableTables
 using DataFrames
 using DataTables
 using DataArrays
-using TypedTables
+import TypedTables: @Table
 using NamedTuples
 using DataStreams
 using CSV
@@ -557,7 +557,7 @@ end
 @test @count(source_df)==3
 @test @count(source_df, i->i.children>3)==1
 
-q = collect(@where(source_df, i->i.age>30. && i.children > 2), DataFrame)
+q = collect(@filter(source_df, i->i.age>30. && i.children > 2), DataFrame)
 
 @test isa(q, DataFrame)
 @test size(q)==(1,3)
