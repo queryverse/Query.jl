@@ -30,7 +30,7 @@ The package currently provides working implementations for in-memory data source
 Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx), in fact right now the package is largely an implementation of the [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) part of the [C# specification](https://msdn.microsoft.com/en-us/library/ms228593.aspx). Future versions of Query will most likely add features that are not found in the original [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) design.
 
 ## Alternatives
-[Query.jl](https://github.com/davidanthoff/Query.jl) is not the only julia initiative for querying data, there are many other packages that have similar goals. Take a look at [DataFramesMeta.jl](https://github.com/JuliaStats/DataFramesMeta.jl), [StructuredQueries.jl](https://github.com/davidagold/StructuredQueries.jl), and [LazyQuery.jl](https://github.com/bramtayl/LazyQuery.jl). *If I missed other initiatives, please let me know and I'll add them to this list!*
+[Query.jl](https://github.com/davidanthoff/Query.jl) is not the only julia initiative for querying data, there are many other packages that have similar goals. Take a look at [DataFramesMeta.jl](https://github.com/JuliaStats/DataFramesMeta.jl), [StructuredQueries.jl](https://github.com/davidagold/StructuredQueries.jl), [LazyQuery.jl](https://github.com/bramtayl/LazyQuery.jl) and [SplitApplyCombine.jl](https://github.com/JuliaData/SplitApplyCombine.jl). *If I missed other initiatives, please let me know and I'll add them to this list!*
 
 ## Installation
 
