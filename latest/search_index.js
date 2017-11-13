@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Overview",
     "category": "section",
-    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in IterableTables.jl. One can for example query any of the following data sources: any array, DataFrames, DataStreams (including CSV, Feather, SQLite, ODBC), DataTables, IndexedTables, TimeSeries, Temporal, TypedTables and DifferentialEquations (any DESolution).The package currenlty provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a \"query provider\" for SQLite in the package, but it is experimental at this point and only works for a very small subset of queries.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
+    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in IterableTables.jl. One can for example query any of the following data sources: any array, DataFrames, DataStreams (including CSV, Feather, SQLite, ODBC), DataTables, IndexedTables, TimeSeries, Temporal, TypedTables and DifferentialEquations (any DESolution).The package currently provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a \"query provider\" for SQLite in the package, but it is experimental at this point and only works for a very small subset of queries.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
 },
 
 {
@@ -449,22 +449,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#CSV-file-1",
-    "page": "Data Sinks",
-    "title": "CSV file",
-    "category": "section",
-    "text": "The statement @collect CsvFile(filename) will write the results of the query into a CSV file with the name filename. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax. The CsvFile constructor call takes a number of optional arguments: delim_char, quote_char, escape_char and header. These arguments control the format of the CSV file that is created by the statement."
-},
-
-{
-    "location": "sinks.html#Example-4",
-    "page": "Data Sinks",
-    "title": "Example",
-    "category": "section",
-    "text": "[TODO]"
-},
-
-{
     "location": "sinks.html#DataStram-sink-1",
     "page": "Data Sinks",
     "title": "DataStram sink",
@@ -473,7 +457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-5",
+    "location": "sinks.html#Example-4",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -489,7 +473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-6",
+    "location": "sinks.html#Example-5",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -505,7 +489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-7",
+    "location": "sinks.html#Example-6",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -521,7 +505,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-8",
+    "location": "sinks.html#Example-7",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -549,7 +533,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "Standalone query operators",
     "category": "section",
-    "text": "All standalone query commands can either take a source as their first argument, or one can pipe the source into the command, as in the above example. For example, one can either writedf = df |> @groupby(_.a)ordf = @groupbe(df, _.a)both forms are equivalent.The remaining arguments of each query demand are command specific.The following discussion will present each command in the version that accepts a source as the first argument."
+    "text": "All standalone query commands can either take a source as their first argument, or one can pipe the source into the command, as in the above example. For example, one can either writedf = df |> @groupby(_.a)ordf = @groupby(df, _.a)both forms are equivalent.The remaining arguments of each query demand are command specific.The following discussion will present each command in the version that accepts a source as the first argument."
 },
 
 {
