@@ -20,22 +20,10 @@ import Base.count
 import QueryOperators: Enumerable
 import QueryOperators: Queryable
 import QueryOperators: QueryProvider
-import QueryOperators: @count_internal
-import QueryOperators: @group_by_internal
-import QueryOperators: @group_by_internal_simple
-import QueryOperators: @group_join_internal
-import QueryOperators: @join_internal
-import QueryOperators: @orderby_internal
-import QueryOperators: @orderby_descending_internal
-import QueryOperators: @thenby_internal
-import QueryOperators: @thenby_descending_internal
-import QueryOperators: @select_internal
-import QueryOperators: @select_many_internal
-import QueryOperators: @where_internal
 
 export @from, @query, @count, Grouping, @NT
 
-export @select, @where, @groupby, @orderby, @orderby_descending,
+export @map, @filter, @groupby, @orderby, @orderby_descending,
 	@thenby, @thenby_descending
 
 include("query_utils.jl")
