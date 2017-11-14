@@ -67,7 +67,7 @@ Any array can be a data source for a query. The range variables are of the eleme
 ```jldoctest
 using Query, DataFrames
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end

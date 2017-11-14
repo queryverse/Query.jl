@@ -11,23 +11,56 @@ function Base.showerror(io::IO, ex::QueryException)
 	end
 end
 
+macro infer(ex)
+	if typeof(ex) == Symbol
+		# simple variables
+		return esc(:(typeof($ex)))
+	elseif typeof(ex) == Expr && ex.head == :call
+		# normal function calls
+		f = ex.args[1]
+		TS = :(Tuple{$((:(Query.@infer($arg)) for arg in ex.args[2:end])...)})
+		return esc(:(Base._return_type($f, $TS)))
+	elseif typeof(ex) == Expr && ex.head == :->
+		# anonymous functions
+		return :(typeof($ex))
+	elseif typeof(ex) == Expr && ex.head == :.
+		# getfield
+		return esc(:(fieldtype(typeof($(ex.args[1])), $(ex.args[2]))))
+	elseif typeof(ex) == Expr && ex.head == :string
+		# interpolated strings
+		return String
+	elseif typeof(ex) != Expr
+		# all literal values
+		return typeof(ex)
+	else
+		throw(ArgumentError("can't figure out how to infer: '$ex'"))
+	end
+end
+
 function helper_namedtuples_replacement(ex)
 	return postwalk(ex) do x
 		if x isa Expr && x.head==:cell1d
+			# @NT(a::T, b::S, ...)(a, b, ...)
 			new_ex = Expr(:macrocall, Symbol("@NT"), x.args...)
-
+			args = Any[]
 			for (j,field_in_NT) in enumerate(new_ex.args[2:end])
+				# nm=nm => nm=nm
 				if isa(field_in_NT, Expr) && field_in_NT.head==:(=)
-					new_ex.args[j+1] = Expr(:kw, field_in_NT.args...)
+					new_ex.args[j+1] = Expr(:(::), field_in_NT.args[1], :(Query.@infer $(field_in_NT.args[2])))
+					push!(args, field_in_NT.args[2])
+				# nm.nm => nm=nm
 				elseif isa(field_in_NT, Expr) && field_in_NT.head==:.
 					name_to_use = field_in_NT.args[2].args[1]
-					new_ex.args[j+1] = Expr(:kw, name_to_use, field_in_NT)
+					new_ex.args[j+1] = Expr(:(::), name_to_use, :(Query.@infer $field_in_NT))
+					push!(args, field_in_NT)
+				# nm => nm=nm
 				elseif isa(field_in_NT, Symbol)
-					new_ex.args[j+1] = Expr(:kw, field_in_NT, field_in_NT)
+					new_ex.args[j+1] = Expr(:(::), field_in_NT, :(Query.@infer $field_in_NT))
+					push!(args, field_in_NT)
 				end
 			end
 
-			return new_ex
+			return Expr(:call, new_ex, args...)
 		else
 			return x
 		end

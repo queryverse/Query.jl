@@ -2,7 +2,7 @@
 using SQLite
 export table
 
-immutable SQLiteTable
+struct SQLiteTable
     db::SQLite.DB
     tablename::String
 end
@@ -11,7 +11,7 @@ function table{T<:AbstractString}(db::SQLite.DB,tablename::T)
     return SQLiteTable(db,tablename)
 end
 
-immutable QueryableSQLite{T,Provider} <: Queryable{T,Provider}
+struct QueryableSQLite{T,Provider} <: Queryable{T,Provider}
     db::SQLite.DB
     tablename::AbstractString
 end
@@ -24,14 +24,14 @@ function QueryOperators.query(table::SQLiteTable)
 
     col_expressions = Array{Expr,1}()
     for i in 1:size(columns,1)
-    	type_string = get(columns[i,:type])
+    	type_string = columns[i,:type]
     	eltype = type_string=="INTEGER" ? Int64 :
     	         type_string[1:8]=="NVARCHAR" ? String :
     	         type_string=="DATETIME" ? DateTime : error("Unsupported column type")
-    	if get(columns[i,:notnull])==0
+    	if columns[i,:notnull]==0
             eltype=Nullable{eltype}
     	end
-        push!(col_expressions, Expr(:(::), get(columns[i,:name]), Type(eltype)))
+        push!(col_expressions, Expr(:(::), columns[i,:name], Type(eltype)))
     end
     t_expr = NamedTuples.make_tuple(col_expressions)
     #t_expr.args[1] = t_expr.args[1].args[1]

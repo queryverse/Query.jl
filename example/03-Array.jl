@@ -1,7 +1,7 @@
 using Query
 using DataFrames
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end
