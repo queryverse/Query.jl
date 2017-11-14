@@ -14,7 +14,7 @@ macro groupby(source, elementSelector, resultSelector)
  	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :(QueryOperators.group_by(QueryOperators.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
+    return :(QueryOperators.groupby(QueryOperators.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
@@ -26,7 +26,7 @@ macro groupby(elementSelector, resultSelector)
  	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :( i -> QueryOperators.group_by(QueryOperators.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
+    return :( i -> QueryOperators.groupby(QueryOperators.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
@@ -38,7 +38,7 @@ macro groupby(elementSelector)
  	q_elementSelector = Expr(:quote, elementSelector_as_anonym_func)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :( i -> QueryOperators.group_by(QueryOperators.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
+    return :( i -> QueryOperators.groupby(QueryOperators.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end

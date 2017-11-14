@@ -347,9 +347,9 @@ function query_expression_translation_phase_6(qe)
 			f_resultSelector = Expr(:->, x, v)
 
 			if v==x
-				qe[1] = :( Query.@group_by_internal_simple($e, $(esc(f_elementSelector))) )
+				qe[1] = :( Query.@groupby_internal_simple($e, $(esc(f_elementSelector))) )
 			else
-				qe[1] = :( Query.@group_by_internal($e, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
+				qe[1] = :( Query.@groupby_internal($e, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
 			end
 			deleteat!(qe,2)
 		else
