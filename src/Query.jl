@@ -23,7 +23,7 @@ import QueryOperators: QueryProvider
 import QueryOperators: @count_internal
 import QueryOperators: @groupby_internal
 import QueryOperators: @groupby_internal_simple
-import QueryOperators: @group_join_internal
+import QueryOperators: @groupjoin_internal
 import QueryOperators: @join_internal
 import QueryOperators: @orderby_internal
 import QueryOperators: @orderby_descending_internal

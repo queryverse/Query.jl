@@ -237,7 +237,7 @@ function query_expression_translation_phase_4(qe)
 			f_outer_key = Expr(:->, x1, k1)
 			f_inner_key = Expr(:->, x2, k2)
 			f_result = Expr(:->, Expr(:tuple,x1,g), v)
-			qe[1] = :( Query.@group_join_internal($e1, $e2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			qe[1] = :( Query.@groupjoin_internal($e1, $e2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
@@ -254,7 +254,7 @@ function query_expression_translation_phase_4(qe)
 			f_result = Expr(:->, Expr(:tuple,x1,g), :(@NT($x1=$x1,$g=$g)) )
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, g)
-			qe[1].args[2].args[3] = :( Query.@group_join_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			qe[1].args[2].args[3] = :( Query.@groupjoin_internal($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@orderby")
 			e = qe[1].args[2].args[3]
