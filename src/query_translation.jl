@@ -162,7 +162,7 @@ function query_expression_translation_phase_4(qe)
 			f_collection_selector = Expr(:->, x1, e2)
 			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), v)
 
-			qe[1] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			qe[1] = :( Query.@mapmany_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,3)
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from")
@@ -175,7 +175,7 @@ function query_expression_translation_phase_4(qe)
 			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=$x1,$x2=$x2)))
 
 			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
-			qe[1].args[2].args[3] = :( Query.@select_many_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			qe[1].args[2].args[3] = :( Query.@mapmany_internal($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@let")
 			x = qe[1].args[2].args[2]

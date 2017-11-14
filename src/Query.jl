@@ -30,7 +30,7 @@ import QueryOperators: @orderby_descending_internal
 import QueryOperators: @thenby_internal
 import QueryOperators: @thenby_descending_internal
 import QueryOperators: @map_internal
-import QueryOperators: @select_many_internal
+import QueryOperators: @mapmany_internal
 import QueryOperators: @filter_internal
 
 export @from, @query, @count, Grouping, @NT
