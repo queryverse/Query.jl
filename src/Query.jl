@@ -24,7 +24,7 @@ import QueryOperators: QueryProvider
 export @from, @query, @count, Grouping, @NT
 
 export @map, @filter, @groupby, @orderby, @orderby_descending,
-	@thenby, @thenby_descending
+	@thenby, @thenby_descending, @groupjoin
 
 include("query_utils.jl")
 include("query_translation.jl")

@@ -43,6 +43,42 @@ macro groupby(elementSelector)
         helper_replace_field_extraction_syntax
 end
 
+macro groupjoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
+    outerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(outerKeySelector)
+    innerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(innerKeySelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
+
+    q_outerKeySelector = Expr(:quote, outerKeySelector_as_anonym_func)
+    q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
+    q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+    return :(QueryOperators.groupjoin(QueryOperators.query($(esc(outer))), 
+            QueryOperators.query($(esc(inner))), 
+            $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
+            $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
+            $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro groupjoin(inner, outerKeySelector, innerKeySelector, resultSelector)
+    outerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(outerKeySelector)
+    innerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(innerKeySelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
+
+    q_outerKeySelector = Expr(:quote, outerKeySelector_as_anonym_func)
+    q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
+    q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
+
+    return :( outer -> QueryOperators.groupjoin(QueryOperators.query(outer), 
+            QueryOperators.query($(esc(inner))), 
+            $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
+            $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
+            $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
 macro orderby(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
