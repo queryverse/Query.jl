@@ -37,10 +37,28 @@ end
 function helper_replace_anon_func_syntax(ex)
 	if !(isa(ex, Expr) && ex.head==:->)
 		new_symb = gensym()
+		new_symb2 = gensym()
+		two_args = false
 		new_ex = postwalk(ex) do x
-			isa(x, Symbol) && x==:_ ? new_symb : x
+			if isa(x, Symbol)
+				if x==:_
+					return new_symb
+				elseif x==:__
+					two_args = true
+					return new_symb2
+				else
+					return x
+				end
+			else
+				return x
+			end
 		end
-		return :($new_symb -> $(new_ex) )
+
+		if two_args
+			return :(($new_symb, $new_symb2) -> $(new_ex) )
+		else
+			return :($new_symb -> $(new_ex) )
+		end
 	else
 		return ex
 	end
