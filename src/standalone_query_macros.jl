@@ -195,6 +195,34 @@ macro map(f)
         helper_replace_field_extraction_syntax
 end
 
+macro mapmany(source, collectionSelector,resultSelector)
+    collectionSelector_as_anonym_func = helper_replace_anon_func_syntax(collectionSelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
+
+    collectionSelector_q = Expr(:quote, collectionSelector_as_anonym_func)
+    resultSelector_q = Expr(:quote, resultSelector_as_anonym_func)
+
+    return :(QueryOperators.mapmany(QueryOperators.query($(esc(source))),
+            $(esc(collectionSelector_as_anonym_func)), $(esc(collectionSelector_q)),
+            $(esc(resultSelector_as_anonym_func)), $(esc(resultSelector_q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+macro mapmany(collectionSelector,resultSelector)
+    collectionSelector_as_anonym_func = helper_replace_anon_func_syntax(collectionSelector)
+    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
+
+    collectionSelector_q = Expr(:quote, collectionSelector_as_anonym_func)
+    resultSelector_q = Expr(:quote, resultSelector_as_anonym_func)
+
+    return :( i-> QueryOperators.mapmany(QueryOperators.query(i),
+            $(esc(collectionSelector_as_anonym_func)), $(esc(collectionSelector_q)),
+            $(esc(resultSelector_as_anonym_func)), $(esc(resultSelector_q)))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
 macro filter(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
