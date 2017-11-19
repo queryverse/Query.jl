@@ -525,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "Experimental features",
     "category": "section",
-    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @select, @where, @groupby and @orderby (and various variants) commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @select({a=_.key, b=mean(_..b)}) |>\n    @where(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
+    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @map, @filter, @groupby, @orderby (and various variants), @groupjoin, @join and @mapmany commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=_.key, b=mean(_..b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
 },
 
 {
@@ -537,19 +537,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@select-command-1",
+    "location": "experimental.html#The-@map-command-1",
     "page": "Experimental Features",
-    "title": "The @select command",
+    "title": "The @map command",
     "category": "section",
-    "text": "The @select command has the form @select(source, element_selector). source can be any source that can be queried. element_selector must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element."
+    "text": "The @map command has the form @map(source, element_selector). source can be any source that can be queried. element_selector must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element."
 },
 
 {
-    "location": "experimental.html#The-@where-command-1",
+    "location": "experimental.html#The-@filter-command-1",
     "page": "Experimental Features",
-    "title": "The @where command",
+    "title": "The @filter command",
     "category": "section",
-    "text": "The @where command has the form @where(source, filter_condition). source can be any source that can be queried. filter_condition must be an anonymous function that accepts one element of the element type of the source and returns true if that element should be retained, and false if that element should be filtered out."
+    "text": "The @filter command has the form @filter(source, filter_condition). source can be any source that can be queried. filter_condition must be an anonymous function that accepts one element of the element type of the source and returns true if that element should be retained, and false if that element should be filtered out."
 },
 
 {
@@ -569,6 +569,30 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "experimental.html#The-@groupjoin-command-1",
+    "page": "Experimental Features",
+    "title": "The @groupjoin command",
+    "category": "section",
+    "text": "The @groupjoin command has the form @groupjoin(outer, inner, outer_selector, inner_selector, result_selector). outer and inner can be any source that can be queried. outer_selector and inner_selector must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The result_selector must be an anonymous function that takes two arguments, first the element from the outer source, and second an array of those elements from the second source that are grouped together."
+},
+
+{
+    "location": "experimental.html#The-@join-command-1",
+    "page": "Experimental Features",
+    "title": "The @join command",
+    "category": "section",
+    "text": "The @join command has the form @join(outer, inner, outer_selector, inner_selector, result_selector). outer and inner can be any source that can be queried. outer_selector and inner_selector must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The result_selector must be an anonymous function that takes two arguments. It will be called for each element in the result set, and the first argument will hold the element from the outer source and the second argument will hold the element from the inner source."
+},
+
+{
+    "location": "experimental.html#The-@mapmany-command-1",
+    "page": "Experimental Features",
+    "title": "The @mapmany command",
+    "category": "section",
+    "text": "The @mapmany command has the form @mapmany(source, collection_selector, result_selector). source can be any source that can be queried. collection_selector must be an anonymous function that takes one argument and returns a collection. result_selector must be an anonymous function that takes two arguments. It will be applied to each element of the intermediate collection."
+},
+
+{
     "location": "experimental.html#The-..-syntax-1",
     "page": "Experimental Features",
     "title": "The .. syntax",
@@ -577,11 +601,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-_-syntax-1",
+    "location": "experimental.html#The-_-and-__-syntax-1",
     "page": "Experimental Features",
-    "title": "The _ syntax",
+    "title": "The _ and __ syntax",
     "category": "section",
-    "text": "This syntax only works in the standalone query commands. Instead of writing a full anonymous function, for example @select(i->i.a), one can write @select(_.a), where _ stands for the current element, i.e. has the same role as the argument of the anonymous function."
+    "text": "This syntax only works in the standalone query commands. Instead of writing a full anonymous function, for example @map(i->i.a), one can write @map(_.a), where _ stands for the current element, i.e. has the same role as the argument of the anonymous function.If one uses both _ and __, Query will automatically create an anonymous function with two arguments. For example, the result selector in the @join command requires an anonymous function that takes two arguments. This can be written succinctly like this:using DataFrames, Query\n\ndf_parents = DataFrame(Name=[\"John\", \"Sally\"])\ndf_children = DataFrame(Name=[\"Bill\", \"Joe\", \"Mary\"], Parent=[\"John\", \"John\", \"Sally\"])\n\ndf_parents |> @join(df_children, _.Name, _.Parent, {Parent=_.Name, Child=__.Name}) |> DataFrame"
 },
 
 {
