@@ -6,7 +6,7 @@ deal with significant changes to these features in future versions of
 Query.jl. At the same time any feedback on these features would be
 especially welcome.
 
-The `@select`, `@where`, `@groupby` and `@orderby` (and various variants)
+The `@map`, `@filter`, `@groupby` and `@orderby` (and various variants)
 commands can be used in standalone versions. Those standalone versions
 are especially convenient in combination with the pipe syntax in julia.
 Here is an example that demonstrates their use:
@@ -18,8 +18,8 @@ df = DataFrame(a=[1,1,2,3], b=[4,5,6,8])
 
 df2 = df |>
     @groupby(_.a) |>
-    @select({a=_.key, b=mean(_..b)}) |>
-    @where(_.b > 5) |>
+    @map({a=_.key, b=mean(_..b)}) |>
+    @filter(_.b > 5) |>
     @orderby_descending(_.b) |>
     DataFrame
 ```
@@ -47,16 +47,16 @@ The remaining arguments of each query demand are command specific.
 The following discussion will present each command in the version that
 accepts a source as the first argument.
 
-### The `@select` command
+### The `@map` command
 
-The `@select` command has the form `@select(source, element_selector)`.
+The `@map` command has the form `@map(source, element_selector)`.
 `source` can be any source that can be queried. `element_selector` must
 be an anonymous function that accepts one element of the element type of
 the source and applies some transformation to this single element.
 
-### The `@where` command
+### The `@filter` command
 
-The `@where` command has the form `@where(source, filter_condition)`.
+The `@filter` command has the form `@filter(source, filter_condition)`.
 `source` can be any source that can be queried. `filter_condition` must
 be an anonymous function that accepts one element of the element type of
 the source and returns `true` if that element should be retained, and
@@ -122,6 +122,6 @@ column from that table.
 ## The `_` syntax
 
 This syntax only works in the standalone query commands. Instead of writing
-a full anonymous function, for example `@select(i->i.a)`, one can write
-`@select(_.a)`, where `_` stands for the current element, i.e. has the
+a full anonymous function, for example `@map(i->i.a)`, one can write
+`@map(_.a)`, where `_` stands for the current element, i.e. has the
 same role as the argument of the anonymous function.

@@ -107,7 +107,7 @@ macro thenby_descending(f)
         helper_replace_field_extraction_syntax
 end
 
-macro select(source, f)
+macro map(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.map(QueryOperators.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
@@ -115,7 +115,7 @@ macro select(source, f)
         helper_replace_field_extraction_syntax
 end
 
-macro select(f)
+macro map(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :( i-> QueryOperators.map(QueryOperators.query(i), $(esc(f_as_anonym_func)), $(esc(q))) ) |>

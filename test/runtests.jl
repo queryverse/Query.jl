@@ -565,7 +565,7 @@ q = collect(@filter(source_df, i->i.age>30. && i.children > 2), DataFrame)
 @test q[1,:age]==42.
 @test q[1,:children]==5
 
-q = collect(Query.@select(source_df, i->get(i.children)))
+q = collect(@map(source_df, i->get(i.children)))
 
 @test isa(q, Array{Int,1})
 @test q==[3,5,2]
