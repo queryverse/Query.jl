@@ -6,10 +6,11 @@ deal with significant changes to these features in future versions of
 Query.jl. At the same time any feedback on these features would be
 especially welcome.
 
-The `@map`, `@filter`, `@groupby` and `@orderby` (and various variants)
-commands can be used in standalone versions. Those standalone versions
-are especially convenient in combination with the pipe syntax in julia.
-Here is an example that demonstrates their use:
+The `@map`, `@filter`, `@groupby`, `@orderby` (and various variants),
+`@groupjoin`, `@join` and `@mapmany` commands can be used in standalone
+versions. Those standalone versions are especially convenient in
+combination with the pipe syntax in julia. Here is an example that
+demonstrates their use:
 
 ```julia
 using Query, DataFrames
@@ -94,6 +95,35 @@ command works in the same way, but sorts things in descending order. The
 of any of the four sorting commands as their `source`, otherwise they have
 the same syntax as the `@orderby` and `@orderby_descending` commands.
 
+### The `@groupjoin` command
+
+The `@groupjoin` command has the form `@groupjoin(outer, inner, outer_selector, inner_selector, result_selector)`.
+`outer` and `inner` can be any source that can be queried. `outer_selector`
+and `inner_selector` must be an anonymous function that extracts the value
+from the outer and inner source respectively on which the join should
+be run. The `result_selector` must be an anonymous function that takes two
+arguments, first the element from the `outer` source, and second an array
+of those elements from the second source that are grouped together.
+
+### The `@join` command
+
+The `@join` command has the form `@join(outer, inner, outer_selector, inner_selector, result_selector)`.
+`outer` and `inner` can be any source that can be queried. `outer_selector`
+and `inner_selector` must be an anonymous function that extracts the value
+from the outer and inner source respectively on which the join should
+be run. The `result_selector` must be an anonymous function that takes two
+arguments. It will be called for each element in the result set, and the
+first argument will hold the element from the outer source and the second
+argument will hold the element from the inner source.
+
+### The `@mapmany` command
+
+The `@mapmany` command has the form `@mapmany(source, collection_selector, result_selector)`.
+`source` can be any source that can be queried. `collection_selector` must
+be an anonymous function that takes one argument and returns a collection.
+`result_selector` must be an anonymous function that takes two arguments.
+It will be applied to each element of the intermediate collection.
+
 ## The `..` syntax
 
 The syntax `a..b` is translated into `map(i->i.b, a)` in any query
@@ -119,9 +149,23 @@ The `@group` command here creates a list of tables, i.e. `g` will hold
 a full table for each group. The syntax `g..b` then extracts a single
 column from that table.
 
-## The `_` syntax
+## The `_` and `__` syntax
 
 This syntax only works in the standalone query commands. Instead of writing
 a full anonymous function, for example `@map(i->i.a)`, one can write
 `@map(_.a)`, where `_` stands for the current element, i.e. has the
 same role as the argument of the anonymous function.
+
+If one uses both `_` and `__`, Query will automatically create an anonymous
+function with two arguments. For example, the result selector in the
+`@join` command requires an anonymous function that takes two arguments.
+This can be written succinctly like this:
+
+```julia
+using DataFrames, Query
+
+df_parents = DataFrame(Name=["John", "Sally"])
+df_children = DataFrame(Name=["Bill", "Joe", "Mary"], Parent=["John", "John", "Sally"])
+
+df_parents |> @join(df_children, _.Name, _.Parent, {Parent=_.Name, Child=__.Name}) |> DataFrame
+```
