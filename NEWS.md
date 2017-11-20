@@ -1,3 +1,7 @@
+# Query.jl v0.8.0 Release Notes
+* Add @groupjoin, @join and @mapmany standalone macros
+* Move backend code to QueryOperators.jl
+
 # Query.jl v0.7.2 Release Notes
 * Fix bug in group implementation
 
