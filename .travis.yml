@@ -14,6 +14,7 @@ branches:
   only:
   - master
   - /release-.*/
+  - /v(\d+)\.(\d+)\.(\d+)/
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia -e 'Pkg.clone(pwd()); Pkg.build("Query"); Pkg.test("Query"; coverage=true)'
