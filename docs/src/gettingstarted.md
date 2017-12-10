@@ -75,8 +75,8 @@ using Query, DataFrames
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
 x = df |> @query(i, begin
-          @where i.age>50
-          @select {i.name, i.children}
+            @where i.age>50
+            @select {i.name, i.children}
           end) |> DataFrame
 
 println(x)
