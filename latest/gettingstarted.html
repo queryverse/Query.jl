@@ -22,10 +22,10 @@ println(x)
 
 df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
 
-x |&gt; @query(i, begin
-         @where i.age&gt;50
-         @select {i.name, i.children}
-     end) |&gt; DataFrame
+x = df |&gt; @query(i, begin
+            @where i.age&gt;50
+            @select {i.name, i.children}
+          end) |&gt; DataFrame
 
 println(x)
 
