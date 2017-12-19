@@ -189,7 +189,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{String},1})
+@test isa(q, DataValueArray{String,1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -199,7 +199,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{String},1})
+@test isa(q, DataValueArray{String,1})
 @test length(q)==3
 @test q==["kirk", "sally", "john"]
 
@@ -209,7 +209,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{String},1})
+@test isa(q, DataValueArray{String,1})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -237,7 +237,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{DataValue{Int},1})
+@test isa(q, DataValueArray{Int,1})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -459,7 +459,7 @@ q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "newdata", "ai
     @collect
 end
 
-@test isa(q, Array{Query.DataValue{Int32},1})
+@test isa(q, DataValueArray{Int32,1})
 @test q==[5,6,7,8,9]
 
 source_df_nulls = DataFrame(name=@data(["John", "Sally", NA, "Kirk"]), age=[23., 42., 54., 59.], children=@data([3,NA,8,2]))
