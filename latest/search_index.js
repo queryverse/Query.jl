@@ -525,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "Experimental features",
     "category": "section",
-    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @map, @filter, @groupby, @orderby (and various variants), @groupjoin, @join and @mapmany commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=_.key, b=mean(_..b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
+    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @map, @filter, @groupby, @orderby (and various variants), @groupjoin, @join, @mapmany, @take and @drop commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=_.key, b=mean(_..b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
 },
 
 {
@@ -590,6 +590,22 @@ var documenterSearchIndex = {"docs": [
     "title": "The @mapmany command",
     "category": "section",
     "text": "The @mapmany command has the form @mapmany(source, collection_selector, result_selector). source can be any source that can be queried. collection_selector must be an anonymous function that takes one argument and returns a collection. result_selector must be an anonymous function that takes two arguments. It will be applied to each element of the intermediate collection."
+},
+
+{
+    "location": "experimental.html#The-@take-command-1",
+    "page": "Experimental Features",
+    "title": "The @take command",
+    "category": "section",
+    "text": "The @take command has the form @take(source, n). source can be any source that can be queried. n must be an integer, and it specifies how many elements from the beginning of the source should be kept."
+},
+
+{
+    "location": "experimental.html#The-@drop-command-1",
+    "page": "Experimental Features",
+    "title": "The @drop command",
+    "category": "section",
+    "text": "The @drop command has the form @drop(source, n). source can be any source that can be queried. n must be an integer, and it specifies how many elements from the beginning of the source should be dropped from the results."
 },
 
 {
