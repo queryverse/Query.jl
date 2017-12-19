@@ -7,7 +7,7 @@ Query.jl. At the same time any feedback on these features would be
 especially welcome.
 
 The `@map`, `@filter`, `@groupby`, `@orderby` (and various variants),
-`@groupjoin`, `@join` and `@mapmany` commands can be used in standalone
+`@groupjoin`, `@join`, `@mapmany`, `@take` and `@drop` commands can be used in standalone
 versions. Those standalone versions are especially convenient in
 combination with the pipe syntax in julia. Here is an example that
 demonstrates their use:
@@ -123,6 +123,14 @@ The `@mapmany` command has the form `@mapmany(source, collection_selector, resul
 be an anonymous function that takes one argument and returns a collection.
 `result_selector` must be an anonymous function that takes two arguments.
 It will be applied to each element of the intermediate collection.
+
+### The `@take` command
+
+The `@take` command has the form `@take(source, n)`. `source` can be any source that can be queried. `n` must be an integer, and it specifies how many elements from the beginning of the source should be kept.
+
+### The `@drop` command
+
+The `@drop` command has the form `@drop(source, n)`. `source` can be any source that can be queried. `n` must be an integer, and it specifies how many elements from the beginning of the source should be dropped from the results.
 
 ## The `..` syntax
 

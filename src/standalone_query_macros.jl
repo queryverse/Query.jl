@@ -238,3 +238,19 @@ macro filter(f)
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
+
+macro take(source, n)
+    return :(QueryOperators.take(QueryOperators.query($(esc(source))), $(esc(n))))
+end
+
+macro take(n)
+    return :( i -> QueryOperators.take(QueryOperators.query(i), $(esc(n))))
+end
+
+macro drop(source, n)
+    return :(QueryOperators.drop(QueryOperators.query($(esc(source))), $(esc(n))))
+end
+
+macro drop(n)
+    return :( i -> QueryOperators.drop(QueryOperators.query(i), $(esc(n))))
+end

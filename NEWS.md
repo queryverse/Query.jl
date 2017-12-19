@@ -1,3 +1,7 @@
+# Query.jl v0.9.0 Release Notes
+* Add @take and @drop standalone macros
+* Fix some test bugs
+
 # Query.jl v0.8.0 Release Notes
 * Add @groupjoin, @join and @mapmany standalone macros
 * Move backend code to QueryOperators.jl
