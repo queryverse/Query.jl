@@ -7,6 +7,10 @@ macro count(source)
     :(QueryOperators.count(QueryOperators.query($(esc(source)))))
 end
 
+macro count()
+    :( i -> QueryOperators.count(QueryOperators.query(i)))
+end
+
 macro groupby(source, elementSelector, resultSelector)
     elementSelector_as_anonym_func = helper_replace_anon_func_syntax(elementSelector)
     resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
