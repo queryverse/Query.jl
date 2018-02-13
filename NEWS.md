@@ -1,3 +1,6 @@
+# Query.jl v0.9.1 Release Notes
+* Add missing @count macro definition for piping
+
 # Query.jl v0.9.0 Release Notes
 * Add @take and @drop standalone macros
 * Fix some test bugs
