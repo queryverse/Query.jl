@@ -1,3 +1,6 @@
+# Query.jl v0.9.2 Release Notes
+* Fix deprecation warning in IndexedTables tests
+
 # Query.jl v0.9.1 Release Notes
 * Add missing @count macro definition for piping
 
