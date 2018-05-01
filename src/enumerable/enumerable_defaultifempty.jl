@@ -14,7 +14,7 @@ function default_if_empty{S}(source::S)
         if !all(i->i<:DataValue,T.parameters)
             error("default_if_empty requires a default value if the source element is a NamedTuple and at least one of its fields is not a DataValue.")
         end
-        default_value = T([i() for i in T.parameters]...)
+        default_value = T(i() for i in T.parameters)
     else
         if !(T<:DataValue)
             error("default_if_empty requires a default value if the source element is not a DataValue.")
