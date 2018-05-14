@@ -1,8 +1,8 @@
-using Query, DataFrames, Feather
+using Query, DataFrames, FileIO, FeatherFiles
 
-testfile = joinpath(Pkg.dir("Feather"),"test", "data", "airquality.feather")
+testfile = joinpath(Pkg.dir("FeatherLib"),"test", "data", "airquality.feather")
 
-results = @from i in Feather.Source(testfile) begin
+results = @from i in load(testfile) begin
     @select i
     @collect DataFrame
 end
