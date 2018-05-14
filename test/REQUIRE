@@ -1,11 +1,6 @@
 DataFrames
-DataArrays
-DataTables
-TypedTables
-# SQLite
-DataStreams
-CSV
 JSON
-Feather
-NullableArrays
 IndexedTables
+FileIO
+CSVFiles
+FeatherFiles
