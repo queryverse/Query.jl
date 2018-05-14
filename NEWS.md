@@ -1,3 +1,6 @@
+# Query.jl v0.9.3 Release Notes
+* Add the ability to collect into a function from LINQ style queries
+
 # Query.jl v0.9.2 Release Notes
 * Fix deprecation warning in IndexedTables tests
 
