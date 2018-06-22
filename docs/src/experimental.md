@@ -52,14 +52,14 @@ accepts a source as the first argument.
 
 The `@map` command has the form `@map(source, element_selector)`.
 `source` can be any source that can be queried. `element_selector` must
-be an anonymous function that accepts one element of the element type of
+be a function that accepts one element of the element type of
 the source and applies some transformation to this single element.
 
 ### The `@filter` command
 
 The `@filter` command has the form `@filter(source, filter_condition)`.
 `source` can be any source that can be queried. `filter_condition` must
-be an anonymous function that accepts one element of the element type of
+be a function that accepts one element of the element type of
 the source and returns `true` if that element should be retained, and
 `false` if that element should be filtered out.
 
@@ -67,13 +67,13 @@ the source and returns `true` if that element should be retained, and
 
 There are two versions of the `@groupby` command. The simple version has
 the form `@groupby(source, key_selector)`. `source` can be any source
-that can be queried. `key_selector` must be an anonymous function that
+that can be queried. `key_selector` must be a function that
 returns a value for each element of `source` by which the source elements
 should be grouped.
 
 The second variant has the form `@groupby(source, key_selector, element_selector)`.
 The definition of `source` and `key_selector` is the same as in the simple
-variant. `element_selector` must be an anonymous function that is applied
+variant. `element_selector` must be a function that is applied
 to each element of the `source` before that element is placed into a group,
 i.e. this is a projection function.
 
@@ -86,8 +86,8 @@ command. They specify how ties in the previous sorting condition are to be
 resolved.
 
 The general sorting command form is `@orderby(source, key_selector)`.
-`source` can be any source than can be queried. `key_selector` must be an
-anonymous function that returns a value for each element of `source`. The
+`source` can be any source than can be queried. `key_selector` must be a
+function that returns a value for each element of `source`. The
 elements of the source are then sorted is ascending order by the value
 returned from the `key_selector` function. The `@orderby_descending`
 command works in the same way, but sorts things in descending order. The
@@ -99,9 +99,9 @@ the same syntax as the `@orderby` and `@orderby_descending` commands.
 
 The `@groupjoin` command has the form `@groupjoin(outer, inner, outer_selector, inner_selector, result_selector)`.
 `outer` and `inner` can be any source that can be queried. `outer_selector`
-and `inner_selector` must be an anonymous function that extracts the value
+and `inner_selector` must be a function that extracts the value
 from the outer and inner source respectively on which the join should
-be run. The `result_selector` must be an anonymous function that takes two
+be run. The `result_selector` must be a function that takes two
 arguments, first the element from the `outer` source, and second an array
 of those elements from the second source that are grouped together.
 
@@ -109,9 +109,9 @@ of those elements from the second source that are grouped together.
 
 The `@join` command has the form `@join(outer, inner, outer_selector, inner_selector, result_selector)`.
 `outer` and `inner` can be any source that can be queried. `outer_selector`
-and `inner_selector` must be an anonymous function that extracts the value
+and `inner_selector` must be a function that extracts the value
 from the outer and inner source respectively on which the join should
-be run. The `result_selector` must be an anonymous function that takes two
+be run. The `result_selector` must be a function that takes two
 arguments. It will be called for each element in the result set, and the
 first argument will hold the element from the outer source and the second
 argument will hold the element from the inner source.
@@ -120,8 +120,8 @@ argument will hold the element from the inner source.
 
 The `@mapmany` command has the form `@mapmany(source, collection_selector, result_selector)`.
 `source` can be any source that can be queried. `collection_selector` must
-be an anonymous function that takes one argument and returns a collection.
-`result_selector` must be an anonymous function that takes two arguments.
+be a function that takes one argument and returns a collection.
+`result_selector` must be a function that takes two arguments.
 It will be applied to each element of the intermediate collection.
 
 ### The `@take` command
@@ -166,7 +166,7 @@ same role as the argument of the anonymous function.
 
 If one uses both `_` and `__`, Query will automatically create an anonymous
 function with two arguments. For example, the result selector in the
-`@join` command requires an anonymous function that takes two arguments.
+`@join` command requires a function that takes two arguments.
 This can be written succinctly like this:
 
 ```julia
