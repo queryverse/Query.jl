@@ -77,6 +77,11 @@ variant. `element_selector` must be an anonymous function that is applied
 to each element of the `source` before that element is placed into a group,
 i.e. this is a projection function.
 
+The return value of `@groupby` is an iterable of groups. Each group is itself a
+collection of data rows, and has a `key` field that is equal to the value the
+rows were grouped by. Often the next step in the pipeline will be to use `@map`
+with a function that acts on each group, summarizing it in a new data row.
+
 ### The `@orderby`, `@orderby_descending`, `@thenby` and `@thenby_descending` command
 
 There are four commands that are used to sort data. Any sorting has to
