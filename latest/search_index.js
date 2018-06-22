@@ -557,7 +557,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "The @groupby command",
     "category": "section",
-    "text": "There are two versions of the @groupby command. The simple version has the form @groupby(source, key_selector). source can be any source that can be queried. key_selector must be an anonymous function that returns a value for each element of source by which the source elements should be grouped.The second variant has the form @groupby(source, key_selector, element_selector). The definition of source and key_selector is the same as in the simple variant. element_selector must be an anonymous function that is applied to each element of the source before that element is placed into a group, i.e. this is a projection function."
+    "text": "There are two versions of the @groupby command. The simple version has the form @groupby(source, key_selector). source can be any source that can be queried. key_selector must be an anonymous function that returns a value for each element of source by which the source elements should be grouped.The second variant has the form @groupby(source, key_selector, element_selector). The definition of source and key_selector is the same as in the simple variant. element_selector must be an anonymous function that is applied to each element of the source before that element is placed into a group, i.e. this is a projection function.The return value of @groupby is an iterable of groups. Each group is itself a collection of data rows, and has a key field that is equal to the value the rows were grouped by. Often the next step in the pipeline will be to use @map with a function that acts on each group, summarizing it in a new data row."
 },
 
 {
