@@ -40,7 +40,7 @@ Pkg.add("Query")
 ````
 
 ## Getting started
-To get started, take a look at the [documentation](http://www.david-anthoff.com/Query.jl/stable/).
+To get started, take a look at the [documentation](http://www.queryverse.org/Query.jl/stable/).
 
 ## Getting help
 
