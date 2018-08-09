@@ -1,13 +1,7 @@
 using Query
 using DataFrames
 
-# We want a DataFrame without Nullable's, so
-# we need to construct a DataFrame with columns of Array
-columns=[]
-push!(columns, ["John", "Sally", "Kirk"])
-push!(columns, [34., 23., 59.])
-push!(columns, [3,5,2])
-df = DataFrame(columns, [:name, :age, :children])
+df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
 x = @from i in df begin
     @orderby i.age

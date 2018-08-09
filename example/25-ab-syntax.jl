@@ -1,5 +1,6 @@
 using Query
 using DataFrames
+using Statistics
 
 df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]), 
      age=vcat([10., 20., 30.],[10., 20., 30.].+3), 
@@ -7,7 +8,7 @@ df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]),
 
 x = @from i in df begin
     @group i by i.state into g
-    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}
+    @select {group=key(g),mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}
     @collect DataFrame
 end
 
