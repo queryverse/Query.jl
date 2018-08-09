@@ -1,6 +1,6 @@
 using Query
 using DataFrames
-using Base.Test
+using Test
 
 @testset "Standalone Syntax" begin
 

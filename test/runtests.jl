@@ -1,14 +1,10 @@
 using Query
+using QueryOperators
 using DataFrames
-using IndexedTables
-using NamedTuples
 using DataValues
-using FileIO
-using CSVFiles
-using FeatherFiles
-using Base.Test
+using Test
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end
@@ -22,8 +18,8 @@ end
         @test Query.ismacro(:(@from(1)), "@from")
         @test !Query.ismacro(:(@from 1), "@for")
         @test !Query.ismacro(:(@from,1), "@from")
-        @test Query.ismacro(:(@from 1 2 3), "@from", 3)
-        @test !Query.ismacro(:(@from 1 2 3 4), "@from", 3)
+        @test Query.ismacro(:(@from 1 2 3), "@from", 4)
+        @test !Query.ismacro(:(@from 1 2 3 4), "@from", 4)
         @test !Query.ismacro(:(map(1)), :map)
 
         @test !Query.iscall(Symbol("@from"), :map)
@@ -66,11 +62,11 @@ q = @from i in source_dict begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Vector{String})
 @test length(q)==1
 @test q[1]=="sally"
 
-source_array = Array{Person}(0)
+source_array = Array{Person}(undef,0)
 push!(source_array, Person("John", ["Sally", "Miles", "Frank"]))
 push!(source_array, Person("Sally", ["Don", "Martin"]))
 
@@ -80,7 +76,7 @@ q = @from i in source_array begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_Name_Friendcount{String,Int},1})
+@test isa(q,Vector{NamedTuple{(:Name,:Friendcount),Tuple{String,Int}}})
 @test length(q)==1
 @test q[1].Name=="John"
 @test q[1].Friendcount==3
@@ -97,7 +93,7 @@ end
 @test q[1,:Friendcount]==3
 
 source_df2 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
-source_it = table([2.,4.,2.],["John","Jim","Sally"],names=[:c,:d])
+source_it = DataFrame(c=[2.,4.,2.],d=["John","Jim","Sally"])
 
 
 q = @from i in source_df2 begin
@@ -161,7 +157,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Vector{String})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -171,7 +167,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Vector{String})
 @test length(q)==3
 @test q==["kirk", "sally", "john"]
 
@@ -181,7 +177,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{String,1})
+@test isa(q, Vector{String})
 @test length(q)==3
 @test q==["john", "sally", "kirk"]
 
@@ -192,13 +188,13 @@ q = @from i in source_nestedsort begin
     @collect
 end
 
-@test isa(q, Array{Tuple{Int,Int},1})
+@test isa(q, Vector{Tuple{Int,Int}})
 @test length(q)==4
 @test q==[(1,2),(1,1),(4,3),(4,3)]
 
 
 # We need to use a typed const here, otherwise type inference stands no chance
-const closure_var_1::Int = 1
+closure_var_1::Int = 1
 
 q = @from i in source_df begin
     @let k = i.children + closure_var_1
@@ -209,7 +205,7 @@ q = @from i in source_df begin
     @collect
 end
 
-@test isa(q, Array{Int,1})
+@test isa(q, Vector{Int})
 @test length(q)==2
 @test q[1]==4
 @test q[2]==3
@@ -220,7 +216,7 @@ q = @from i in [5,4,4,6,1] begin
     @collect
 end
 
-@test isa(q,Array{Int,1})
+@test isa(q,Vector{Int})
 @test length(q)==5
 @test q==[1,4,4,5,6]
 
@@ -230,7 +226,7 @@ q = @from i in [5,4,4,6,1] begin
     @collect
 end
 
-@test isa(q,Array{Int,1})
+@test isa(q,Vector{Int})
 @test length(q)==5
 @test q==[6,5,4,4,1]
 
@@ -241,23 +237,12 @@ q = @from i in source_array begin
     @collect
 end
 
-@test isa(q,Array{Person,1})
+@test isa(q,Vector{Person})
 @test length(q)==2
 @test q[1].Name=="John"
 @test q[1].Friends==["Sally", "Miles", "Frank"]
 @test q[2].Name=="Sally"
 @test q[2].Friends==["Don", "Martin"]
-
-q = @from i in load("data.csv") begin
-    @where i.Children > 2
-    @select i.Name
-    @collect
-end
-
-@test isa(q,Array{String,1})
-@test length(q)==2
-@test q[1]=="John"
-@test q[2]=="Kirk"
 
 q = @from i in source_df begin
     @from j in source_df2
@@ -281,13 +266,13 @@ q = @from i in source_nested_dict begin
     @collect
 end
 
-@test isa(q, Array{@NT(Key::Symbol,Value::Int),1})
+@test isa(q, Vector{NamedTuple{(:Key,:Value),Tuple{Symbol,Int}}})
 @test length(q)==5
-@test in(@NT(Key=:a,Value=1), q)
-@test in(@NT(Key=:a,Value=2), q)
-@test in(@NT(Key=:a,Value=3), q)
-@test in(@NT(Key=:b,Value=4), q)
-@test in(@NT(Key=:b,Value=5), q)
+@test in((Key=:a,Value=1), q)
+@test in((Key=:a,Value=2), q)
+@test in((Key=:a,Value=3), q)
+@test in((Key=:b,Value=4), q)
+@test in((Key=:b,Value=5), q)
 
 q = @from i in source_df begin
     @from j in source_df2
@@ -313,11 +298,11 @@ q = @from i in source_nested_dict begin
     @collect
 end
 
-@test isa(q, Array{@NT(Key::Symbol,Value::Int),1})
+@test isa(q, Vector{NamedTuple{(:Key,:Value),Tuple{Symbol,Int}}})
 @test length(q)==3
-@test in(@NT(Key=:a,Value=3), q)
-@test in(@NT(Key=:b,Value=4), q)
-@test in(@NT(Key=:b,Value=5), q)
+@test in((Key=:a,Value=3), q)
+@test in((Key=:b,Value=4), q)
+@test in((Key=:b,Value=5), q)
 
 source_df_groupby = DataFrame(name=["John", "Sally", "Kirk"], children=[3,2,2])
 
@@ -328,9 +313,9 @@ end
 
 @test isa(x, Array{Grouping{Int,String}})
 @test length(x)==2
-@test x[1].key==3
+@test key(x[1])==3
 @test x[1][:]==["John"]
-@test x[2].key==2
+@test key(x[2])==2
 @test x[2][:]==["Sally", "Kirk"]
 
 x = @from i in source_df_groupby begin
@@ -338,17 +323,17 @@ x = @from i in source_df_groupby begin
     @collect
 end
 
-@test isa(x, Array{Grouping{Int,NamedTuples._NT_name_children{String,Int}},1})
+@test isa(x, Vector{Grouping{Int,NamedTuple{(:name,:children),Tuple{String,Int}}}})
 @test length(x)==2
-@test x[1].key==3
+@test key(x[1])==3
 @test x[1][1].name=="John";
-@test x[2].key==2
+@test key(x[2])==2
 @test x[2][1].name=="Sally";
 @test x[2][2].name=="Kirk";
 
 q = @from i in source_df_groupby begin
     @group i by i.children into g
-    @select {Children=g.key,Number_of_parents=length(g)}
+    @select {Children=key(g),Number_of_parents=length(g)}
     @collect DataFrame
 end
 
@@ -375,15 +360,15 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_a_b_c{Int,Float64,Array{NamedTuples._NT_c_d{Float64,String},1}},1})
+@test isa(q,Vector{NamedTuple{(:a,:b,:c),Tuple{Int,Float64,Vector{NamedTuple{(:c,:d),Tuple{Float64,String}}}}}})
 @test length(q)==3
 @test q[1].a == 1
 @test q[1].b==1.
-@test isa(q[1].c, Array{NamedTuples._NT_c_d{Float64,String},1})
+@test isa(q[1].c, Vector{NamedTuple{(:c,:d),Tuple{Float64,String}}})
 @test length(q[1].c)==0
 @test q[2].a==2
 @test q[2].b==2.
-@test isa(q[2].c, Array{NamedTuples._NT_c_d{Float64,String},1})
+@test isa(q[2].c, Vector{NamedTuple{(:c,:d),Tuple{Float64,String}}})
 @test length(q[2].c)==2
 @test q[2].c[1].c==2.
 @test q[2].c[1].d== "John"
@@ -391,7 +376,7 @@ end
 @test q[2].c[2].d== "Sally"
 @test q[3].a==3
 @test q[3].b==3.
-@test isa(q[3].c, Array{NamedTuples._NT_c_d{Float64,String},1})
+@test isa(q[3].c, Vector{NamedTuple{(:c,:d),Tuple{Float64,String}}})
 @test length(q[3].c)==0
 
 q = @from i in source_df2 begin
@@ -401,25 +386,16 @@ q = @from i in source_df2 begin
     @collect
 end
 
-@test isa(q,Array{NamedTuples._NT_a_b_c{Int,Float64,Array{NamedTuples._NT_c_d{Float64,String},1}},1})
+@test isa(q,Vector{NamedTuple{(:a,:b,:c),Tuple{Int,Float64,Vector{NamedTuple{(:c,:d),Tuple{Float64,String}}}}}})
 @test length(q)==1
 @test q[1].a==2
 @test q[1].b==2.
-@test isa(q[1].c, Array{NamedTuples._NT_c_d{Float64,String},1})
+@test isa(q[1].c, Vector{NamedTuple{(:c,:d),Tuple{Float64,String}}})
 @test length(q[1].c)==2
 @test q[1].c[1].c==2.
 @test q[1].c[1].d== "John"
 @test q[1].c[2].c==2.
 @test q[1].c[2].d== "Sally"
-
-q = @from i in load(joinpath(Pkg.dir("FeatherLib"),"test", "data", "airquality.feather")) begin
-    @where i.Day==2
-    @select i.Month
-    @collect
-end
-
-@test isa(q, Array{Int32,1})
-@test q==[5,6,7,8,9]
 
 source_df_nulls = DataFrame(name=["John", "Sally", missing, "Kirk"], age=[23., 42., 54., 59.], children=[3,missing,8,2])
 q = @from i in source_df_nulls begin
@@ -439,25 +415,9 @@ end
 @test q[3,:children]==8
 @test q[4,:children]==2
 
-q = @from i in source_df begin
-    @select i
-end
-q |> save("test-output.feather")
-df_loaded_from_feather = load("test-output.feather") |> DataFrame
-@test size(source_df) == size(df_loaded_from_feather)
-@test source_df[1,:name] == df_loaded_from_feather[1,:name]
-@test source_df[2,:name] == df_loaded_from_feather[2,:name]
-@test source_df[3,:name] == df_loaded_from_feather[3,:name]
-@test source_df[1,:age] == df_loaded_from_feather[1,:age]
-@test source_df[2,:age] == df_loaded_from_feather[2,:age]
-@test source_df[3,:age] == df_loaded_from_feather[3,:age]
-@test source_df[1,:children] == df_loaded_from_feather[1,:children]
-@test source_df[2,:children] == df_loaded_from_feather[2,:children]
-@test source_df[3,:children] == df_loaded_from_feather[3,:children]
-
 q = Query.collect(QueryOperators.default_if_empty(DataValue{String}[]))
 @test length(q)==1
-@test isnull(q[1])
+@test isna(q[1])
 
 q = Query.collect(QueryOperators.default_if_empty(DataValue{String}["John", "Sally"]))
 @test length(q)==2
@@ -508,50 +468,11 @@ q = collect(@filter(source_df, i->i.age>30. && i.children > 2), DataFrame)
 
 q = collect(@map(source_df, i->i.children))
 
-@test isa(q, Array{Int,1})
+@test isa(q, Vector{Int})
 @test q==[3,5,2]
 
-include("test_indexedtables.jl")
-include("test_pipesyntax.jl")
+# TODO 0.7 Reenable
+# include("test_pipesyntax.jl")
 include("test_dplyr-syntax.jl")
 
-end
-
-@testset "Examples" begin
-    example_files = ["../example/01-DataFrame.jl",
-        "../example/02-Dict.jl",
-        "../example/03-Array.jl",
-        # "../example/04-SQLite.jl",
-        "../example/05-Nullable.jl",
-        "../example/06-Generator.jl",
-        "../example/08-join.jl",
-        "../example/09-let.jl",
-        "../example/10-orderby.jl",
-        # "../example/11-Datastream.jl",
-        "../example/12-IndexedTables.jl",
-        "../example/13-selectmany.jl",
-        "../example/14-groupby.jl",
-        "../example/15-groupinto.jl",
-        "../example/16-selectinto.jl",
-        "../example/17-groupjoin.jl",
-        "../example/18-orderby-nested.jl",
-        "../example/19-feather.jl",
-        "../example/21-nulls.jl",
-        # "../example/22-datastreams-sink.jl",
-        "../example/23-dict-sink.jl",
-        "../example/24-DataTable.jl",
-        "../example/25-ab-syntax.jl"]
-
-    color = Base.have_color ? "--color=yes" : "--color=no"
-    compilecache = "--compilecache=" * (Bool(Base.JLOptions().use_compilecache) ? "yes" : "no")
-    julia_exe = Base.julia_cmd()
-
-    for file in example_files
-        println("Now testing $file")
-        if success(`$julia_exe --check-bounds=yes $color $compilecache $file`)
-            @test true
-        else
-            @test false
-        end
-    end
 end
