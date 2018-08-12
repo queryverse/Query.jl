@@ -1,8 +1,7 @@
 module Query
 
-using Requires
 using TableTraits
-using IterableTables
+import IterableTables
 using DataValues
 using MacroTools: postwalk
 using QueryOperators
