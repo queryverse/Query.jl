@@ -1,23 +1,21 @@
-# Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
 os:
   - linux
   - osx
 julia:
-  - 0.6
+  - 0.7
+  - 1.0
+  - nightly
 notifications:
   email: false
-matrix:
-  allow_failure:
-    - julia: nightly
 branches:
   only:
   - master
   - /release-.*/
-  - /v(\d+)\.(\d+)\.(\d+)/
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("Query"); Pkg.test("Query"; coverage=true)'
+  - /v(\d+)\.(\d+)\.(\d+)/   
+matrix:
+  allow_failures:
+  - julia: nightly
 after_success:
   - julia -e 'cd(Pkg.dir("Query")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
   - julia -e 'Pkg.add("Documenter")'
