@@ -1,11 +1,7 @@
-function collect{T}(enumerable::Enumerable, ::Type{T})
+function Base.collect(enumerable::Enumerable, ::Type{T}) where {T}
     return T(enumerable)
 end
 
-function collect(enumerable::Enumerable, f::Function)
+function Base.collect(enumerable::Enumerable, f::Function)
     return f(enumerable)
-end
-
-function collect{T, TS,Provider}(source::Queryable{TS,Provider}, ::Type{T})
-    collect(QueryOperators.query(collect(source)), T)
 end
