@@ -17,7 +17,7 @@ import QueryOperators: Enumerable
 export @from, @query, @count, Grouping, key
 
 export @map, @filter, @groupby, @orderby, @orderby_descending,
-	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop
+    @thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop
 
 include("query_utils.jl")
 include("query_translation.jl")
@@ -26,31 +26,31 @@ include("standalone_query_macros.jl")
 include("sinks/sink_type.jl")
 
 macro from(range::Expr, body::Expr)
-	if range.head!=:call || range.args[1]!=:in
-		error()
-	end
+    if range.head!=:call || range.args[1]!=:in
+        error()
+    end
 
-	if body.head!=:block
-		error()
-	end
+    if body.head!=:block
+        error()
+    end
 
-	body.args = filter(i->!isa(i, LineNumberNode),body.args)
+    body.args = filter(i->!isa(i, LineNumberNode),body.args)
 
-	insert!(body.args,1,:( @from $(range.args[2]) in $(range.args[3]) ))
+    insert!(body.args,1,:( @from $(range.args[2]) in $(range.args[3]) ))
 
-	translate_query(body)
+    translate_query(body)
 
-	return body.args[1]
+    return body.args[1]
 end
 
 macro query(range::Symbol, body::Expr)
-	if body.head!=:block
-		error()
-	end
+    if body.head!=:block
+        error()
+    end
 
-	f_arg = gensym()
-	x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), Expr(:call, :in, esc(range), f_arg), esc(body)))
-	return x
+    f_arg = gensym()
+    x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), Expr(:call, :in, esc(range), f_arg), esc(body)))
+    return x
 end
 
 end # module
