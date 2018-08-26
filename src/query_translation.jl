@@ -112,7 +112,7 @@ function query_expression_translation_phase_B(qe)
 				clause.args[3].args[3] = :(QueryOperators.query($(esc(subq))))
 			end
 		elseif ismacro(clause, "@from")
-			clause.args[3].args[3] = :(QueryOperators.query($clause.args[3].args[3]))
+			clause.args[3].args[3] = :(QueryOperators.query($(clause.args[3].args[3])))
 		elseif ismacro(clause, "@join")
 			clause.args[3].args[3] = :(QueryOperators.query($(esc(clause.args[3].args[3]))))
 		end
@@ -199,7 +199,7 @@ function query_expression_translation_phase_4(qe)
 			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(($x1=$x1,$x2=$x2)))
 
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
-			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($e1, $(esc(f_collection_selector)), $esc(f_result_selector)) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@let")
 			x = qe[1].args[3].args[2]
