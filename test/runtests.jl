@@ -471,8 +471,7 @@ q = collect(@map(source_df, i->i.children))
 @test isa(q, Vector{Int})
 @test q==[3,5,2]
 
-# TODO 0.7 Reenable
-# include("test_pipesyntax.jl")
 include("test_dplyr-syntax.jl")
+include("test_pipesyntax.jl")
 
 end
