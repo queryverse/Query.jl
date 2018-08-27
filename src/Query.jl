@@ -48,7 +48,7 @@ macro query(range::Symbol, body::Expr)
 	end
 
 	f_arg = gensym()
-	x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), Expr(:call, :in, esc(range), f_arg), esc(body)))
+	x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), @__LINE__, Expr(:call, :in, esc(range), f_arg), esc(body)))
 	return x
 end
 
