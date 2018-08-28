@@ -72,13 +72,13 @@ function query_expression_translation_phase_A(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
-		if ismacro(clause, "@left_outer_join")
+		# macrotools doesn't like underscores
+		if ismacro(clause, Symbol("@left_outer_join")) && @capture clause @amacro_ rangevariable_ in source_ args__
 			clause.args[1] = Symbol("@join")
 			temp_name = gensym()
-			x1 = clause.args[3].args[2]
 			push!(clause.args, :into)
 			push!(clause.args, temp_name)
-			nested_from = :(@from $x1 in QueryOperators.default_if_empty($temp_name))
+			nested_from = :(@from $rangevariable in QueryOperators.default_if_empty($temp_name))
 			insert!(qe,i+1,nested_from)
 		end
 		i+=1
