@@ -102,7 +102,7 @@ function query_expression_translation_phase_B(qe)
 		# end
 
 		if i==1 && ismacro(clause, "@from")
-			# Handle the case of a nested query. We are essentially detecting 
+			# Handle the case of a nested query. We are essentially detecting
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
 			subq = clause.args[3].args[3]
@@ -361,19 +361,14 @@ end
 function query_expression_translation_phase_6(qe)
 	done = false
 	while !done
-		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@group")
-			e = qe[1].args[3].args[3]
-			x = qe[1].args[3].args[2]
-			v = qe[2].args[3]
-			k = qe[2].args[5]
+		if (@capture qe[1] @from rangevariable_ in source_) && (@capture qe[2] @group elementselector_ by keyselector_ args__)
+			f_elementSelector = Expr(:->, rangevariable, keyselector)
+			f_resultSelector = Expr(:->, rangevariable, elementselector)
 
-			f_elementSelector = Expr(:->, x, k)
-			f_resultSelector = Expr(:->, x, v)
-
-			if v==x
-				qe[1] = :( QueryOperators.@groupby_simple($e, $(esc(f_elementSelector))) )
+			if elementselector == rangevariable
+				qe[1] = :( QueryOperators.@groupby_simple($source, $(esc(f_elementSelector))) )
 			else
-				qe[1] = :( QueryOperators.@groupby($e, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
+				qe[1] = :( QueryOperators.@groupby($source, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
 			end
 			deleteat!(qe,2)
 		else
@@ -468,7 +463,7 @@ function query_expression_translation_phase_D(qe)
 end
 
 function translate_query(body)
-	debug_output = false
+	debug_output = true
 
 	debug_output && println("AT START")
 	debug_output && println(body)
