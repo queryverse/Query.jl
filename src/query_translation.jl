@@ -190,16 +190,11 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
 			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@let")
-			x = qe[1].args[3].args[2]
-			e = qe[1].args[3].args[3]
-			y = qe[2].args[3].args[1]
-			f = qe[2].args[3].args[2]
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source_) && (@capture qe[2] @let rangevariable2_ = valueselector_)
+			f_selector = Expr(:->, rangevariable1, :(($rangevariable1=$rangevariable1,$rangevariable2=$valueselector)))
 
-			f_selector = Expr(:->, x, :(($x=$x,$y=$f)))
-
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
-			qe[1].args[3].args[3] = :( QueryOperators.@map($e,$(esc(f_selector))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
+			qe[1].args[3].args[3] = :( QueryOperators.@map($source,$(esc(f_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@where")
 			x = qe[1].args[3].args[2]
