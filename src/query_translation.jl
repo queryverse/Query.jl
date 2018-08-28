@@ -215,19 +215,13 @@ function query_expression_translation_phase_4(qe)
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 6)
-			e1 = qe[1].args[3].args[3]
-			e2 = qe[2].args[3].args[3]
-			x1 = qe[1].args[3].args[2]
-			x2 = qe[2].args[3].args[2]
-			k1 = qe[2].args[5]
-			k2 = qe[2].args[7]
-			f_outer_key = Expr(:->, x1, k1)
-			f_inner_key = Expr(:->, x2, k2)
-			f_result = Expr(:->, Expr(:tuple,x1,x2), :(($x1=$x1,$x2=$x2)) )
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_)
+			f_outer_key = Expr(:->, rangevariable1, leftkey)
+			f_inner_key = Expr(:->, rangevariable2, rightkey)
+			f_result = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)) )
 
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
-			qe[1].args[3].args[3] = :( QueryOperators.@join($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
+			qe[1].args[3].args[3] = :( QueryOperators.@join($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 8) && ismacro(qe[3], "@select")
 			e1 = qe[1].args[3].args[3]
