@@ -201,16 +201,16 @@ function query_expression_translation_phase_4(qe)
 
 			qe[1].args[3].args[3] = :( QueryOperators.@filter($source,$(esc(f_condition))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 6) && ismacro(qe[3], "@select")
-			outer = qe[1].args[3].args[3]
-			inner = qe[2].args[3].args[3]
-			outer_range_var = qe[1].args[3].args[2]
-			inner_range_var = qe[2].args[3].args[2]
-			f_outer_key = Expr(:->, outer_range_var, qe[2].args[5])
-			f_inner_key = Expr(:->, inner_range_var, qe[2].args[7])
-			f_result = Expr(:->, Expr(:tuple,outer_range_var,inner_range_var), qe[3].args[3])
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_) && (@capture qe[3] @select condition_)
+			outer = source1
+			inner = source2
+			outer_range_var = rangevariable1
+			inner_range_var = rangevariable2
+			f_outer_key = Expr(:->, outer_range_var, leftkey)
+			f_inner_key = Expr(:->, inner_range_var, rightkey)
+			f_result = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), condition)
 			qe[1] = :(
-				QueryOperators.@join($outer, $inner, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
+				QueryOperators.@join($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
 				)
 
 			deleteat!(qe,3)
