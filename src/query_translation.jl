@@ -173,6 +173,16 @@ function query_expression_translation_phase_3(qe)
 	end
 end
 
+function attribute_and_direction(sort_clause)
+	if @capture sort_clause descending(attribute_)
+		attribute, :descending
+	elseif @capture sort_clause ascending(attribute_)
+		attribute, :ascending
+	else
+		sort_clause, :ascending
+	end
+end
+
 function query_expression_translation_phase_4(qe)
 	done = false
 	while !done
@@ -190,24 +200,20 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
 			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source_) && (@capture qe[2] @let rangevariable2_ = valueselector_)
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @let rangevariable2_ = valueselector_)
 			f_selector = Expr(:->, rangevariable1, :(($rangevariable1=$rangevariable1,$rangevariable2=$valueselector)))
 
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
-			qe[1].args[3].args[3] = :( QueryOperators.@map($source,$(esc(f_selector))) )
+			qe[1].args[3].args[3] = :( QueryOperators.@map($source1,$(esc(f_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable_ in source_) && (@capture qe[2] @where condition_)
-			f_condition = Expr(:->, rangevariable, condition)
+			f_condition = Expr(:->, rangevariable1, condition)
 
-			qe[1].args[3].args[3] = :( QueryOperators.@filter($source,$(esc(f_condition))) )
+			qe[1].args[3].args[3] = :( QueryOperators.@filter($source1,$(esc(f_condition))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_) && (@capture qe[3] @select condition_)
-			outer = source1
-			inner = source2
-			outer_range_var = rangevariable1
-			inner_range_var = rangevariable2
-			f_outer_key = Expr(:->, outer_range_var, leftkey)
-			f_inner_key = Expr(:->, inner_range_var, rightkey)
+			f_outer_key = Expr(:->, rangevariable1, leftkey)
+			f_inner_key = Expr(:->, rangevariable2, rightkey)
 			f_result = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), condition)
 			qe[1] = :(
 				QueryOperators.@join($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
@@ -239,50 +245,28 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, groupvariable)
 			qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@orderby")
-			e = qe[1].args[3].args[3]
-			x = qe[1].args[3].args[2]
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @orderby sortclause_)
 			ks = []
-			if isa(qe[2].args[3], Expr) && qe[2].args[3].head==:tuple
-				for sort_clause in qe[2].args[3].args
-					if isa(sort_clause, Expr) && iscall(sort_clause, :descending)
-						k = sort_clause.args[2]
-						direction = :descending
-					elseif isa(sort_clause, Expr) && iscall(sort_clause, :ascending)
-						k = sort_clause.args[2]
-						direction = :ascending
-					else
-						k = sort_clause
-						direction = :ascending
-					end
-					push!(ks, (k, direction))
+			if @capture sortclause (sortclauses__,)
+				for sort_clause in sortclauses
+					push!(ks, attribute_and_direction(sort_clause))
 				end
 			else
-				if isa(qe[2].args[3], Expr) && iscall(qe[2].args[3], :descending)
-					k = qe[2].args[3].args[2]
-					direction = :descending
-				elseif isa(qe[2].args[3], Expr) && iscall(qe[2].args[3], :ascending)
-					k = qe[2].args[3].args[2]
-					direction = :ascending
-				else
-					k = qe[2].args[3]
-					direction = :ascending
-				end
-				push!(ks, (k, direction))
+				push!(ks, attribute_and_direction(sortclause))
 			end
 
 			for (i,sort_clause) in enumerate(ks)
-				f_condition = Expr(:->, x, sort_clause[1])
+				f_condition = Expr(:->, rangevariable1, sort_clause[1])
 
 				if sort_clause[2]==:ascending
 					if i==1
-						qe[1].args[3].args[3] = :( QueryOperators.@orderby($e,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@orderby($source1,$(esc(f_condition))) )
 					else
-						qe[1].args[3].args[3] = :( QueryOperators.@thenby($(qe[1].args[3].args[3]),$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@thenby($source1,$(esc(f_condition))) )
 					end
 				elseif sort_clause[2]==:descending
 					if i==1
-						qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($e,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($source1,$(esc(f_condition))) )
 					else
 						qe[1].args[3].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[3].args[3]),$(esc(f_condition))) )
 					end
