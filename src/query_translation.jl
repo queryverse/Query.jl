@@ -176,7 +176,7 @@ end
 function query_expression_translation_phase_4(qe)
 	done = false
 	while !done
-		if length(qe)>=3 && (@capture qe[1] rangevariable1_ in source1_) && (@capture qe[2] rangevariable2_ in source2_) && (@capture qe[3] @select condition_)
+		if length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @from rangevariable2_ in source2_) && (@capture qe[3] @select condition_)
 			f_collection_selector = Expr(:->, rangevariable1, source2)
 			f_result_selector = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), condition)
 
@@ -196,14 +196,10 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
 			qe[1].args[3].args[3] = :( QueryOperators.@map($source,$(esc(f_selector))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@where")
-			x = qe[1].args[3].args[2]
-			e = qe[1].args[3].args[3]
-			f = qe[2].args[3]
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable_ in source_) && (@capture qe[2] @where condition_)
+			f_condition = Expr(:->, rangevariable, condition)
 
-			f_condition = Expr(:->, x, f)
-
-			qe[1].args[3].args[3] = :( QueryOperators.@filter($e,$(esc(f_condition))) )
+			qe[1].args[3].args[3] = :( QueryOperators.@filter($source,$(esc(f_condition))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 6) && ismacro(qe[3], "@select")
 			outer = qe[1].args[3].args[3]
