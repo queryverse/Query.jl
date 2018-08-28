@@ -176,17 +176,11 @@ end
 function query_expression_translation_phase_4(qe)
 	done = false
 	while !done
-		if length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from") && ismacro(qe[3], "@select")
-			x1 = qe[1].args[3].args[2]
-			x2 = qe[2].args[3].args[2]
-			e1 = qe[1].args[3].args[3]
-			e2 = qe[2].args[3].args[3]
-			v = qe[3].args[3]
+		if length(qe)>=3 && (@capture qe[1] rangevariable1_ in source1_) && (@capture qe[2] rangevariable2_ in source2_) && (@capture qe[3] @select condition_)
+			f_collection_selector = Expr(:->, rangevariable1, source2)
+			f_result_selector = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), condition)
 
-			f_collection_selector = Expr(:->, x1, e2)
-			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), v)
-
-			qe[1] = :( QueryOperators.@mapmany($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			qe[1] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,3)
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from")
