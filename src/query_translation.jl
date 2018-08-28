@@ -160,11 +160,12 @@ end
 function query_expression_translation_phase_3(qe)
 	done = false
 	while !done
-		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@select") && qe[1].args[3].args[2]==qe[2].args[3]
-			x = qe[1].args[3].args[2]
-			e = qe[1].args[3].args[3]
+		if length(qe)>=2 &&
+		   (@capture qe[1] @from rangevariable_ in source_) &&
+		   (@capture qe[2] @select condition_) &&
+		   condition == source
 
-			qe[1] = :( QueryOperators.@map($e,x->x) )
+			qe[1] = :( QueryOperators.@map($source,identity) )
 			deleteat!(qe,2)
 		else
 			done = true
