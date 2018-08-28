@@ -25,7 +25,7 @@ include("standalone_query_macros.jl")
 include("sinks/sink_type.jl")
 
 macro from(range::Expr, body::Expr)
-	if range.head!=:call || range.args[1]!=:in
+	if range.head!=:call || (range.args[1]!=:in && range.args[1]!=in)
 		error()
 	end
 
@@ -48,7 +48,7 @@ macro query(range::Symbol, body::Expr)
 	end
 
 	f_arg = gensym()
-	x = Expr(:->,f_arg,Expr(:macrocall,Symbol("@from"), @__LINE__, Expr(:call, :in, esc(range), f_arg), esc(body)))
+	x = x = esc(:($f_arg -> $Query.@from $in($range, $f_arg) $body))
 	return x
 end
 
