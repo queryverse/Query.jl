@@ -101,20 +101,19 @@ function query_expression_translation_phase_B(qe)
 		# 	end
 		# end
 
-		if i==1 && ismacro(clause, "@from")
+		if i==1 && @capture clause @from rangevariable_ in source_
 			# Handle the case of a nested query. We are essentially detecting
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
-			subq = clause.args[3].args[3]
-			if isa(subq, Expr) && subq.head==:call && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:QueryOperators
-				clause.args[3].args[3] = :(QueryOperators.query($(subq)))
-			elseif !(isa(subq, Expr) && subq.head==:macrocall && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:QueryOperators)
-				clause.args[3].args[3] = :(QueryOperators.query($(esc(subq))))
+			if @capture source Query.something_(args__)
+				clause.args[3].args[3] = :(QueryOperators.query($(source)))
+			elseif !(@capture source @QueryOperators.something_ args__)
+				clause.args[3].args[3] = :(QueryOperators.query($(esc(source))))
 			end
-		elseif ismacro(clause, "@from")
-			clause.args[3].args[3] = :(QueryOperators.query($(clause.args[3].args[3])))
-		elseif ismacro(clause, "@join")
-			clause.args[3].args[3] = :(QueryOperators.query($(esc(clause.args[3].args[3]))))
+		elseif @capture clause @from rangevariable_ in source_
+			clause.args[3].args[3] = :(QueryOperators.query($source))
+		elseif @capture clause @join rangevariable_ in source_ args__
+			clause.args[3].args[3] = :(QueryOperators.query($(esc(source))))
 		end
 		i+=1
 	end
@@ -448,12 +447,12 @@ function query_expression_translation_phase_D(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
-		if ismacro(clause, "@collect")
+		if @capture clause @collect args__
 			previous_clause = qe[i-1]
-			if length(clause.args)==2
-				qe[i-1] = :( collect($previous_clause) )
-			else
-				qe[i-1] = :( collect($previous_clause, $(esc(clause.args[3]))) )
+			if @capture clause @collect sink_
+			    qe[i-1] = :( collect($previous_clause, $(esc(sink))) )
+			elseif @capture clause @collect
+			    qe[i-1] = :( collect($previous_clause) )
 			end
 			deleteat!(qe,i)
 		else
