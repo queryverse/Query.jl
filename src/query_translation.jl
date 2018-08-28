@@ -183,17 +183,12 @@ function query_expression_translation_phase_4(qe)
 			qe[1] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from")
-			x1 = qe[1].args[3].args[2]
-			x2 = qe[2].args[3].args[2]
-			e1 = qe[1].args[3].args[3]
-			e2 = qe[2].args[3].args[3]
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @from rangevariable2_ in source2_)
+			f_collection_selector = Expr(:->, rangevariable1, source2)
+			f_result_selector = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)))
 
-			f_collection_selector = Expr(:->, x1, e2)
-			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(($x1=$x1,$x2=$x2)))
-
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
-			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
+			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@let")
 			x = qe[1].args[3].args[2]
