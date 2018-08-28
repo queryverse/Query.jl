@@ -339,19 +339,19 @@ end
 function query_expression_translation_phase_5(qe)
 	i = 1
 	while i<=length(qe)
-		clause = qe[i]
-		if ismacro(clause, "@select")
+		if @capture qe[i] @select condition_
 			from_clause = qe[i-1]
-			ismacro(from_clause, "@from") || throw(QueryException("Phase 5: expected @from before @select", from_clause))
-			range_var = from_clause.args[3].args[2]
-			source = from_clause.args[3].args[3]
-			if clause.args[3]==range_var
-				qe[i-1] = source
-			else
-				func_call = Expr(:->, range_var, clause.args[3])
-				qe[i-1] = :( QueryOperators.@map($source, $(esc(func_call))) )
+			if @capture from_clause @from rangevariable_ in source_
+				if condition==rangevariable
+					qe[i-1] = source
+				else
+					func_call = Expr(:->, rangevariable, condition)
+					qe[i-1] = :( QueryOperators.@map($source, $(esc(func_call))) )
+				end
+				deleteat!(qe,i)
+		    else
+				throw(QueryException("Phase 5: expected @from before @select", from_clause))
 			end
-			deleteat!(qe,i)
 		else
 			i+=1
 		end
