@@ -186,19 +186,20 @@ end
 function query_expression_translation_phase_4(qe)
 	done = false
 	while !done
-		if length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @from rangevariable2_ in source2_) && (@capture qe[3] @select condition_)
+		if length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @from rangevariable2_ in source2_)
 			f_collection_selector = Expr(:->, rangevariable1, source2)
-			f_result_selector = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), condition)
+			f_arguments = Expr(:tuple,rangevariable1,rangevariable2)
+			if (@capture qe[3] @select condition_)
+				f_result_selector = Expr(:->, f_arguments, condition)
 
-			qe[1] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
-			deleteat!(qe,3)
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @from rangevariable2_ in source2_)
-			f_collection_selector = Expr(:->, rangevariable1, source2)
-			f_result_selector = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)))
+				qe[1] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+				deleteat!(qe,3)
+			else
+				f_result_selector = Expr(:->, f_arguments, :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)))
 
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
-			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
+				qe[1].args[3].args[3] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			end
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @let rangevariable2_ = valueselector_)
 			f_selector = Expr(:->, rangevariable1, :(($rangevariable1=$rangevariable1,$rangevariable2=$valueselector)))
@@ -206,44 +207,45 @@ function query_expression_translation_phase_4(qe)
 			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
 			qe[1].args[3].args[3] = :( QueryOperators.@map($source1,$(esc(f_selector))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable_ in source_) && (@capture qe[2] @where condition_)
+		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @where condition_)
 			f_condition = Expr(:->, rangevariable1, condition)
 
 			qe[1].args[3].args[3] = :( QueryOperators.@filter($source1,$(esc(f_condition))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_) && (@capture qe[3] @select condition_)
-			f_outer_key = Expr(:->, rangevariable1, leftkey)
-			f_inner_key = Expr(:->, rangevariable2, rightkey)
-			f_result = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), condition)
-			qe[1] = :(
-				QueryOperators.@join($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
-				)
-
-			deleteat!(qe,3)
-			deleteat!(qe,2)
 		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_)
 			f_outer_key = Expr(:->, rangevariable1, leftkey)
 			f_inner_key = Expr(:->, rangevariable2, rightkey)
-			f_result = Expr(:->, Expr(:tuple,rangevariable1,rangevariable2), :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)) )
+			f_arguments = Expr(:tuple,rangevariable1,rangevariable2)
+			if (@capture qe[3] @select condition_)
+				f_result = Expr(:->, f_arguments, condition)
+				qe[1] = :(
+					QueryOperators.@join($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
+					)
 
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
-			qe[1].args[3].args[3] = :( QueryOperators.@join($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_ into groupvariable_) && (@capture qe[3] @select condition_)
-			f_outer_key = Expr(:->, rangevariable1, leftkey)
-			f_inner_key = Expr(:->, rangevariable2, rightkey)
-			f_result = Expr(:->, Expr(:tuple,rangevariable1,groupvariable), condition)
-			qe[1] = :( QueryOperators.@groupjoin($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+				deleteat!(qe,3)
+			else
+				f_result = Expr(:->, f_arguments, :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)) )
 
-			deleteat!(qe,3)
+				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
+				qe[1].args[3].args[3] = :( QueryOperators.@join($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+
+			end
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_ into groupvariable_)
 			f_outer_key = Expr(:->, rangevariable1, leftkey)
 			f_inner_key = Expr(:->, rangevariable2, rightkey)
-			f_result = Expr(:->, Expr(:tuple,rangevariable1,groupvariable), :(($rangevariable1=$rangevariable1,$groupvariable=$groupvariable)) )
+			f_arguments = Expr(:tuple,rangevariable1,groupvariable)
+			if (@capture qe[3] @select condition_)
+				f_result = Expr(:->, f_arguments, condition)
+				qe[1] = :( QueryOperators.@groupjoin($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, groupvariable)
-			qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+				deleteat!(qe,3)
+			else
+				f_result = Expr(:->, f_arguments, :(($rangevariable1=$rangevariable1,$groupvariable=$groupvariable)) )
+
+				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, groupvariable)
+				qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			end
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @orderby sortclause_)
 			ks = []
