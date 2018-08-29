@@ -19,8 +19,7 @@ macro groupby(source, elementSelector, resultSelector)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
     return :(QueryOperators.groupby(QueryOperators.query($(esc(source))), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro groupby(elementSelector, resultSelector)
@@ -31,8 +30,7 @@ macro groupby(elementSelector, resultSelector)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
     return :( i -> QueryOperators.groupby(QueryOperators.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro groupby(elementSelector)
@@ -43,8 +41,7 @@ macro groupby(elementSelector)
 	q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
     return :( i -> QueryOperators.groupby(QueryOperators.query(i), $(esc(elementSelector_as_anonym_func)), $(esc(q_elementSelector)), $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro groupjoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
@@ -61,8 +58,7 @@ macro groupjoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro groupjoin(inner, outerKeySelector, innerKeySelector, resultSelector)
@@ -79,8 +75,7 @@ macro groupjoin(inner, outerKeySelector, innerKeySelector, resultSelector)
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
@@ -97,8 +92,7 @@ macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro join(inner, outerKeySelector, innerKeySelector, resultSelector)
@@ -115,88 +109,77 @@ macro join(inner, outerKeySelector, innerKeySelector, resultSelector)
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro orderby(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.orderby(QueryOperators.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro orderby(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
     return :( i -> QueryOperators.orderby(QueryOperators.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro orderby_descending(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.orderby_descending(QueryOperators.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro orderby_descending(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
     return :( i -> QueryOperators.orderby_descending(QueryOperators.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro thenby(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.thenby($(esc(source)), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro thenby(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
     return :( i -> QueryOperators.thenby(i, $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro thenby_descending(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.thenby_descending($(esc(source)), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro thenby_descending(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
     return :( i -> QueryOperators.thenby_descending(i, $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro map(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.map(QueryOperators.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro map(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :( i-> QueryOperators.map(QueryOperators.query(i), $(esc(f_as_anonym_func)), $(esc(q))) ) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro mapmany(source, collectionSelector,resultSelector)
@@ -209,8 +192,7 @@ macro mapmany(source, collectionSelector,resultSelector)
     return :(QueryOperators.mapmany(QueryOperators.query($(esc(source))),
             $(esc(collectionSelector_as_anonym_func)), $(esc(collectionSelector_q)),
             $(esc(resultSelector_as_anonym_func)), $(esc(resultSelector_q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro mapmany(collectionSelector,resultSelector)
@@ -223,24 +205,21 @@ macro mapmany(collectionSelector,resultSelector)
     return :( i-> QueryOperators.mapmany(QueryOperators.query(i),
             $(esc(collectionSelector_as_anonym_func)), $(esc(collectionSelector_q)),
             $(esc(resultSelector_as_anonym_func)), $(esc(resultSelector_q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro filter(source, f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, f_as_anonym_func)
     return :(QueryOperators.filter(QueryOperators.query($(esc(source))), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro filter(f)
     f_as_anonym_func = helper_replace_anon_func_syntax(f)
     q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
     return :( i -> QueryOperators.filter(QueryOperators.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro take(source, n)
