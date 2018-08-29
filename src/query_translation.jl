@@ -74,48 +74,43 @@ function left_outer_joins!(qe)
 		clause = qe[i]
 		# macrotools doesn't like underscores
 		if ismacro(clause, Symbol("@left_outer_join")) && @capture clause @amacro_ argument1_ in body1_ args__
-			clause.args[1] = Symbol("@join")
 			temp_name = gensym()
-			push!(clause.args, :into)
-			push!(clause.args, temp_name)
+			qe[i] = :(@join $argument1 in $body1 $(args...) into $temp_name)
 			nested_from = :(@from $argument1 in QueryOperators.default_if_empty($temp_name))
 			insert!(qe,i+1,nested_from)
 		end
 		i+=1
 	end
-
-	for i in eachindex(qe)
-		qe[i] = helper_replace_field_extraction_syntax(qe[i])
-	end
 end
 
-function query!(qe)
-	i = 1
-	while i<=length(qe)
-		qe[i] = helper_namedtuples_replacement(qe[i])
-		clause = qe[i]
-
+function add_query(index_and_clause)
+	index, clause = index_and_clause
 		# for l=length(clause.args):-1:1
 		# 	if clause.args[l] isa LineNumberNode
 		# 		deleteat!(clause.args,l)
 		# 	end
 		# end
-
-		if i==1 && @capture clause @from argument1_ in body1_
+	if @capture clause @from argument1_ in body1_
+		:(@from $argument1 in $(
+			if index == 1
 			# Handle the case of a nested query. We are essentially detecting
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
-			if @capture body1 Query.something_(args__)
-				clause.args[3].args[3] = :(QueryOperators.query($(body1)))
-			elseif !(@capture body1 @QueryOperators.something_ args__)
-				clause.args[3].args[3] = :(QueryOperators.query($(esc(body1))))
+				if @capture body1 Query.something_(args__)
+					:(QueryOperators.query($(body1)))
+				elseif @capture body1 @QueryOperators.something_ args__
+					body1
+				else
+					:(QueryOperators.query($(esc(body1))))
+				end
+			else
+				:(QueryOperators.query($body1))
 			end
-		elseif @capture clause @from argument1_ in body1_
-			clause.args[3].args[3] = :(QueryOperators.query($body1))
-		elseif @capture clause @join argument1_ in body1_ args__
-			clause.args[3].args[3] = :(QueryOperators.query($(esc(body1))))
-		end
-		i+=1
+		))
+	elseif @capture clause @join argument1_ in body1_ args__
+		:(@join $argument1 in QueryOperators.query($(esc(body1))) $(args...))
+	else
+		clause
 	end
 end
 
@@ -253,16 +248,13 @@ function from_let_where_join_orderby!(qe)
 				end
 				deleteat!(qe,2)
 			elseif (@capture qe[2] @orderby body2_)
-				ks = []
-				if @capture body2 (sortclauses__,)
-					for sort_clause in sortclauses
-						push!(ks, attribute_and_direction(sort_clause))
-					end
+				sort_clauses = if @capture body2 (sortclauses__,)
+					map(attribute_and_direction, sortclauses)
 				else
-					push!(ks, attribute_and_direction(body2))
+					[attribute_and_direction(body2)]
 				end
 
-				for (i,sort_clause) in enumerate(ks)
+				for (i,sort_clause) in enumerate(sort_clauses)
 					function1 = anon(qe[2], argument1, sort_clause[1])
 
 					if sort_clause[2]==:ascending
@@ -389,13 +381,9 @@ function find_and_translate_transparent_identifier(ex::Expr)
 			find_and_translate_transparent_identifier(child_ex)
 		end
 	end
+	nothing
 end
-
-function transparents!(qe)
-	for clause in qe
-		isa(clause, Expr) && find_and_translate_transparent_identifier(clause)
-	end
-end
+find_and_translate_transparent_identifier(something) = nothing
 
 function sinks!(qe)
 	i = 1
@@ -426,10 +414,12 @@ function translate_query(body1)
 	debug_output && println(body1)
 
 	left_outer_joins!(body1.args)
+	body1.args = helper_replace_field_extraction_syntax.(body1.args)
 	debug_output && println("AFTER A")
 	debug_output && println(body1)
 
-	query!(body1.args)
+	body1.args = helper_namedtuples_replacement.(body1.args)
+	body1.args = add_query.(enumerate(body1.args))
 	debug_output && println("AFTER B")
 	debug_output && println(body1)
 
@@ -449,7 +439,7 @@ function translate_query(body1)
 	debug_output && println("AFTER 6")
 	debug_output && println(body1)
 
-	transparents!(body1.args)
+	find_and_translate_transparent_identifier.(body1.args)
 	debug_output && println("AFTER 7")
 	debug_output && println(body1)
 

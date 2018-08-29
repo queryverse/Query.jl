@@ -56,8 +56,8 @@ macro groupjoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector
     q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
     q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :(QueryOperators.groupjoin(QueryOperators.query($(esc(outer))), 
-            QueryOperators.query($(esc(inner))), 
+    return :(QueryOperators.groupjoin(QueryOperators.query($(esc(outer))),
+            QueryOperators.query($(esc(inner))),
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
@@ -74,8 +74,8 @@ macro groupjoin(inner, outerKeySelector, innerKeySelector, resultSelector)
     q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
     q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :( outer -> QueryOperators.groupjoin(QueryOperators.query(outer), 
-            QueryOperators.query($(esc(inner))), 
+    return :( outer -> QueryOperators.groupjoin(QueryOperators.query(outer),
+            QueryOperators.query($(esc(inner))),
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
@@ -92,8 +92,8 @@ macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
     q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
     q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :(QueryOperators.join(QueryOperators.query($(esc(outer))), 
-            QueryOperators.query($(esc(inner))), 
+    return :(QueryOperators.join(QueryOperators.query($(esc(outer))),
+            QueryOperators.query($(esc(inner))),
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
@@ -110,8 +110,8 @@ macro join(inner, outerKeySelector, innerKeySelector, resultSelector)
     q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
     q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
 
-    return :( outer -> QueryOperators.join(QueryOperators.query(outer), 
-            QueryOperators.query($(esc(inner))), 
+    return :( outer -> QueryOperators.join(QueryOperators.query(outer),
+            QueryOperators.query($(esc(inner))),
             $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
             $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
             $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
