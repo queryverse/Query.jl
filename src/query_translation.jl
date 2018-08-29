@@ -13,17 +13,15 @@ end
 
 function helper_namedtuples_replacement(ex)
 	return postwalk(ex) do x
-		if x isa Expr && x.head==:cell1d
-			new_ex = Expr(:macrocall, Symbol("@NT"), x.args...)
+		if x isa Expr && x.head==:braces
+			new_ex = Expr(:tuple, x.args...)
 
-			for (j,field_in_NT) in enumerate(new_ex.args[2:end])
-				if isa(field_in_NT, Expr) && field_in_NT.head==:(=)
-					new_ex.args[j+1] = Expr(:kw, field_in_NT.args...)
-				elseif isa(field_in_NT, Expr) && field_in_NT.head==:.
-					name_to_use = field_in_NT.args[2].args[1]
-					new_ex.args[j+1] = Expr(:kw, name_to_use, field_in_NT)
+			for (j,field_in_NT) in enumerate(new_ex.args)
+				if isa(field_in_NT, Expr) && field_in_NT.head==:.
+					name_to_use = field_in_NT.args[2].value
+					new_ex.args[j] = Expr(:(=), name_to_use, field_in_NT)
 				elseif isa(field_in_NT, Symbol)
-					new_ex.args[j+1] = Expr(:kw, field_in_NT, field_in_NT)
+					new_ex.args[j] = Expr(:(=), field_in_NT, field_in_NT)
 				end
 			end
 
@@ -77,7 +75,7 @@ function query_expression_translation_phase_A(qe)
 		if ismacro(clause, "@left_outer_join")
 			clause.args[1] = Symbol("@join")
 			temp_name = gensym()
-			x1 = clause.args[2].args[2]
+			x1 = clause.args[3].args[2]
 			push!(clause.args, :into)
 			push!(clause.args, temp_name)
 			nested_from = :(@from $x1 in QueryOperators.default_if_empty($temp_name))
@@ -96,20 +94,27 @@ function query_expression_translation_phase_B(qe)
 	while i<=length(qe)
 		qe[i] = helper_namedtuples_replacement(qe[i])
 		clause = qe[i]
+
+		# for l=length(clause.args):-1:1
+		# 	if clause.args[l] isa LineNumberNode
+		# 		deleteat!(clause.args,l)
+		# 	end
+		# end
+
 		if i==1 && ismacro(clause, "@from")
 			# Handle the case of a nested query. We are essentially detecting 
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
-			subq = clause.args[2].args[3]
+			subq = clause.args[3].args[3]
 			if isa(subq, Expr) && subq.head==:call && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:QueryOperators
-				clause.args[2].args[3] = :(QueryOperators.query($(subq)))
+				clause.args[3].args[3] = :(QueryOperators.query($(subq)))
 			elseif !(isa(subq, Expr) && subq.head==:macrocall && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:QueryOperators)
-				clause.args[2].args[3] = :(QueryOperators.query($(esc(subq))))
+				clause.args[3].args[3] = :(QueryOperators.query($(esc(subq))))
 			end
 		elseif ismacro(clause, "@from")
-			clause.args[2].args[3] = :(QueryOperators.query($(clause.args[2].args[3])))
+			clause.args[3].args[3] = :(QueryOperators.query($(clause.args[3].args[3])))
 		elseif ismacro(clause, "@join")
-			clause.args[2].args[3] = :(QueryOperators.query($(esc(clause.args[2].args[3]))))
+			clause.args[3].args[3] = :(QueryOperators.query($(esc(clause.args[3].args[3]))))
 		end
 		i+=1
 	end
@@ -118,14 +123,15 @@ end
 function query_expression_translation_phase_1(qe)
 	done = false
 	while !done
-		group_into_index = findfirst(i->ismacro(i, "@group", 5) && i.args[5]==:into, qe)
-		select_into_index = findfirst(i->ismacro(i, "@select", 3) && i.args[3]==:into, qe)
-		if length(qe)>=2 && ismacro(qe[1], "@from") && group_into_index>0
-			x = qe[group_into_index].args[6]
+		group_into_index = findfirst(i->ismacro(i, "@group", 6) && i.args[6]==:into, qe)
+		select_into_index = findfirst(i->ismacro(i, "@select", 4) && i.args[4]==:into, qe)
+		if length(qe)>=2 && ismacro(qe[1], "@from") && group_into_index!==nothing
+			x = qe[group_into_index].args[7]
 
 			sub_query = Expr(:block, qe[1:group_into_index]...)
+
+			deleteat!(sub_query.args[end].args,7)
 			deleteat!(sub_query.args[end].args,6)
-			deleteat!(sub_query.args[end].args,5)
 
 			translate_query(sub_query)
 
@@ -133,12 +139,12 @@ function query_expression_translation_phase_1(qe)
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
 			deleteat!(qe, 2:group_into_index)
-		elseif length(qe)>=2 && ismacro(qe[1], "@from") && select_into_index>0
-			x = qe[select_into_index].args[4]
+		elseif length(qe)>=2 && ismacro(qe[1], "@from") && select_into_index!==nothing
+			x = qe[select_into_index].args[5]
 
 			sub_query = Expr(:block, qe[1:select_into_index]...)
+			deleteat!(sub_query.args[end].args,5)
 			deleteat!(sub_query.args[end].args,4)
-			deleteat!(sub_query.args[end].args,3)
 
 			translate_query(sub_query)
 
@@ -155,9 +161,9 @@ end
 function query_expression_translation_phase_3(qe)
 	done = false
 	while !done
-		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@select") && qe[1].args[2].args[2]==qe[2].args[2]
-			x = qe[1].args[2].args[2]
-			e = qe[1].args[2].args[3]
+		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@select") && qe[1].args[3].args[2]==qe[2].args[3]
+			x = qe[1].args[3].args[2]
+			e = qe[1].args[3].args[3]
 
 			qe[1] = :( QueryOperators.@map($e,x->x) )
 			deleteat!(qe,2)
@@ -171,11 +177,11 @@ function query_expression_translation_phase_4(qe)
 	done = false
 	while !done
 		if length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from") && ismacro(qe[3], "@select")
-			x1 = qe[1].args[2].args[2]
-			x2 = qe[2].args[2].args[2]
-			e1 = qe[1].args[2].args[3]
-			e2 = qe[2].args[2].args[3]
-			v = qe[3].args[2]
+			x1 = qe[1].args[3].args[2]
+			x2 = qe[2].args[3].args[2]
+			e1 = qe[1].args[3].args[3]
+			e2 = qe[2].args[3].args[3]
+			v = qe[3].args[3]
 
 			f_collection_selector = Expr(:->, x1, e2)
 			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), v)
@@ -184,74 +190,74 @@ function query_expression_translation_phase_4(qe)
 			deleteat!(qe,3)
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@from")
-			x1 = qe[1].args[2].args[2]
-			x2 = qe[2].args[2].args[2]
-			e1 = qe[1].args[2].args[3]
-			e2 = qe[2].args[2].args[3]
+			x1 = qe[1].args[3].args[2]
+			x2 = qe[2].args[3].args[2]
+			e1 = qe[1].args[3].args[3]
+			e2 = qe[2].args[3].args[3]
 
 			f_collection_selector = Expr(:->, x1, e2)
-			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=$x1,$x2=$x2)))
+			f_result_selector = Expr(:->, Expr(:tuple,x1,x2), :(($x1=$x1,$x2=$x2)))
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
-			qe[1].args[2].args[3] = :( QueryOperators.@mapmany($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
+			qe[1].args[3].args[3] = :( QueryOperators.@mapmany($e1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@let")
-			x = qe[1].args[2].args[2]
-			e = qe[1].args[2].args[3]
-			y = qe[2].args[2].args[1]
-			f = qe[2].args[2].args[2]
+			x = qe[1].args[3].args[2]
+			e = qe[1].args[3].args[3]
+			y = qe[2].args[3].args[1]
+			f = qe[2].args[3].args[2]
 
-			f_selector = Expr(:->, x, :(@NT($x=$x,$y=$f)))
+			f_selector = Expr(:->, x, :(($x=$x,$y=$f)))
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
-			qe[1].args[2].args[3] = :( QueryOperators.@map($e,$(esc(f_selector))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x, y)
+			qe[1].args[3].args[3] = :( QueryOperators.@map($e,$(esc(f_selector))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@where")
-			x = qe[1].args[2].args[2]
-			e = qe[1].args[2].args[3]
-			f = qe[2].args[2]
+			x = qe[1].args[3].args[2]
+			e = qe[1].args[3].args[3]
+			f = qe[2].args[3]
 
 			f_condition = Expr(:->, x, f)
 
-			qe[1].args[2].args[3] = :( QueryOperators.@filter($e,$(esc(f_condition))) )
+			qe[1].args[3].args[3] = :( QueryOperators.@filter($e,$(esc(f_condition))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 5) && ismacro(qe[3], "@select")
-			outer = qe[1].args[2].args[3]
-			inner = qe[2].args[2].args[3]
-			outer_range_var = qe[1].args[2].args[2]
-			inner_range_var = qe[2].args[2].args[2]
-			f_outer_key = Expr(:->, outer_range_var, qe[2].args[4])
-			f_inner_key = Expr(:->, inner_range_var, qe[2].args[6])
-			f_result = Expr(:->, Expr(:tuple,outer_range_var,inner_range_var), qe[3].args[2])
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 6) && ismacro(qe[3], "@select")
+			outer = qe[1].args[3].args[3]
+			inner = qe[2].args[3].args[3]
+			outer_range_var = qe[1].args[3].args[2]
+			inner_range_var = qe[2].args[3].args[2]
+			f_outer_key = Expr(:->, outer_range_var, qe[2].args[5])
+			f_inner_key = Expr(:->, inner_range_var, qe[2].args[7])
+			f_result = Expr(:->, Expr(:tuple,outer_range_var,inner_range_var), qe[3].args[3])
 			qe[1] = :(
 				QueryOperators.@join($outer, $inner, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
 				)
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 5)
-			e1 = qe[1].args[2].args[3]
-			e2 = qe[2].args[2].args[3]
-			x1 = qe[1].args[2].args[2]
-			x2 = qe[2].args[2].args[2]
-			k1 = qe[2].args[4]
-			k2 = qe[2].args[6]
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 6)
+			e1 = qe[1].args[3].args[3]
+			e2 = qe[2].args[3].args[3]
+			x1 = qe[1].args[3].args[2]
+			x2 = qe[2].args[3].args[2]
+			k1 = qe[2].args[5]
+			k2 = qe[2].args[7]
 			f_outer_key = Expr(:->, x1, k1)
 			f_inner_key = Expr(:->, x2, k2)
-			f_result = Expr(:->, Expr(:tuple,x1,x2), :(@NT($x1=$x1,$x2=$x2)) )
+			f_result = Expr(:->, Expr(:tuple,x1,x2), :(($x1=$x1,$x2=$x2)) )
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
-			qe[1].args[2].args[3] = :( QueryOperators.@join($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x1, x2)
+			qe[1].args[3].args[3] = :( QueryOperators.@join($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 7) && ismacro(qe[3], "@select")
-			e1 = qe[1].args[2].args[3]
-			e2 = qe[2].args[2].args[3]
-			x1 = qe[1].args[2].args[2]
-			x2 = qe[2].args[2].args[2]
-			k1 = qe[2].args[4]
-			k2 = qe[2].args[6]
-			g = qe[2].args[8]
-			v = qe[3].args[2]
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 8) && ismacro(qe[3], "@select")
+			e1 = qe[1].args[3].args[3]
+			e2 = qe[2].args[3].args[3]
+			x1 = qe[1].args[3].args[2]
+			x2 = qe[2].args[3].args[2]
+			k1 = qe[2].args[5]
+			k2 = qe[2].args[7]
+			g = qe[2].args[9]
+			v = qe[3].args[3]
 			f_outer_key = Expr(:->, x1, k1)
 			f_inner_key = Expr(:->, x2, k2)
 			f_result = Expr(:->, Expr(:tuple,x1,g), v)
@@ -259,27 +265,27 @@ function query_expression_translation_phase_4(qe)
 
 			deleteat!(qe,3)
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 7)
-			e1 = qe[1].args[2].args[3]
-			e2 = qe[2].args[2].args[3]
-			x1 = qe[1].args[2].args[2]
-			x2 = qe[2].args[2].args[2]
-			k1 = qe[2].args[4]
-			k2 = qe[2].args[6]
-			g = qe[2].args[8]
+		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@join", 8)
+			e1 = qe[1].args[3].args[3]
+			e2 = qe[2].args[3].args[3]
+			x1 = qe[1].args[3].args[2]
+			x2 = qe[2].args[3].args[2]
+			k1 = qe[2].args[5]
+			k2 = qe[2].args[7]
+			g = qe[2].args[9]
 			f_outer_key = Expr(:->, x1, k1)
 			f_inner_key = Expr(:->, x2, k2)
-			f_result = Expr(:->, Expr(:tuple,x1,g), :(@NT($x1=$x1,$g=$g)) )
+			f_result = Expr(:->, Expr(:tuple,x1,g), :(($x1=$x1,$g=$g)) )
 
-			qe[1].args[2].args[2] = Expr(:transparentidentifier, gensym(:t), x1, g)
-			qe[1].args[2].args[3] = :( QueryOperators.@groupjoin($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), x1, g)
+			qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($e1,$e2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
 			deleteat!(qe,2)
 		elseif length(qe)>=3 && ismacro(qe[1], "@from") && ismacro(qe[2], "@orderby")
-			e = qe[1].args[2].args[3]
-			x = qe[1].args[2].args[2]
+			e = qe[1].args[3].args[3]
+			x = qe[1].args[3].args[2]
 			ks = []
-			if isa(qe[2].args[2], Expr) && qe[2].args[2].head==:tuple
-				for sort_clause in qe[2].args[2].args
+			if isa(qe[2].args[3], Expr) && qe[2].args[3].head==:tuple
+				for sort_clause in qe[2].args[3].args
 					if isa(sort_clause, Expr) && iscall(sort_clause, :descending)
 						k = sort_clause.args[2]
 						direction = :descending
@@ -293,14 +299,14 @@ function query_expression_translation_phase_4(qe)
 					push!(ks, (k, direction))
 				end
 			else
-				if isa(qe[2].args[2], Expr) && iscall(qe[2].args[2], :descending)
-					k = qe[2].args[2].args[2]
+				if isa(qe[2].args[3], Expr) && iscall(qe[2].args[3], :descending)
+					k = qe[2].args[3].args[2]
 					direction = :descending
-				elseif isa(qe[2].args[2], Expr) && iscall(qe[2].args[2], :ascending)
-					k = qe[2].args[2].args[2]
+				elseif isa(qe[2].args[3], Expr) && iscall(qe[2].args[3], :ascending)
+					k = qe[2].args[3].args[2]
 					direction = :ascending
 				else
-					k = qe[2].args[2]
+					k = qe[2].args[3]
 					direction = :ascending
 				end
 				push!(ks, (k, direction))
@@ -311,15 +317,15 @@ function query_expression_translation_phase_4(qe)
 
 				if sort_clause[2]==:ascending
 					if i==1
-						qe[1].args[2].args[3] = :( QueryOperators.@orderby($e,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@orderby($e,$(esc(f_condition))) )
 					else
-						qe[1].args[2].args[3] = :( QueryOperators.@thenby($(qe[1].args[2].args[3]),$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@thenby($(qe[1].args[3].args[3]),$(esc(f_condition))) )
 					end
 				elseif sort_clause[2]==:descending
 					if i==1
-						qe[1].args[2].args[3] = :( QueryOperators.@orderby_descending($e,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($e,$(esc(f_condition))) )
 					else
-						qe[1].args[2].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[2].args[3]),$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[3].args[3]),$(esc(f_condition))) )
 					end
 				end
 			end
@@ -337,12 +343,12 @@ function query_expression_translation_phase_5(qe)
 		if ismacro(clause, "@select")
 			from_clause = qe[i-1]
 			ismacro(from_clause, "@from") || throw(QueryException("Phase 5: expected @from before @select", from_clause))
-			range_var = from_clause.args[2].args[2]
-			source = from_clause.args[2].args[3]
-			if clause.args[2]==range_var
+			range_var = from_clause.args[3].args[2]
+			source = from_clause.args[3].args[3]
+			if clause.args[3]==range_var
 				qe[i-1] = source
 			else
-				func_call = Expr(:->, range_var, clause.args[2])
+				func_call = Expr(:->, range_var, clause.args[3])
 				qe[i-1] = :( QueryOperators.@map($source, $(esc(func_call))) )
 			end
 			deleteat!(qe,i)
@@ -356,10 +362,10 @@ function query_expression_translation_phase_6(qe)
 	done = false
 	while !done
 		if length(qe)>=2 && ismacro(qe[1], "@from") && ismacro(qe[2], "@group")
-			e = qe[1].args[2].args[3]
-			x = qe[1].args[2].args[2]
-			v = qe[2].args[2]
-			k = qe[2].args[4]
+			e = qe[1].args[3].args[3]
+			x = qe[1].args[3].args[2]
+			v = qe[2].args[3]
+			k = qe[2].args[5]
 
 			f_elementSelector = Expr(:->, x, k)
 			f_resultSelector = Expr(:->, x, v)
@@ -384,7 +390,7 @@ function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in
 			replace_transparent_identifier_in_anonym_func(child_ex, names_to_put_in_scope)
 		elseif isa(child_ex, Symbol)
 			index_of_name = findfirst(j->child_ex==j[2], names_to_put_in_scope)
-			if index_of_name>0 && !(ex.head==Symbol("=>") && i==1)
+			if index_of_name!==nothing && !(ex.head==Symbol("=>") && i==1)
 				ex.args[i] = Expr(:., names_to_put_in_scope[index_of_name][1], QuoteNode(child_ex))
 			end
 		end
@@ -449,10 +455,10 @@ function query_expression_translation_phase_D(qe)
 		clause = qe[i]
 		if ismacro(clause, "@collect")
 			previous_clause = qe[i-1]
-			if length(clause.args)==1
+			if length(clause.args)==2
 				qe[i-1] = :( collect($previous_clause) )
 			else
-				qe[i-1] = :( collect($previous_clause, $(esc(clause.args[2]))) )
+				qe[i-1] = :( collect($previous_clause, $(esc(clause.args[3]))) )
 			end
 			deleteat!(qe,i)
 		else

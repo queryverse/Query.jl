@@ -2,15 +2,15 @@
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://queryverse.github.io/Query.jl/stable)
-[![Build Status](https://travis-ci.org/davidanthoff/Query.jl.svg?branch=master)](https://travis-ci.org/davidanthoff/Query.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/9xdm60oa50uw5eru/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/query-jl/branch/master)
+[![Build Status](https://travis-ci.org/queryverse/Query.jl.svg?branch=master)](https://travis-ci.org/queryverse/Query.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/wuo030ogcyrchkde/branch/master?svg=true)](https://ci.appveyor.com/project/queryverse/query-jl/branch/master)
 [![Query](http://pkg.julialang.org/badges/Query_0.5.svg)](http://pkg.julialang.org/?pkg=Query)
 [![Query](http://pkg.julialang.org/badges/Query_0.6.svg)](http://pkg.julialang.org/?pkg=Query)
-[![codecov](https://codecov.io/gh/davidanthoff/Query.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/davidanthoff/Query.jl)
+[![codecov](https://codecov.io/gh/queryverse/Query.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/queryverse/Query.jl)
 
 ## Overview
 
-Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in [IterableTables.jl](https://github.com/davidanthoff/IterableTables.jl). One can for example query any of the following data sources:
+Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in [IterableTables.jl](https://github.com/queryverse/IterableTables.jl). One can for example query any of the following data sources:
 any array,
 [DataFrames](https://github.com/JuliaStats/DataFrames.jl),
 [DataStreams](https://github.com/JuliaData/DataStreams.jl)
@@ -30,7 +30,7 @@ The package currently provides working implementations for in-memory data source
 Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx), in fact right now the package is largely an implementation of the [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) part of the [C# specification](https://msdn.microsoft.com/en-us/library/ms228593.aspx). Future versions of Query will most likely add features that are not found in the original [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) design.
 
 ## Alternatives
-[Query.jl](https://github.com/davidanthoff/Query.jl) is not the only julia initiative for querying data, there are many other packages that have similar goals. Take a look at [DataFramesMeta.jl](https://github.com/JuliaStats/DataFramesMeta.jl), [StructuredQueries.jl](https://github.com/davidagold/StructuredQueries.jl), [LazyQuery.jl](https://github.com/bramtayl/LazyQuery.jl) and [SplitApplyCombine.jl](https://github.com/JuliaData/SplitApplyCombine.jl). *If I missed other initiatives, please let me know and I'll add them to this list!*
+[Query.jl](https://github.com/queryverse/Query.jl) is not the only julia initiative for querying data, there are many other packages that have similar goals. Take a look at [DataFramesMeta.jl](https://github.com/JuliaStats/DataFramesMeta.jl), [StructuredQueries.jl](https://github.com/davidagold/StructuredQueries.jl), [LazyQuery.jl](https://github.com/bramtayl/LazyQuery.jl) and [SplitApplyCombine.jl](https://github.com/JuliaData/SplitApplyCombine.jl). *If I missed other initiatives, please let me know and I'll add them to this list!*
 
 ## Installation
 

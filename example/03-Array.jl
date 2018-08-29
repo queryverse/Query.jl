@@ -1,12 +1,12 @@
 using Query
 using DataFrames
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end
 
-source = Array{Person}(0)
+source = Array{Person}(undef, 0)
 push!(source, Person("John", ["Sally", "Miles", "Frank"]))
 push!(source, Person("Sally", ["Don", "Martin"]))
 

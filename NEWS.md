@@ -1,3 +1,6 @@
+# Query.jl v0.10.0 Release Notes
+* Drop julia 0.6 support, add julia 0.7 support
+
 # Query.jl v0.9.3 Release Notes
 * Add the ability to collect into a function from LINQ style queries
 
