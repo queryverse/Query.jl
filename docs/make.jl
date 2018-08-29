@@ -23,5 +23,5 @@ deploydocs(
     make = nothing,
     target = "build",
     repo = "github.com/queryverse/Query.jl.git",
-    julia = "0.7"
+    julia = "1.0"
 )
