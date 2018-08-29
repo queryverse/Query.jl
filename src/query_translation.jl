@@ -68,7 +68,7 @@ function helper_replace_field_extraction_syntax(ex)
 	end
 end
 
-function query_expression_translation_phase_A(qe)
+function left_outer_joins!(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
@@ -89,7 +89,7 @@ function query_expression_translation_phase_A(qe)
 	end
 end
 
-function query_bodies!(qe)
+function query!(qe)
 	i = 1
 	while i<=length(qe)
 		qe[i] = helper_namedtuples_replacement(qe[i])
@@ -183,98 +183,106 @@ function attribute_and_direction(sort_clause)
 	end
 end
 
+function transparentidentifier(argument1, argument2)
+	Expr(:transparentidentifier, gensym(:t), argument1, argument2)
+end
+
 function from_let_where_join_orderby!(qe)
 	done = false
 	while !done
-		if length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @from argument2_ in body2_)
-			function1 = anon(qe[2], argument1, body2)
-			function3_arguments = Expr(:tuple,argument1,argument2)
-			if (@capture qe[3] @select body3_)
-				function3 = anon(qe[3], function3_arguments, body3)
+		if length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_)
+			if (@capture qe[2] @from argument2_ in body2_)
+				function1 = anon(qe[2], argument1, body2)
+				function3_arguments = Expr(:tuple,argument1,argument2)
+				if (@capture qe[3] @select body3_)
+					function3 = anon(qe[3], function3_arguments, body3)
 
-				qe[1] = :( QueryOperators.@mapmany($body1, $(esc(function1)), $(esc(function3))) )
-				deleteat!(qe,3)
-			else
-				function3 = anon(qe[3], function3_arguments, :(($argument1=$argument1,$argument2=$argument2)))
+					qe[1] = :( QueryOperators.@mapmany($body1, $(esc(function1)), $(esc(function3))) )
+					deleteat!(qe,3)
+				else
+					function3 = anon(qe[3], function3_arguments, :(($argument1=$argument1,$argument2=$argument2)))
 
-				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
-				qe[1].args[3].args[3] = :( QueryOperators.@mapmany($body1, $(esc(function1)), $(esc(function3))) )
-			end
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @let argument2_ = valueselector_)
-			function1 = anon(qe[2], argument1, :(($argument1=$argument1,$argument2=$valueselector)))
-
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
-			qe[1].args[3].args[3] = :( QueryOperators.@map($body1,$(esc(function1))) )
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @where body2_)
-			function1 = anon(qe[2], argument1, body2)
-
-			qe[1].args[3].args[3] = :( QueryOperators.@filter($body1,$(esc(function1))) )
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_)
-			function1 = anon(qe[2], argument1, leftkey)
-			function2 = anon(qe[2], argument2, rightkey)
-			function3_arguments = Expr(:tuple,argument1,argument2)
-			if (@capture qe[3] @select body3_)
-				function3 = anon(qe[3], function3_arguments, body3)
-				qe[1] = :(
-					QueryOperators.@join($body1, $body2, $(esc(function1)), $(esc(function2)), $(esc(function3)))
-					)
-
-				deleteat!(qe,3)
-			else
-				function3 = anon(qe[2], function3_arguments, :(($argument1=$argument1,$argument2=$argument2)) )
-
-				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
-				qe[1].args[3].args[3] = :( QueryOperators.@join($body1,$body2,$(esc(function1)), $(esc(function2)), $(esc(function3))) )
-
-			end
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_ into groupvariable_)
-			function1 = anon(qe[2], argument1, leftkey)
-			function2 = anon(qe[2], argument2, rightkey)
-			function3_arguments = Expr(:tuple,argument1,groupvariable)
-			if (@capture qe[3] @select body3_)
-				function3 = anon(qe[3], function3_arguments, body3)
-				qe[1] = :( QueryOperators.@groupjoin($body1, $body2, $(esc(function1)), $(esc(function2)), $(esc(function3))) )
-
-				deleteat!(qe,3)
-			else
-				function3 = anon(qe[2], function3_arguments, :(($argument1=$argument1,$groupvariable=$groupvariable)) )
-
-				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, groupvariable)
-				qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($body1,$body2,$(esc(function1)), $(esc(function2)), $(esc(function3))) )
-			end
-			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @orderby sortclause_)
-			ks = []
-			if @capture sortclause (sortclauses__,)
-				for sort_clause in sortclauses
-					push!(ks, attribute_and_direction(sort_clause))
+					qe[1].args[3].args[2] = transparentidentifier(argument1, argument2)
+					qe[1].args[3].args[3] = :( QueryOperators.@mapmany($body1, $(esc(function1)), $(esc(function3))) )
 				end
-			else
-				push!(ks, attribute_and_direction(sortclause))
-			end
+				deleteat!(qe,2)
+			elseif (@capture qe[2] @let argument2_ = valueselector_)
+				function1 = anon(qe[2], argument1, :(($argument1=$argument1,$argument2=$valueselector)))
 
-			for (i,sort_clause) in enumerate(ks)
-				function1 = anon(qe[2], argument1, sort_clause[1])
+				qe[1].args[3].args[2] = transparentidentifier(argument1, argument2)
+				qe[1].args[3].args[3] = :( QueryOperators.@map($body1,$(esc(function1))) )
+				deleteat!(qe,2)
+			elseif (@capture qe[2] @where body2_)
+				function1 = anon(qe[2], argument1, body2)
 
-				if sort_clause[2]==:ascending
-					if i==1
-						qe[1].args[3].args[3] = :( QueryOperators.@orderby($body1,$(esc(function1))) )
+				qe[1].args[3].args[3] = :( QueryOperators.@filter($body1,$(esc(function1))) )
+				deleteat!(qe,2)
+			elseif (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_ args__)
+				function1 = anon(qe[2], argument1, leftkey)
+				function2 = anon(qe[2], argument2, rightkey)
+				if (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_)
+					(@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_)
+					function3_arguments = Expr(:tuple,argument1,argument2)
+					if (@capture qe[3] @select body3_)
+						function3 = anon(qe[3], function3_arguments, body3)
+						qe[1] = :(
+							QueryOperators.@join($body1, $body2, $(esc(function1)), $(esc(function2)), $(esc(function3)))
+							)
+
+						deleteat!(qe,3)
 					else
-						qe[1].args[3].args[3] = :( QueryOperators.@thenby($body1,$(esc(function1))) )
+						function3 = anon(qe[2], function3_arguments, :(($argument1=$argument1,$argument2=$argument2)) )
+
+						qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
+						qe[1].args[3].args[3] = :( QueryOperators.@join($body1,$body2,$(esc(function1)), $(esc(function2)), $(esc(function3))) )
+
 					end
-				elseif sort_clause[2]==:descending
-					if i==1
-						qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($body1,$(esc(function1))) )
+				elseif (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_ into groupvariable_)
+					function3_arguments = Expr(:tuple,argument1,groupvariable)
+					if (@capture qe[3] @select body3_)
+						function3 = anon(qe[3], function3_arguments, body3)
+						qe[1] = :( QueryOperators.@groupjoin($body1, $body2, $(esc(function1)), $(esc(function2)), $(esc(function3))) )
+
+						deleteat!(qe,3)
 					else
-						qe[1].args[3].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[3].args[3]),$(esc(function1))) )
+						function3 = anon(qe[2], function3_arguments, :(($argument1=$argument1,$groupvariable=$groupvariable)) )
+
+						qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, groupvariable)
+						qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($body1,$body2,$(esc(function1)), $(esc(function2)), $(esc(function3))) )
 					end
 				end
+				deleteat!(qe,2)
+			elseif (@capture qe[2] @orderby body2_)
+				ks = []
+				if @capture body2 (sortclauses__,)
+					for sort_clause in sortclauses
+						push!(ks, attribute_and_direction(sort_clause))
+					end
+				else
+					push!(ks, attribute_and_direction(body2))
+				end
+
+				for (i,sort_clause) in enumerate(ks)
+					function1 = anon(qe[2], argument1, sort_clause[1])
+
+					if sort_clause[2]==:ascending
+						if i==1
+							qe[1].args[3].args[3] = :( QueryOperators.@orderby($body1,$(esc(function1))) )
+						else
+							qe[1].args[3].args[3] = :( QueryOperators.@thenby($body1,$(esc(function1))) )
+						end
+					elseif sort_clause[2]==:descending
+						if i==1
+							qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($body1,$(esc(function1))) )
+						else
+							qe[1].args[3].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[3].args[3]),$(esc(function1))) )
+						end
+					end
+				end
+				deleteat!(qe,2)
+			else
+				done = true
 			end
-			deleteat!(qe,2)
 		else
 			done = true
 		end
@@ -417,11 +425,11 @@ function translate_query(body1)
 	debug_output && println("AFTER 1")
 	debug_output && println(body1)
 
-	query_expression_translation_phase_A(body1.args)
+	left_outer_joins!(body1.args)
 	debug_output && println("AFTER A")
 	debug_output && println(body1)
 
-	query_bodies!(body1.args)
+	query!(body1.args)
 	debug_output && println("AFTER B")
 	debug_output && println(body1)
 
