@@ -73,12 +73,12 @@ function query_expression_translation_phase_A(qe)
 	while i<=length(qe)
 		clause = qe[i]
 		# macrotools doesn't like underscores
-		if ismacro(clause, Symbol("@left_outer_join")) && @capture clause @amacro_ rangevariable_ in source_ args__
+		if ismacro(clause, Symbol("@left_outer_join")) && @capture clause @amacro_ argument1_ in body1_ args__
 			clause.args[1] = Symbol("@join")
 			temp_name = gensym()
 			push!(clause.args, :into)
 			push!(clause.args, temp_name)
-			nested_from = :(@from $rangevariable in QueryOperators.default_if_empty($temp_name))
+			nested_from = :(@from $argument1 in QueryOperators.default_if_empty($temp_name))
 			insert!(qe,i+1,nested_from)
 		end
 		i+=1
@@ -89,7 +89,7 @@ function query_expression_translation_phase_A(qe)
 	end
 end
 
-function query_expression_translation_phase_B(qe)
+function query_bodies!(qe)
 	i = 1
 	while i<=length(qe)
 		qe[i] = helper_namedtuples_replacement(qe[i])
@@ -101,19 +101,19 @@ function query_expression_translation_phase_B(qe)
 		# 	end
 		# end
 
-		if i==1 && @capture clause @from rangevariable_ in source_
+		if i==1 && @capture clause @from argument1_ in body1_
 			# Handle the case of a nested query. We are essentially detecting
 			# here that the subquery starts with convert2nullable
 			# and then we don't escape things.
-			if @capture source Query.something_(args__)
-				clause.args[3].args[3] = :(QueryOperators.query($(source)))
-			elseif !(@capture source @QueryOperators.something_ args__)
-				clause.args[3].args[3] = :(QueryOperators.query($(esc(source))))
+			if @capture body1 Query.something_(args__)
+				clause.args[3].args[3] = :(QueryOperators.query($(body1)))
+			elseif !(@capture body1 @QueryOperators.something_ args__)
+				clause.args[3].args[3] = :(QueryOperators.query($(esc(body1))))
 			end
-		elseif @capture clause @from rangevariable_ in source_
-			clause.args[3].args[3] = :(QueryOperators.query($source))
-		elseif @capture clause @join rangevariable_ in source_ args__
-			clause.args[3].args[3] = :(QueryOperators.query($(esc(source))))
+		elseif @capture clause @from argument1_ in body1_
+			clause.args[3].args[3] = :(QueryOperators.query($body1))
+		elseif @capture clause @join argument1_ in body1_ args__
+			clause.args[3].args[3] = :(QueryOperators.query($(esc(body1))))
 		end
 		i+=1
 	end
@@ -157,15 +157,15 @@ function query_expression_translation_phase_1(qe)
 	end
 end
 
-function query_expression_translation_phase_3(qe)
+function remove_trivial_selects!(qe)
 	done = false
 	while !done
 		if length(qe)>=2 &&
-		   (@capture qe[1] @from rangevariable_ in source_) &&
-		   (@capture qe[2] @select condition_) &&
-		   condition == source
+		    (@capture qe[1] @from argument1_ in body1_) &&
+		    (@capture qe[2] @select body2_) &&
+		    body2 == body1
 
-			qe[1] = :( QueryOperators.@map($source,identity) )
+		    qe[1] = :( QueryOperators.@map($body1,identity) )
 			deleteat!(qe,2)
 		else
 			done = true
@@ -183,71 +183,71 @@ function attribute_and_direction(sort_clause)
 	end
 end
 
-function query_expression_translation_phase_4(qe)
+function from_let_where_join_orderby!(qe)
 	done = false
 	while !done
-		if length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @from rangevariable2_ in source2_)
-			f_collection_selector = anon(qe[2], rangevariable1, source2)
-			f_arguments = Expr(:tuple,rangevariable1,rangevariable2)
-			if (@capture qe[3] @select condition_)
-				f_result_selector = anon(qe[3], f_arguments, condition)
+		if length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @from argument2_ in body2_)
+			function1 = anon(qe[2], argument1, body2)
+			function3_arguments = Expr(:tuple,argument1,argument2)
+			if (@capture qe[3] @select body3_)
+				function3 = anon(qe[3], function3_arguments, body3)
 
-				qe[1] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+				qe[1] = :( QueryOperators.@mapmany($body1, $(esc(function1)), $(esc(function3))) )
 				deleteat!(qe,3)
 			else
-				f_result_selector = anon(qe[3], f_arguments, :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)))
+				function3 = anon(qe[3], function3_arguments, :(($argument1=$argument1,$argument2=$argument2)))
 
-				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
-				qe[1].args[3].args[3] = :( QueryOperators.@mapmany($source1, $(esc(f_collection_selector)), $(esc(f_result_selector))) )
+				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
+				qe[1].args[3].args[3] = :( QueryOperators.@mapmany($body1, $(esc(function1)), $(esc(function3))) )
 			end
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @let rangevariable2_ = valueselector_)
-			f_selector = anon(qe[3], rangevariable1, :(($rangevariable1=$rangevariable1,$rangevariable2=$valueselector)))
+		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @let argument2_ = valueselector_)
+			function1 = anon(qe[2], argument1, :(($argument1=$argument1,$argument2=$valueselector)))
 
-			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
-			qe[1].args[3].args[3] = :( QueryOperators.@map($source1,$(esc(f_selector))) )
+			qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
+			qe[1].args[3].args[3] = :( QueryOperators.@map($body1,$(esc(function1))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @where condition_)
-			f_condition = anon(qe[2], rangevariable1, condition)
+		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @where body2_)
+			function1 = anon(qe[2], argument1, body2)
 
-			qe[1].args[3].args[3] = :( QueryOperators.@filter($source1,$(esc(f_condition))) )
+			qe[1].args[3].args[3] = :( QueryOperators.@filter($body1,$(esc(function1))) )
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_)
-			f_outer_key = anon(qe[2], rangevariable1, leftkey)
-			f_inner_key = anon(qe[2], rangevariable2, rightkey)
-			f_arguments = Expr(:tuple,rangevariable1,rangevariable2)
-			if (@capture qe[3] @select condition_)
-				f_result = anon(qe[3], f_arguments, condition)
+		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_)
+			function1 = anon(qe[2], argument1, leftkey)
+			function2 = anon(qe[2], argument2, rightkey)
+			function3_arguments = Expr(:tuple,argument1,argument2)
+			if (@capture qe[3] @select body3_)
+				function3 = anon(qe[3], function3_arguments, body3)
 				qe[1] = :(
-					QueryOperators.@join($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result)))
+					QueryOperators.@join($body1, $body2, $(esc(function1)), $(esc(function2)), $(esc(function3)))
 					)
 
 				deleteat!(qe,3)
 			else
-				f_result = anon(qe[2], f_arguments, :(($rangevariable1=$rangevariable1,$rangevariable2=$rangevariable2)) )
+				function3 = anon(qe[2], function3_arguments, :(($argument1=$argument1,$argument2=$argument2)) )
 
-				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, rangevariable2)
-				qe[1].args[3].args[3] = :( QueryOperators.@join($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, argument2)
+				qe[1].args[3].args[3] = :( QueryOperators.@join($body1,$body2,$(esc(function1)), $(esc(function2)), $(esc(function3))) )
 
 			end
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @join rangevariable2_ in source2_ on leftkey_ equals rightkey_ into groupvariable_)
-			f_outer_key = anon(qe[2], rangevariable1, leftkey)
-			f_inner_key = anon(qe[2], rangevariable2, rightkey)
-			f_arguments = Expr(:tuple,rangevariable1,groupvariable)
-			if (@capture qe[3] @select condition_)
-				f_result = anon(qe[3], f_arguments, condition)
-				qe[1] = :( QueryOperators.@groupjoin($source1, $source2, $(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @join argument2_ in body2_ on leftkey_ equals rightkey_ into groupvariable_)
+			function1 = anon(qe[2], argument1, leftkey)
+			function2 = anon(qe[2], argument2, rightkey)
+			function3_arguments = Expr(:tuple,argument1,groupvariable)
+			if (@capture qe[3] @select body3_)
+				function3 = anon(qe[3], function3_arguments, body3)
+				qe[1] = :( QueryOperators.@groupjoin($body1, $body2, $(esc(function1)), $(esc(function2)), $(esc(function3))) )
 
 				deleteat!(qe,3)
 			else
-				f_result = anon(qe[2], f_arguments, :(($rangevariable1=$rangevariable1,$groupvariable=$groupvariable)) )
+				function3 = anon(qe[2], function3_arguments, :(($argument1=$argument1,$groupvariable=$groupvariable)) )
 
-				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), rangevariable1, groupvariable)
-				qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($source1,$source2,$(esc(f_outer_key)), $(esc(f_inner_key)), $(esc(f_result))) )
+				qe[1].args[3].args[2] = Expr(:transparentidentifier, gensym(:t), argument1, groupvariable)
+				qe[1].args[3].args[3] = :( QueryOperators.@groupjoin($body1,$body2,$(esc(function1)), $(esc(function2)), $(esc(function3))) )
 			end
 			deleteat!(qe,2)
-		elseif length(qe)>=3 && (@capture qe[1] @from rangevariable1_ in source1_) && (@capture qe[2] @orderby sortclause_)
+		elseif length(qe)>=3 && (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @orderby sortclause_)
 			ks = []
 			if @capture sortclause (sortclauses__,)
 				for sort_clause in sortclauses
@@ -258,19 +258,19 @@ function query_expression_translation_phase_4(qe)
 			end
 
 			for (i,sort_clause) in enumerate(ks)
-				f_condition = anon(qe[2], rangevariable1, sort_clause[1])
+				function1 = anon(qe[2], argument1, sort_clause[1])
 
 				if sort_clause[2]==:ascending
 					if i==1
-						qe[1].args[3].args[3] = :( QueryOperators.@orderby($source1,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@orderby($body1,$(esc(function1))) )
 					else
-						qe[1].args[3].args[3] = :( QueryOperators.@thenby($source1,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@thenby($body1,$(esc(function1))) )
 					end
 				elseif sort_clause[2]==:descending
 					if i==1
-						qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($source1,$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@orderby_descending($body1,$(esc(function1))) )
 					else
-						qe[1].args[3].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[3].args[3]),$(esc(f_condition))) )
+						qe[1].args[3].args[3] = :( QueryOperators.@thenby_descending($(qe[1].args[3].args[3]),$(esc(function1))) )
 					end
 				end
 			end
@@ -281,17 +281,17 @@ function query_expression_translation_phase_4(qe)
 	end
 end
 
-function query_expression_translation_phase_5(qe)
+function selects!(qe)
 	i = 1
 	while i<=length(qe)
-		if @capture qe[i] @select condition_
+		if @capture qe[i] @select body2_
 			from_clause = qe[i-1]
-			if @capture from_clause @from rangevariable_ in source_
-				if condition==rangevariable
-					qe[i-1] = source
+			if @capture from_clause @from argument1_ in body1_
+				if body2==argument1
+					qe[i-1] = body1
 				else
-					func_call = Expr(:->, rangevariable, condition)
-					qe[i-1] = :( QueryOperators.@map($source, $(esc(func_call))) )
+					func_call = Expr(:->, argument1, body2)
+					qe[i-1] = :( QueryOperators.@map($body1, $(esc(func_call))) )
 				end
 				deleteat!(qe,i)
 		    else
@@ -303,17 +303,17 @@ function query_expression_translation_phase_5(qe)
 	end
 end
 
-function query_expression_translation_phase_6(qe)
+function groups!(qe)
 	done = false
 	while !done
-		if (@capture qe[1] @from rangevariable_ in source_) && (@capture qe[2] @group elementselector_ by keyselector_ args__)
-			f_elementSelector = Expr(:->, rangevariable, keyselector)
-			f_resultSelector = Expr(:->, rangevariable, elementselector)
+		if (@capture qe[1] @from argument1_ in body1_) && (@capture qe[2] @group elementselector_ by keyselector_ args__)
+			f_elementSelector = Expr(:->, argument1, keyselector)
+			f_resultSelector = Expr(:->, argument1, elementselector)
 
-			if elementselector == rangevariable
-				qe[1] = :( QueryOperators.@groupby_simple($source, $(esc(f_elementSelector))) )
+			if elementselector == argument1
+				qe[1] = :( QueryOperators.@groupby_simple($body1, $(esc(f_elementSelector))) )
 			else
-				qe[1] = :( QueryOperators.@groupby($source, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
+				qe[1] = :( QueryOperators.@groupby($body1, $(esc(f_elementSelector)), $(esc(f_resultSelector))) )
 			end
 			deleteat!(qe,2)
 		else
@@ -383,13 +383,13 @@ function find_and_translate_transparent_identifier(ex::Expr)
 	end
 end
 
-function query_expression_translation_phase_7(qe)
+function transparents!(qe)
 	for clause in qe
 		isa(clause, Expr) && find_and_translate_transparent_identifier(clause)
 	end
 end
 
-function query_expression_translation_phase_D(qe)
+function sinks!(qe)
 	i = 1
 	while i<=length(qe)
 		clause = qe[i]
@@ -407,45 +407,45 @@ function query_expression_translation_phase_D(qe)
 	end
 end
 
-function translate_query(body)
+function translate_query(body1)
 	debug_output = true
 
 	debug_output && println("AT START")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_1(body.args)
+	query_expression_translation_phase_1(body1.args)
 	debug_output && println("AFTER 1")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_A(body.args)
+	query_expression_translation_phase_A(body1.args)
 	debug_output && println("AFTER A")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_B(body.args)
+	query_bodies!(body1.args)
 	debug_output && println("AFTER B")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_3(body.args)
+	remove_trivial_selects!(body1.args)
 	debug_output && println("AFTER 3")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_4(body.args)
+	from_let_where_join_orderby!(body1.args)
 	debug_output && println("AFTER 4")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_5(body.args)
+	selects!(body1.args)
 	debug_output && println("AFTER 5")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_6(body.args)
+	groups!(body1.args)
 	debug_output && println("AFTER 6")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_7(body.args)
+	transparents!(body1.args)
 	debug_output && println("AFTER 7")
-	debug_output && println(body)
+	debug_output && println(body1)
 
-	query_expression_translation_phase_D(body.args)
+	sinks!(body1.args)
 	debug_output && println("AFTER D")
-	debug_output && println(body)
+	debug_output && println(body1)
 end
