@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Overview",
     "category": "section",
-    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in IterableTables.jl. One can for example query any of the following data sources: any array, DataFrames, DataStreams (including CSV, Feather, SQLite, ODBC), DataTables, IndexedTables, TimeSeries, Temporal, TypedTables and DifferentialEquations (any DESolution).The package currently provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a \"query provider\" for SQLite in the package, but it is experimental at this point and only works for a very small subset of queries.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
+    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in IterableTables.jl.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
 },
 
 {
@@ -237,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.Grouping{DataValues.DataValue{Int64},DataValues.DataValue{String}}[DataValues.DataValue{String}[\"John\"], DataValues.DataValue{String}[\"Sally\", \"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=g.key,Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key │ Count │\n├─────┼─────┼───────┤\n│ 1   │ 3   │ 1     │\n│ 2   │ 2   │ 2     │"
+    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nQuery.Grouping{DataValues.DataValue{Int64},DataValues.DataValue{String}}[DataValues.DataValue{String}[\"John\"], DataValues.DataValue{String}[\"Sally\", \"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=key(g),Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key │ Count │\n├─────┼─────┼───────┤\n│ 1   │ 3   │ 1     │\n│ 2   │ 2   │ 2     │"
 },
 
 {
@@ -245,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Split-Apply-Combine (a.k.a. dplyr)",
     "category": "section",
-    "text": "Query.jl provides special syntax to summarise data in a Query.Grouping as above. Summarising here is synonymous to aggregating or collapsing the dataset over a certain grouping variable. Summarising thus requires an aggregating function like mean, maximum, or any other function that takes a vector and returns a scalar. The special syntax is @select new_var = agg_fun(g..var), where agg_fun is your aggregation function (e.g. mean), g is your grouping, and var is the relevant column that you want to summarise."
+    "text": "Query.jl provides special syntax to summarise data in a Query.Grouping as above. Summarising here is synonymous to aggregating or collapsing the dataset over a certain grouping variable. Summarising thus requires an aggregating function like mean, maximum, or any other function that takes a vector and returns a scalar. The special syntax is @select new_var = agg_fun(g.var), where agg_fun is your aggregation function (e.g. mean), g is your grouping, and var is the relevant column that you want to summarise."
 },
 
 {
@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ group │ mage │ oldest │ youngest │\n├─────┼───────┼──────┼────────┼──────────┤\n│ 1   │ a     │ 20.0 │ 30.0   │ 10.0     │\n│ 2   │ b     │ 23.0 │ 33.0   │ 13.0     │\n"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ group │ mage │ oldest │ youngest │\n├─────┼───────┼──────┼────────┼──────────┤\n│ 1   │ a     │ 20.0 │ 30.0   │ 10.0     │\n│ 2   │ b     │ 23.0 │ 33.0   │ 13.0     │\n"
 },
 
 {
@@ -525,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Experimental Features",
     "title": "Experimental features",
     "category": "section",
-    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @map, @filter, @groupby, @orderby (and various variants), @groupjoin, @join, @mapmany, @take and @drop commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=_.key, b=mean(_..b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the .. syntax and 3) the _ anonymous function syntax."
+    "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome.The @map, @filter, @groupby, @orderby (and various variants), @groupjoin, @join, @mapmany, @take and @drop commands can be used in standalone versions. Those standalone versions are especially convenient in combination with the pipe syntax in julia. Here is an example that demonstrates their use:using Query, DataFrames\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=key(_), b=mean(_.b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrameThis example makes use of three experimental features: 1) the standalone query commands, 2) the . syntax and 3) the _ anonymous function syntax."
 },
 
 {
@@ -606,14 +606,6 @@ var documenterSearchIndex = {"docs": [
     "title": "The @drop command",
     "category": "section",
     "text": "The @drop command has the form @drop(source, n). source can be any source that can be queried. n must be an integer, and it specifies how many elements from the beginning of the source should be dropped from the results."
-},
-
-{
-    "location": "experimental.html#The-..-syntax-1",
-    "page": "Experimental Features",
-    "title": "The .. syntax",
-    "category": "section",
-    "text": "The syntax a..b is translated into map(i->i.b, a) in any query expression. This is especially helpful when computing some reduction of a given column of a grouped table.For example, the following command groups a table by column a, and then computes the mean of the b column for each group:using DataFrames, Query\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\n@from i in df begin\n    @group i by i.a into g\n    @select {a=i.key, b=mean(g..b)}\n    @collect DataFrame\nendThe @group command here creates a list of tables, i.e. g will hold a full table for each group. The syntax g..b then extracts a single column from that table."
 },
 
 {
