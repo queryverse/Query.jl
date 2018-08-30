@@ -2,22 +2,7 @@
 
 ## Overview
 
-Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in [IterableTables.jl](https://github.com/davidanthoff/IterableTables.jl). One can for example query any of the following data sources:
-any array,
-[DataFrames](https://github.com/JuliaStats/DataFrames.jl),
-[DataStreams](https://github.com/JuliaData/DataStreams.jl)
-(including [CSV](https://github.com/JuliaData/CSV.jl),
-[Feather](https://github.com/JuliaStats/Feather.jl),
-[SQLite](https://github.com/JuliaDB/SQLite.jl),
-[ODBC](https://github.com/JuliaDB/ODBC.jl)),
-[DataTables](https://github.com/JuliaData/DataTables.jl),
-[IndexedTables](https://github.com/JuliaComputing/IndexedTables.jl),
-[TimeSeries](https://github.com/JuliaStats/TimeSeries.jl),
-[Temporal](https://github.com/dysonance/Temporal.jl),
-[TypedTables](https://github.com/FugroRoames/TypedTables.jl) and
-[DifferentialEquations](https://github.com/JuliaDiffEq/DifferentialEquations.jl) (any `DESolution`).
-
-The package currently provides working implementations for in-memory data sources, but will eventually be able to translate queries into e.g. SQL. There is a prototype implementation of such a "query provider" for [SQLite](https://github.com/JuliaDB/SQLite.jl) in the package, but it is experimental at this point and only works for a *very* small subset of queries.
+Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in [IterableTables.jl](https://github.com/queryverse/IterableTables.jl).
 
 Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx), in fact right now the package is largely an implementation of the [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) part of the [C# specification](https://msdn.microsoft.com/en-us/library/ms228593.aspx). Future versions of Query will most likely add features that are not found in the original [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) design.
 

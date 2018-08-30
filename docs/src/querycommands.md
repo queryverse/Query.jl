@@ -268,7 +268,7 @@ df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,
 
 x = @from i in df begin
     @group i by i.children into g
-    @select {Key=g.key,Count=length(g)}
+    @select {Key=key(g),Count=length(g)}
     @collect DataFrame
 end
 
@@ -285,7 +285,7 @@ println(x)
 
 ## Split-Apply-Combine (a.k.a. `dplyr`)
 
-`Query.jl` provides special syntax to summarise data in a `Query.Grouping` as above. *Summarising* here is synonymous to *aggregating* or *collapsing* the dataset over a certain grouping variable. Summarising thus requires an aggregating function like `mean`, `maximum`, or any other function that takes a vector and returns a scalar. The special syntax is `@select new_var = agg_fun(g..var)`, where `agg_fun` is your aggregation function (e.g. `mean`), `g` is your grouping, and `var` is the relevant column that you want to summarise.
+`Query.jl` provides special syntax to summarise data in a `Query.Grouping` as above. *Summarising* here is synonymous to *aggregating* or *collapsing* the dataset over a certain grouping variable. Summarising thus requires an aggregating function like `mean`, `maximum`, or any other function that takes a vector and returns a scalar. The special syntax is `@select new_var = agg_fun(g.var)`, where `agg_fun` is your aggregation function (e.g. `mean`), `g` is your grouping, and `var` is the relevant column that you want to summarise.
 
 #### Example
 
@@ -298,7 +298,7 @@ df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]),
 
 x = @from i in df begin
     @group i by i.state into g
-    @select {group=g.key,mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}
+    @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}
     @collect DataFrame
 end
 
