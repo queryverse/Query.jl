@@ -4,6 +4,8 @@ using TableTraits
 import IterableTables
 using DataValues
 using MacroTools: postwalk, @capture
+using Base.Meta: quot
+using Base.Iterators: flatten
 using QueryOperators
 
 import Base.length
