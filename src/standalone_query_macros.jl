@@ -16,17 +16,12 @@ function standalone_template(afunction, source1, source2, args)
 end
 
 function anonymous_template(afunction, args)
-    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
-
-    args = zip(escaped_args, quot.(escaped_args)) |> flatten
     :(i -> QueryOperators.$afunction(QueryOperators.query(i), $(template_args(args)...))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
 
 function anonymous_template(afunction, source2, args)
-    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
-    args = zip(escaped_args, quot.(escaped_args)) |> flatten
     :(i -> QueryOperators.$afunction(QueryOperators.query(i), QueryOperators.query($(esc(source2))), $(template_args(args)...))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
