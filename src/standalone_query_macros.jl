@@ -5,26 +5,22 @@ end
 
 function standalone_template(afunction, source, args)
     :(QueryOperators.$afunction(QueryOperators.query($(esc(source))), $(template_args(args)...))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 function standalone_template(afunction, source1, source2, args)
     :(QueryOperators.$afunction(QueryOperators.query($(esc(source1))), QueryOperators.query($(esc(source2))), $(template_args(args)...))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 function anonymous_template(afunction, args)
     :(i -> QueryOperators.$afunction(QueryOperators.query(i), $(template_args(args)...))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 function anonymous_template(afunction, source2, args)
     :(i -> QueryOperators.$afunction(QueryOperators.query(i), QueryOperators.query($(esc(source2))), $(template_args(args)...))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+        helper_namedtuples_replacement
 end
 
 macro count(source, f)

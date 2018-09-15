@@ -62,12 +62,6 @@ function helper_replace_anon_func_syntax(ex)
 	end
 end
 
-function helper_replace_field_extraction_syntax(ex)
-	postwalk(ex) do x
-		iscall(x, :(..)) ? :(map(i->i.$(x.args[3]), $(x.args[2]))) : x
-	end
-end
-
 function left_outer_joins!(qe)
 	i = 1
 	while i<=length(qe)
@@ -414,7 +408,6 @@ function translate_query(body1)
 	debug_output && println(body1)
 
 	left_outer_joins!(body1.args)
-	body1.args = helper_replace_field_extraction_syntax.(body1.args)
 	debug_output && println("AFTER A")
 	debug_output && println(body1)
 

@@ -42,7 +42,7 @@ The Query package does not require data sources or sinks to have a table like st
 ## Missing values
 
 Missing values are represented as `DataValue` types from the
-[DataValues.jl](https://github.com/davidanthoff/DataValues.jl) package.
+[DataValues.jl](https://github.com/queryverse/DataValues.jl) package.
 Here are some usage tips.
 
 All arithmetic operators work automatically with missing values.

@@ -13,7 +13,7 @@ using Test
 
     x = @from i in df begin
         @group i by i.state into g
-        @select {group=key(g),mage=mean(g..age), oldest=maximum(g..age), youngest=minimum(g..age)}
+        @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}
         @collect DataFrame
     end
 

@@ -18,13 +18,13 @@ using DataTables
     
     @bench "two columns" @from i in $dt begin
         @group {i.A, i.B} by i.B into g
-        @select {m = mean(g..A)}
+        @select {m = mean(g.A)}
         @collect 
     end
 
     @bench "three columns" @from i in $dt begin
         @group {i.A, i.B, i.C} by i.B into g
-        @select {m = mean(g..A)}
+        @select {m = mean(g.A)}
         @collect 
     end
 end
