@@ -1,16 +1,16 @@
-function standalone_template(afunction, source, args)
+function template_args(args)
     escaped_args = esc.(helper_replace_anon_func_syntax.(args))
+    zip(escaped_args, quot.(escaped_args)) |> flatten
+end
 
-    args = zip(escaped_args, quot.(escaped_args)) |> flatten
-    :(QueryOperators.$afunction(QueryOperators.query($(esc(source))), $(args...))) |>
+function standalone_template(afunction, source, args)
+    :(QueryOperators.$afunction(QueryOperators.query($(esc(source))), $(template_args(args)...))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
 
 function standalone_template(afunction, source1, source2, args)
-    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
-    args = zip(escaped_args, quot.(escaped_args)) |> flatten
-    :(QueryOperators.$afunction(QueryOperators.query($(esc(source1))), QueryOperators.query($(esc(source2))), $(args...))) |>
+    :(QueryOperators.$afunction(QueryOperators.query($(esc(source1))), QueryOperators.query($(esc(source2))), $(template_args(args)...))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
@@ -19,7 +19,7 @@ function anonymous_template(afunction, args)
     escaped_args = esc.(helper_replace_anon_func_syntax.(args))
 
     args = zip(escaped_args, quot.(escaped_args)) |> flatten
-    :(i -> QueryOperators.$afunction(QueryOperators.query(i), $(args...))) |>
+    :(i -> QueryOperators.$afunction(QueryOperators.query(i), $(template_args(args)...))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
@@ -27,7 +27,7 @@ end
 function anonymous_template(afunction, source2, args)
     escaped_args = esc.(helper_replace_anon_func_syntax.(args))
     args = zip(escaped_args, quot.(escaped_args)) |> flatten
-    :(i -> QueryOperators.$afunction(QueryOperators.query(i), QueryOperators.query($(esc(source2))), $(args...))) |>
+    :(i -> QueryOperators.$afunction(QueryOperators.query(i), QueryOperators.query($(esc(source2))), $(template_args(args)...))) |>
         helper_namedtuples_replacement |>
         helper_replace_field_extraction_syntax
 end
