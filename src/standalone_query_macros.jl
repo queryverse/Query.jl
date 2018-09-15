@@ -16,6 +16,22 @@ function anonymous_template(afunction, args...)
         helper_replace_field_extraction_syntax
 end
 
+function join_template(afunction, source1, source2, args...)
+    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
+    args = zip(escaped_args, quot.(escaped_args)) |> flatten
+    :(QueryOperators.$afunction(QueryOperators.query($(esc(source1))), QueryOperators.query($(esc(source2))), $(args...))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
+function anonymous_join_template(afunction, source2, args...)
+    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
+    args = zip(escaped_args, quot.(escaped_args)) |> flatten
+    :(i -> QueryOperators.$afunction(QueryOperators.query(i), QueryOperators.query($(esc(source2))), $(args...))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
 macro count(source, f)
     standalone_template(:count, source, f)
 end
@@ -40,76 +56,20 @@ macro groupby(elementSelector)
     anonymous_template(:groupby, elementSelector, :(i -> i))
 end
 
-macro groupjoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
-    outerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(outerKeySelector)
-    innerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(innerKeySelector)
-    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
-
-    q_outerKeySelector = Expr(:quote, outerKeySelector_as_anonym_func)
-    q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
-    q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
-
-    return :(QueryOperators.groupjoin(QueryOperators.query($(esc(outer))),
-            QueryOperators.query($(esc(inner))),
-            $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
-            $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
-            $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+macro groupjoin(outer, inner, args...)
+    join_template(:groupjoin, outer, inner, args...)
 end
 
-macro groupjoin(inner, outerKeySelector, innerKeySelector, resultSelector)
-    outerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(outerKeySelector)
-    innerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(innerKeySelector)
-    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
-
-    q_outerKeySelector = Expr(:quote, outerKeySelector_as_anonym_func)
-    q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
-    q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
-
-    return :( outer -> QueryOperators.groupjoin(QueryOperators.query(outer),
-            QueryOperators.query($(esc(inner))),
-            $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
-            $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
-            $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+macro groupjoin(inner, args...)
+    anonymous_join_template(:groupjoin, source2, args...)
 end
 
 macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
-    outerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(outerKeySelector)
-    innerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(innerKeySelector)
-    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
-
-    q_outerKeySelector = Expr(:quote, outerKeySelector_as_anonym_func)
-    q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
-    q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
-
-    return :(QueryOperators.join(QueryOperators.query($(esc(outer))),
-            QueryOperators.query($(esc(inner))),
-            $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
-            $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
-            $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+    join_template(:join, outer, inner, args...)
 end
 
 macro join(inner, outerKeySelector, innerKeySelector, resultSelector)
-    outerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(outerKeySelector)
-    innerKeySelector_as_anonym_func = helper_replace_anon_func_syntax(innerKeySelector)
-    resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)
-
-    q_outerKeySelector = Expr(:quote, outerKeySelector_as_anonym_func)
-    q_innerKeySelector = Expr(:quote, innerKeySelector_as_anonym_func)
-    q_resultSelector = Expr(:quote, resultSelector_as_anonym_func)
-
-    return :( outer -> QueryOperators.join(QueryOperators.query(outer),
-            QueryOperators.query($(esc(inner))),
-            $(esc(outerKeySelector_as_anonym_func)), $(esc(q_outerKeySelector)),
-            $(esc(innerKeySelector_as_anonym_func)), $(esc(q_innerKeySelector)),
-            $(esc(resultSelector_as_anonym_func)), $(esc(q_resultSelector)),)) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
+    anonymous_join_template(:join, source2, args...)
 end
 
 macro orderby(source, f)
