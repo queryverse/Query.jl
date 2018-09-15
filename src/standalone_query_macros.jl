@@ -7,6 +7,14 @@ function standalone_template(afunction, source, args)
         helper_replace_field_extraction_syntax
 end
 
+function standalone_template(afunction, source1, source2, args)
+    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
+    args = zip(escaped_args, quot.(escaped_args)) |> flatten
+    :(QueryOperators.$afunction(QueryOperators.query($(esc(source1))), QueryOperators.query($(esc(source2))), $(args...))) |>
+        helper_namedtuples_replacement |>
+        helper_replace_field_extraction_syntax
+end
+
 function anonymous_template(afunction, args)
     escaped_args = esc.(helper_replace_anon_func_syntax.(args))
 
@@ -16,15 +24,7 @@ function anonymous_template(afunction, args)
         helper_replace_field_extraction_syntax
 end
 
-function join_template(afunction, source1, source2, args)
-    escaped_args = esc.(helper_replace_anon_func_syntax.(args))
-    args = zip(escaped_args, quot.(escaped_args)) |> flatten
-    :(QueryOperators.$afunction(QueryOperators.query($(esc(source1))), QueryOperators.query($(esc(source2))), $(args...))) |>
-        helper_namedtuples_replacement |>
-        helper_replace_field_extraction_syntax
-end
-
-function anonymous_join_template(afunction, source2, args)
+function anonymous_template(afunction, source2, args)
     escaped_args = esc.(helper_replace_anon_func_syntax.(args))
     args = zip(escaped_args, quot.(escaped_args)) |> flatten
     :(i -> QueryOperators.$afunction(QueryOperators.query(i), QueryOperators.query($(esc(source2))), $(args...))) |>
@@ -57,19 +57,19 @@ macro groupby(elementSelector)
 end
 
 macro groupjoin(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
-    join_template(:groupjoin, outer, inner, (outerKeySelector, innerKeySelector, resultSelector))
+    standalone_template(:groupjoin, outer, inner, (outerKeySelector, innerKeySelector, resultSelector))
 end
 
 macro groupjoin(inner, outerKeySelector, innerKeySelector, resultSelector)
-    anonymous_join_template(:groupjoin, inner, (outerKeySelector, innerKeySelector, resultSelector))
+    anonymous_template(:groupjoin, inner, (outerKeySelector, innerKeySelector, resultSelector))
 end
 
 macro join(outer, inner, outerKeySelector, innerKeySelector, resultSelector)
-    join_template(:join, outer, inner, (outerKeySelector, innerKeySelector, resultSelector))
+    standalone_template(:join, outer, inner, (outerKeySelector, innerKeySelector, resultSelector))
 end
 
 macro join(inner, outerKeySelector, innerKeySelector, resultSelector)
-    anonymous_join_template(:join, inner, (outerKeySelector, innerKeySelector, resultSelector))
+    anonymous_template(:join, inner, (outerKeySelector, innerKeySelector, resultSelector))
 end
 
 macro orderby(source, f)
