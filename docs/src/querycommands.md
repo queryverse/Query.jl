@@ -290,7 +290,7 @@ println(x)
 #### Example
 
 ```jldoctest
-using Query, DataFrames
+using Query, DataFrames, Statistics
 
 df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]), 
      age=vcat([10., 20., 30.],[10., 20., 30.].+3), 

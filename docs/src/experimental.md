@@ -13,7 +13,7 @@ combination with the pipe syntax in julia. Here is an example that
 demonstrates their use:
 
 ```julia
-using Query, DataFrames
+using Query, DataFrames, Statistics
 
 df = DataFrame(a=[1,1,2,3], b=[4,5,6,8])
 
