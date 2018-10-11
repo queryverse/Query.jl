@@ -1,38 +1,36 @@
-using NamedTupleUtils
+# import NamedTupleUtilities
 
 macro select(args...)
     # Use QueryOperators
     foo = :_
     for arg in args
-        # arg must not contain certain characters
         if startswith(string(arg), '-')
             arg = string(arg)[2:end]
-            foo = :( remove($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+            foo = :( remove($foo, Val($(QuoteNode(Symbol(arg))))) )
         elseif startswith(string(arg), "startswith(")
             arg = string(arg)[12:(end-1)]
-            foo = :( NamedTupleUtils.startswith($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+            foo = :( startswith($foo, Val($(QuoteNode(Symbol(arg))))) )
         elseif startswith(string(arg), "endswith(")
             arg = string(arg)[10:(end-1)]
-            foo = :( NamedTupleUtils.endswith($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
-        elseif startswith(string(arg), "contains(")
+            foo = :( endswith($foo, Val($(QuoteNode(Symbol(arg))))) )
+        elseif startswith(string(arg), "occursin(")
             arg = string(arg)[10:(end-1)]
-            foo = :( NamedTupleUtils.contains($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+            foo = :( occursin($foo, Val($(QuoteNode(Symbol(arg))))) )
         elseif startswith(string(arg), "rangeat(")
             arg1, arg2 = split(string(arg)[9:(end-1)], ',')
-            foo = :( NamedTupleUtils.rangeat($foo, Val{$(QuoteNode(Symbol(arg1)))}(), Val{$(QuoteNode(Symbol(arg2)))}()) )
+            foo = :( rangeat($foo, Val($(QuoteNode(Symbol(arg1)))), Val($(QuoteNode(Symbol(arg2))))) )
         end
     end
     return :(Query.@map( $foo ) )
 end
 
-
-function findfirst(s::String, c::Char)
-    for i in 1:length(s)
-        if c == s[i]
-            return i
-        end
+macro rename(args...)
+    foo = :_
+    for arg in args
+        name, replace = split(string(arg), " = ")
+        foo = :( Query.rename($foo, Val($(QuoteNode(Symbol(name)))), Val($(QuoteNode(Symbol(replace))))) )
     end
-    return -1
+    return :(Query.@map( $foo ) )
 end
 
 
@@ -41,4 +39,28 @@ end
     types = Tuple{Any[ fieldtype(a, n) for n in names ]...}
     vals = Any[ :(getfield(a, $(QuoteNode(n)))) for n in names ]
     :( NamedTuple{$names,$types}(($(vals...),)) )
+end
+
+@generated function Base.startswith(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
+    names = ((i for i in an if startswith(String(i), String(bn)))...,)
+    types = Tuple{(fieldtype(a ,n) for n in names)...}
+    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
+    return :(NamedTuple{$names,$types}(($(vals...),)))
+end
+
+@generated function rename(a::NamedTuple{an}, ::Val{bn}, ::Val{cn}) where {an, bn, cn}
+    names = Symbol[]
+    typesArray = DataType[]
+    vals = Expr[]
+    for n in an
+        if n == bn
+            push!(names, cn)
+        else
+            push!(names, n)
+        end
+        push!(typesArray, fieldtype(a, n))
+        push!(vals, :(getfield(a, $(QuoteNode(n)))))
+    end
+    types = Tuple{typesArray...}
+    return :(NamedTuple{$(names...,),$types}(($(vals...),)))
 end
