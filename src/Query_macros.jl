@@ -1,23 +1,27 @@
+using NamedTupleUtils
+
 macro select(args...)
-    # Currently does not work
+    # Use QueryOperators
     foo = :_
     for arg in args
-        if string(arg)[1] == '-'
-            arg = ":" * string(arg)[2:end]
-            foo = :( NamedTuple.remove($foo, Val{$(Symbol(arg))}()) )
-        elseif string(arg)[1:10] == "startswith"
+        # arg must not contain certain characters
+        if startswith(string(arg), '-')
+            arg = string(arg)[2:end]
+            foo = :( remove($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+        elseif startswith(string(arg), "startswith(")
             arg = string(arg)[12:(end-1)]
-            foo = :( NamedTuple.startswith($foo, Val{$(Symbol(arg))}()) )
-        elseif string(arg)[1:8] == "endswith"
+            foo = :( NamedTupleUtils.startswith($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+        elseif startswith(string(arg), "endswith(")
             arg = string(arg)[10:(end-1)]
-            foo = :( NamedTuple.endswith($foo, Val{$(Symbol(arg))}()) )
-        elseif string(arg)[1:7] == "rangeat"
-            arg1 = string(arg)[9:findfirst(string(arg), ',')]
-            arg2 = string(arg)[(findfirst(string(arg), ',')+1):end]
-            foo = :( NamedTuple.rangeat($foo, Val{$(Symbol(arg1))}(), Val{$(Symbol(arg2))}()) )
+            foo = :( NamedTupleUtils.endswith($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+        elseif startswith(string(arg), "contains(")
+            arg = string(arg)[10:(end-1)]
+            foo = :( NamedTupleUtils.contains($foo, Val{$(QuoteNode(Symbol(arg)))}()) )
+        elseif startswith(string(arg), "rangeat(")
+            arg1, arg2 = split(string(arg)[9:(end-1)], ',')
+            foo = :( NamedTupleUtils.rangeat($foo, Val{$(QuoteNode(Symbol(arg1)))}(), Val{$(QuoteNode(Symbol(arg2)))}()) )
         end
     end
-    print(foo)
     return :(Query.@map( $foo ) )
 end
 
