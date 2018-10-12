@@ -42,6 +42,8 @@ macro select(args...)
         elseif startswith(string(arg), "rangeat(")
             arg1, arg2 = split(string(arg)[9:(end-1)], ',')
             foo = :( rangeat($foo, Val($(QuoteNode(Symbol(arg1)))), Val($(QuoteNode(Symbol(arg2))))) )
+        else
+            foo = :( select($foo, Val($(QuoteNode(arg)))) )
         end
     end
     return :(Query.@map( $foo ) )
@@ -81,34 +83,45 @@ end
 
 
 macro mutate(args...)
-    return args
+    foo = :_
+    for arg in args
+
+    end
 end
-    
+
+# Optimize
+@generated function select(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
+    names = ((i for i in an if i == bn)...,)
+    types = Tuple{(fieldtype(a, n) for n in names)...}
+    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
+    return :(NamedTuple{$names,$types}(($(vals...),)))
+end
 
 @generated function remove(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
-    names = (filter(item -> item != bn, [n for n in an])...,)
-    types = Tuple{Any[ fieldtype(a, n) for n in names ]...}
-    vals = Any[ :(getfield(a, $(QuoteNode(n)))) for n in names ]
-    :( NamedTuple{$names,$types}(($(vals...),)) )
+    names = ((i for i in an if i != bn)...,)
+    print(names)
+    types = Tuple{(fieldtype(a, n) for n in names)...}
+    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
+    return :(NamedTuple{$names,$types}(($(vals...),)))
 end
 
 @generated function Base.startswith(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
     names = ((i for i in an if startswith(String(i), String(bn)))...,)
-    types = Tuple{(fieldtype(a ,n) for n in names)...}
+    types = Tuple{(fieldtype(a, n) for n in names)...}
     vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
     return :(NamedTuple{$names,$types}(($(vals...),)))
 end
 
 @generated function Base.endswith(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
     names = ((i for i in an if endswith(String(i), String(bn)))...,)
-    types = Tuple{(fieldtype(a ,n) for n in names)...}
+    types = Tuple{(fieldtype(a, n) for n in names)...}
     vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
     return :(NamedTuple{$names,$types}(($(vals...),)))
 end
 
 @generated function Base.occursin(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
     names = ((i for i in an if occursin(String(bn), String(i)))...,)
-    types = Tuple{(fieldtype(a ,n) for n in names)...}
+    types = Tuple{(fieldtype(a, n) for n in names)...}
     vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
     return :(NamedTuple{$names,$types}(($(vals...),)))
 end
