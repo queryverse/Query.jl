@@ -27,24 +27,35 @@ macro select(args...)
     # Use QueryOperators
     foo = :_
     for arg in args
-        if startswith(string(arg), '-')
-            arg = string(arg)[2:end]
-            foo = :( remove($foo, Val($(QuoteNode(Symbol(arg))))) )
-        elseif startswith(string(arg), "startswith(")
-            arg = string(arg)[12:(end-1)]
-            foo = :( startswith($foo, Val($(QuoteNode(Symbol(arg))))) )
-        elseif startswith(string(arg), "endswith(")
-            arg = string(arg)[10:(end-1)]
-            foo = :( endswith($foo, Val($(QuoteNode(Symbol(arg))))) )
-        elseif startswith(string(arg), "occursin(")
-            arg = string(arg)[10:(end-1)]
-            foo = :( occursin($foo, Val($(QuoteNode(Symbol(arg))))) )
-        elseif startswith(string(arg), "rangeat(")
-            arg1, arg2 = split(string(arg)[9:(end-1)], ',')
-            foo = :( rangeat($foo, Val($(QuoteNode(Symbol(arg1)))), Val($(QuoteNode(Symbol(arg2))))) )
-        else
-            foo = :( select($foo, Val($(QuoteNode(arg)))) )
+        arg = string(arg)
+        # case: -ColumnName
+        m = match(r"^-(.+)", arg)
+        if m !== nothing #matched
+            foo = :( remove($foo, Val($(QuoteNode(Symbol(m[1]))))) )
+            continue
         end
+        # case: one parameter
+        m = match(r"^(startswith|endswith|occursin)\((.+)\)", arg)
+        if m[1] == "startswith"
+            foo = :( startswith($foo, Val($(QuoteNode(Symbol(m[2]))))) )
+            continue
+        elseif m[1] == "endswith"
+            arg = string(arg)[10:(end-1)]
+            foo = :( endswith($foo, Val($(QuoteNode(Symbol(m[2]))))) )
+            continue
+        elseif m[1] == "occursin"
+            arg = string(arg)[10:(end-1)]
+            foo = :( occursin($foo, Val($(QuoteNode(Symbol(m[2]))))) )
+            continue
+        end
+        # case: two parameters
+        m = match(r"^(rangeat)\(([^,]+),([^,]+)\)", arg)
+        if m[1] == "rangeat"
+            foo = :( rangeat($foo, Val($(QuoteNode(Symbol(m[2])))), Val($(QuoteNode(Symbol(m[3]))))) )
+            continue
+        end
+        # case: select
+        foo = :( select($foo, Val($(QuoteNode(arg)))) )
     end
     return :(Query.@map( $foo ) )
 end
