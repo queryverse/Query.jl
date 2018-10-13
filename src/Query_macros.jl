@@ -1,5 +1,3 @@
-# import NamedTupleUtilities
-
 """
     @select(args...)
 Select columns from a table using commands in order.
@@ -24,48 +22,38 @@ julia> df |> Query.@select(startswith(:b), -:bar) |> DataFrame
 ```
 """
 macro select(args...)
-    # Use QueryOperators
     foo = :_
     for arg in args
-        argType = typeof(arg)
-        removal = false
-        if argType == QuoteNode
-            currentSelection = :( select(_, Val($(arg))) )
-        elseif argType == Expr
-        arg = string(arg)
-            # case1: -ColumnName
+        if typeof(arg) == QuoteNode
+            # select
+            foo = :( select($foo, Val($(arg))) )
+        else
+            arg = string(arg)
+            # remove
             m1 = match(r"^-:(.+)", arg)
-            # TODO: variable case
-            # case2: one parameter
-            m2 = match(r"^(startswith|endswith|occursin)\(:(.+)\)", arg)
-            # case3: two parameters
-            m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
-            # case4: select only (no regular expression needed)
-            if m1 !== nothing #matched m1
+            #TODO: variable case
+            # single-parameter functions
+            m2 = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
+            # dual-parameter functions
+            m3 = match(r"^(rangeat)\(\"([^,]+)\", *\"([^,]+)\"\)", arg)
+            if m1 !== nothing
                 foo = :( remove($foo, Val($(QuoteNode(Symbol(m1[1]))))) )
-                removal = true
             elseif m2 !== nothing
                 if m2[1] == "startswith"
-                    currentSelection = :( startswith(_, Val($(QuoteNode(Symbol(m2[2]))))) )
+                    foo = :( startswith($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
                 elseif m2[1] == "endswith"
-                    currentSelection = :( endswith(_, Val($(QuoteNode(Symbol(m2[2]))))) )
+                    foo = :( endswith($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
                 elseif m2[1] == "occursin"
-                    currentSelection = :( occursin(_, Val($(QuoteNode(Symbol(m2[2]))))) )
-        end
+                    foo = :( occursin($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
+                end
             elseif m3 !== nothing
                 if m3[1] == "rangeat"
-                    currentSelection = :( range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3]))))) )
-        end
-            end
-        end
-        if removal == false # we treat removal differently because if nothing is specified before a removal, everying will be selected
-            if foo == :_
-                foo = currentSelection
-            else
-                foo = :( merge($foo, $currentSelection) )
+                    foo = :( range($foo, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3]))))) )
+                end
             end
         end
     end
+    
     return :(Query.@map( $foo ) )
 end
 
@@ -160,5 +148,25 @@ end
         push!(vals, :(getfield(a, $(QuoteNode(n)))))
     end
     types = Tuple{typesArray...}
+    return :(NamedTuple{$(names...,),$types}(($(vals...),)))
+end
+
+@generated function Base.range(a::NamedTuple{an}, ::Val{bn}, ::Val{cn}) where {an, bn, cn}
+    rangeStarted = false
+    names = Symbol[]
+    for n in an
+        if n == bn
+            rangeStarted = true
+        end
+        if rangeStarted
+            push!(names, n)
+        end
+        if n == cn
+            rangeStarted = false
+            break
+        end
+    end
+    types = Tuple{(fieldtype(a, n) for n in names)...}
+    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
     return :(NamedTuple{$(names...,),$types}(($(vals...),)))
 end
