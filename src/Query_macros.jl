@@ -35,7 +35,7 @@ macro select(args...)
             # single-parameter functions
             m2 = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
             # dual-parameter functions
-            m3 = match(r"^(rangeat)\(\"([^,]+)\", *\"([^,]+)\"\)", arg)
+            m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
             if m1 !== nothing
                 foo = :( remove($foo, Val($(QuoteNode(Symbol(m1[1]))))) )
             elseif m2 !== nothing
@@ -53,7 +53,6 @@ macro select(args...)
             end
         end
     end
-    
     return :(Query.@map( $foo ) )
 end
 
@@ -107,7 +106,6 @@ end
 
 @generated function remove(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
     names = ((i for i in an if i != bn)...,)
-    print(names)
     types = Tuple{(fieldtype(a, n) for n in names)...}
     vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
     return :(NamedTuple{$names,$types}(($(vals...),)))
