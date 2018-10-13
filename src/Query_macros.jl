@@ -13,7 +13,7 @@ julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
 │ 2   │ 2     │ 2.0     │ b      │
 │ 3   │ 3     │ 1.0     │ c      │
 
-julia> df |> Query.@select(startswith(b), -bar) |> DataFrame
+julia> df |> Query.@select(startswith(:b), -:bar) |> DataFrame
 3×1 DataFrame
 │ Row │ bat    │
 │     │ String │
