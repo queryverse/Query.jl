@@ -27,35 +27,44 @@ macro select(args...)
     # Use QueryOperators
     foo = :_
     for arg in args
+        argType = typeof(arg)
+        removal = false
+        if argType == QuoteNode
+            currentSelection = :( select(_, Val($(arg))) )
+        elseif argType == Expr
         arg = string(arg)
-        # case: -ColumnName
-        m = match(r"^-(.+)", arg)
-        if m !== nothing #matched
-            foo = :( remove($foo, Val($(QuoteNode(Symbol(m[1]))))) )
-            continue
+            # case1: -ColumnName
+            m1 = match(r"^-:(.+)", arg)
+            # TODO: variable case
+            # case2: one parameter
+            m2 = match(r"^(startswith|endswith|occursin)\(:(.+)\)", arg)
+            # case3: two parameters
+            m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
+            # case4: select only (no regular expression needed)
+            if m1 !== nothing #matched m1
+                foo = :( remove($foo, Val($(QuoteNode(Symbol(m1[1]))))) )
+                removal = true
+            elseif m2 !== nothing
+                if m2[1] == "startswith"
+                    currentSelection = :( startswith(_, Val($(QuoteNode(Symbol(m2[2]))))) )
+                elseif m2[1] == "endswith"
+                    currentSelection = :( endswith(_, Val($(QuoteNode(Symbol(m2[2]))))) )
+                elseif m2[1] == "occursin"
+                    currentSelection = :( occursin(_, Val($(QuoteNode(Symbol(m2[2]))))) )
         end
-        # case: one parameter
-        m = match(r"^(startswith|endswith|occursin)\((.+)\)", arg)
-        if m[1] == "startswith"
-            foo = :( startswith($foo, Val($(QuoteNode(Symbol(m[2]))))) )
-            continue
-        elseif m[1] == "endswith"
-            arg = string(arg)[10:(end-1)]
-            foo = :( endswith($foo, Val($(QuoteNode(Symbol(m[2]))))) )
-            continue
-        elseif m[1] == "occursin"
-            arg = string(arg)[10:(end-1)]
-            foo = :( occursin($foo, Val($(QuoteNode(Symbol(m[2]))))) )
-            continue
+            elseif m3 !== nothing
+                if m3[1] == "rangeat"
+                    currentSelection = :( range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3]))))) )
         end
-        # case: two parameters
-        m = match(r"^(rangeat)\(([^,]+),([^,]+)\)", arg)
-        if m[1] == "rangeat"
-            foo = :( rangeat($foo, Val($(QuoteNode(Symbol(m[2])))), Val($(QuoteNode(Symbol(m[3]))))) )
-            continue
+            end
         end
-        # case: select
-        foo = :( select($foo, Val($(QuoteNode(arg)))) )
+        if removal == false # we treat removal differently because if nothing is specified before a removal, everying will be selected
+            if foo == :_
+                foo = currentSelection
+            else
+                foo = :( merge($foo, $currentSelection) )
+            end
+        end
     end
     return :(Query.@map( $foo ) )
 end
