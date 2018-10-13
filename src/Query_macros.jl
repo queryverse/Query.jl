@@ -47,9 +47,7 @@ macro select(args...)
                     foo = :( occursin($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
                 end
             elseif m3 !== nothing
-                if m3[1] == "rangeat"
-                    foo = :( range($foo, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3]))))) )
-                end
+                foo = :( range($foo, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3]))))) )
             end
         end
     end
@@ -69,7 +67,7 @@ julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
 │ 2   │ 2     │ 2.0     │ b      │
 │ 3   │ 3     │ 1.0     │ c      │
 
-julia> df |> Query.@rename(foo = fat, bar = ban) |> DataFrame
+julia> df |> Query.@rename(:foo => :fat, :bar => :ban) |> DataFrame
 3×3 DataFrame
 │ Row │ fat   │ ban     │ bat    │
 │     │ Int64 │ Float64 │ String │
@@ -82,8 +80,12 @@ julia> df |> Query.@rename(foo = fat, bar = ban) |> DataFrame
 macro rename(args...)
     foo = :_
     for arg in args
-        name, replace = split(string(arg), " = ")
-        foo = :( Query.rename($foo, Val($(QuoteNode(Symbol(name)))), Val($(QuoteNode(Symbol(replace))))) )
+        m = match(r"^:(.+) *=> *:(.+)", string(arg))
+        m1, m2 = m[1], m[2]
+        m1, m2 = strip(m1), strip(m2)
+        if m !== nothing
+            foo = :( Query.rename($foo, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
+        end
     end
     return :(Query.@map( $foo ) )
 end
