@@ -7,6 +7,7 @@ using Test
     
     df = DataFrame(foo=[1,2,3], bar=[3.,2.,1.], bat=["a","b","c"])
 
+    @test df |> Query.@select(bat) |> DataFrame == DataFrame(bat=["a","b","c"],)
     @test df |> Query.@select(-foo) |> DataFrame == DataFrame(bar=[3.,2.,1.], bat=["a","b","c"])
     @test df |> Query.@select(-far) |> DataFrame == df
     @test df |> Query.@select(startswith(b)) |> DataFrame == DataFrame(bar=[3.,2.,1.], bat=["a","b","c"])
