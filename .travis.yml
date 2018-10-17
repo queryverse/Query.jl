@@ -18,5 +18,5 @@ matrix:
   - julia: nightly
 after_success:
   - julia -e 'using Pkg; cd(Pkg.dir("Query")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-  - julia -e 'using Pkg; Pkg.add("Documenter")'
+  - julia -e 'using Pkg; ps=Pkg.PackageSpec(name="Documenter", version="0.19"); Pkg.add(ps); Pkg.pin(ps)'
   - julia -e 'using Pkg; cd(Pkg.dir("Query")); include(joinpath("docs", "make.jl"))'
