@@ -124,7 +124,6 @@ function query_expression_translation_phase_1(qe)
 			deleteat!(sub_query.args[end].args,6)
 
 			translate_query(sub_query)
-
 			length(sub_query.args)==1 || throw(QueryException("@group ... into subquery too long", sub_query))
 
 			qe[1] = :( @from $x in $(sub_query.args[1]) )
@@ -387,13 +386,39 @@ function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in
 	end
 end
 
+# takes :(a.(b.c)) and translates to :((a.b).c)
+function invert_getproperty_accesses(ex::Expr)
+	if ex.args[2] isa QuoteNode
+		return ex
+	elseif ex.args[2].args[2] isa QuoteNode
+		return Expr(:., Expr(:., ex.args[1], QuoteNode(ex.args[2].args[1])), ex.args[2].args[2])
+	else
+		return invert_getproperty_accesses(Expr(:., ex.args[1], QuoteNode(ex.args[2].args[1])), ex.args[2].args[2])
+	end
+end
+
+function invert_getproperty_accesses(inner::Expr, ex::Expr)
+	if ex.args[2] isa QuoteNode
+		return Expr(:., Expr(:., inner, QuoteNode(ex.args[1])), ex.args[2])
+	else
+		inner = Expr(:., inner, QuoteNode(ex.args[1]))
+		return invert_getproperty_accesses(inner, ex.args[2])
+	end
+end
+
 function find_names_to_put_in_scope(ex::Expr)
 	names = []
 	for child_ex in ex.args[2:end]
 		if isa(child_ex,Expr) && child_ex.head==:transparentidentifier
 			child_names = find_names_to_put_in_scope(child_ex)
 			for child_name in child_names
-				push!(names, (Expr(:., ex.args[1], QuoteNode(child_name[1])), child_name[2]))
+				c = child_name[1]
+				if c isa Symbol
+					xx = (Expr(:., ex.args[1], QuoteNode(c)), child_name[2])
+				else
+					xx = (invert_getproperty_accesses(Expr(:., ex.args[1], c)), child_name[2])
+				end
+				push!(names, xx)
 			end
 		elseif isa(child_ex, Symbol)
 			push!(names,(ex.args[1],child_ex))
