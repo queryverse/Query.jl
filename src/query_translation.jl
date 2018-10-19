@@ -386,24 +386,12 @@ function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in
 	end
 end
 
-# takes :(a.(b.c)) and translates to :((a.b).c)
-function invert_getproperty_accesses(ex::Expr)
-	if ex.args[2] isa QuoteNode
-		return ex
-	elseif ex.args[2].args[2] isa QuoteNode
-		return Expr(:., Expr(:., ex.args[1], QuoteNode(ex.args[2].args[1])), ex.args[2].args[2])
-	else
-		return invert_getproperty_accesses(Expr(:., ex.args[1], QuoteNode(ex.args[2].args[1])), ex.args[2].args[2])
+function shift_access!(sym::Symbol, ex::Expr)
+	while ex.args[1] isa Expr
+		ex = ex.args[1]
 	end
-end
-
-function invert_getproperty_accesses(inner::Expr, ex::Expr)
-	if ex.args[2] isa QuoteNode
-		return Expr(:., Expr(:., inner, QuoteNode(ex.args[1])), ex.args[2])
-	else
-		inner = Expr(:., inner, QuoteNode(ex.args[1]))
-		return invert_getproperty_accesses(inner, ex.args[2])
-	end
+	ex.args[1] = Expr(:., sym, QuoteNode(ex.args[1]))
+	return
 end
 
 function find_names_to_put_in_scope(ex::Expr)
@@ -415,8 +403,11 @@ function find_names_to_put_in_scope(ex::Expr)
 				c = child_name[1]
 				if c isa Symbol
 					xx = (Expr(:., ex.args[1], QuoteNode(c)), child_name[2])
+				elseif c.args[1] isa Symbol
+					xx = (Expr(:., Expr(:., ex.args[1], QuoteNode(c.args[1])), c.args[2]), child_name[2])
 				else
-					xx = (invert_getproperty_accesses(Expr(:., ex.args[1], c)), child_name[2])
+					shift_access!(ex.args[1], c)
+					xx = (c, child_name[2])
 				end
 				push!(names, xx)
 			end
