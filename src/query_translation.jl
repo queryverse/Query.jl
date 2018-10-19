@@ -386,6 +386,7 @@ function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in
 	end
 end
 
+# translates (:a, :((b.c).d)) to :(((a.b).c).d)
 function shift_access!(sym::Symbol, ex::Expr)
 	while ex.args[1] isa Expr
 		ex = ex.args[1]
