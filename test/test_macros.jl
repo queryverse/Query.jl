@@ -14,8 +14,8 @@ using Test
     @test df |> Query.@select(occursin("a")) |> DataFrame == DataFrame(bar=[3.,2.,1.],bat=["a","b","c"])
     @test df |> Query.@select(rangeat(:foo, :bar)) |> DataFrame == DataFrame(foo=[1,2,3], bar=[3.,2.,1.])
 
-    @test df |> Query.@select(startswith("b"), endswith("r")) |> DataFrame == DataFrame(bar=[3.,2.,1.],)
-    @test df |> Query.@select(occursin("o"), startswith("ba")) |> DataFrame == DataFrame()
+    @test df |> Query.@select(:foo, :bar, :bat) |> DataFrame == df
+    @test df |> Query.@select(startswith("f"), endswith("t")) |> DataFrame == DataFrame(foo=[1,2,3], bat=["a","b","c"])
 
 end
 

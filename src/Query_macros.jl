@@ -22,11 +22,11 @@ julia> df |> Query.@select(startswith(:b), -:bar) |> DataFrame
 ```
 """
 macro select(args...)
-    foo = :_
+    prev = NamedTuple()
     for arg in args
         if typeof(arg) == QuoteNode
             # select
-            foo = :( select($foo, Val($(arg))) )
+            prev = :( merge($prev, select(_, Val($(arg)))) )
         else
             arg = string(arg)
             # remove
@@ -37,21 +37,26 @@ macro select(args...)
             # dual-parameter functions
             m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
             if m1 !== nothing
-                foo = :( remove($foo, Val($(QuoteNode(Symbol(m1[1]))))) )
+                if prev == NamedTuple()
+                    prev = :( remove(_, Val($(QuoteNode(Symbol(m1[1]))))) )
+                else
+                    prev = :( remove($prev, Val($(QuoteNode(Symbol(m1[1]))))) )
+                end
             elseif m2 !== nothing
                 if m2[1] == "startswith"
-                    foo = :( startswith($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
+                    prev = :( merge($prev, startswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
                 elseif m2[1] == "endswith"
-                    foo = :( endswith($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
+                    prev = :( merge($prev, endswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
                 elseif m2[1] == "occursin"
-                    foo = :( occursin($foo, Val($(QuoteNode(Symbol(m2[2]))))) )
+                    prev = :( merge($prev, occursin(_, Val($(QuoteNode(Symbol(m2[2])))))) )
                 end
             elseif m3 !== nothing
-                foo = :( range($foo, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3]))))) )
+                prev = :( merge($prev, range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3])))))) )
             end
         end
     end
-    return :(Query.@map( $foo ) )
+
+    return :(Query.@map( $prev ) )
 end
 
 """
@@ -78,24 +83,35 @@ julia> df |> Query.@rename(:foo => :fat, :bar => :ban) |> DataFrame
 ```
 """
 macro rename(args...)
-    foo = :_
+    prev = :_
     for arg in args
         m = match(r"^:(.+) *=> *:(.+)", string(arg))
         m1, m2 = m[1], m[2]
         m1, m2 = strip(m1), strip(m2)
         if m !== nothing
-            foo = :( Query.rename($foo, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
+            prev = :( Query.rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
         end
     end
-    return :(Query.@map( $foo ) )
+    return :(Query.@map( $prev ) )
 end
 
 
 macro mutate(args...)
+    @show args
     foo = :_
     for arg in args
-
+        foo = :( merge($foo, ($arg,)) )
+        @show foo
     end
+    return :( Query.@map( $foo ) )
+    # args = :( [$i for $i in $args] )
+    # @show args
+    # foo = :( Tuple([eval(i) for i in $args]) )
+    # foo = $args)
+    # @show foo
+    # @show args
+    # @show :(( merge(_, map(i->eval(i), $args)) ))
+    # return :(Query.@map( merge(_, map(i->eval(i), $args)) ) )
 end
 
 # Optimize
