@@ -1,3 +1,6 @@
+# Query.jl v0.10.1 Release Notes
+* Fix transparent identifier related bug
+
 # Query.jl v0.10.0 Release Notes
 * Drop julia 0.6 support, add julia 0.7 support
 
