@@ -11,7 +11,7 @@ julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
 │ 2   │ 2     │ 2.0     │ b      │
 │ 3   │ 3     │ 1.0     │ c      │
 
-julia> df |> Query.@select(startswith(:b), -:bar) |> DataFrame
+julia> df |> Query.@select(startswith("b"), -:bar) |> DataFrame
 3×1 DataFrame
 │ Row │ bat    │
 │     │ String │
@@ -33,7 +33,7 @@ macro select(args...)
             m1 = match(r"^-:(.+)", arg)
             #TODO: variable case
             # single-parameter functions
-            m2 = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
+            m2 = match(r"^(startswith|endswith|occursin)\((.+)\)", arg)
             # dual-parameter functions
             m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
             if m1 !== nothing
@@ -44,14 +44,16 @@ macro select(args...)
                 end
             elseif m2 !== nothing
                 if m2[1] == "startswith"
-                    prev = :( merge($prev, startswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
+                    prev = :( merge($prev, startswith(_, Val(Symbol(($(esc(Meta.parse(m2[2])))))))) )
                 elseif m2[1] == "endswith"
-                    prev = :( merge($prev, endswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
+                    prev = :( merge($prev, endswith(_, Val(Symbol(($(esc(Meta.parse(m2[2])))))))) )
                 elseif m2[1] == "occursin"
-                    prev = :( merge($prev, occursin(_, Val($(QuoteNode(Symbol(m2[2])))))) )
+                    prev = :( merge($prev, occursin(_, Val(Symbol(($(esc(Meta.parse(m2[2])))))))) )
                 end
             elseif m3 !== nothing
                 prev = :( merge($prev, range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3])))))) )
+            else
+                throw(ArgumentError("Invalid argument or unsupported feature: "*arg))
             end
         end
     end
