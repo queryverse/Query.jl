@@ -455,6 +455,18 @@ end
 @test q["Sally"]==5
 @test q["Kirk"]==2
 
+q = @from i in source_df begin
+    @let j = i.name
+    @let k = i.children
+    @let l = i.age
+    @select {a=j, b=k, c=l}
+    @collect DataFrame
+end
+
+@test q.a == ["John", "Sally", "Kirk"]
+@test q.b == [3, 5, 2]
+@test q.c == [23., 42., 59.]
+
 @test @count(source_df)==3
 @test @count(source_df, i->i.children>3)==1
 
