@@ -32,6 +32,14 @@ end
         @test !Query.iscall(:(map(1,2,3,4)), :map, 3)
     end
 
+    @testset "shift_access!" begin
+        ex = Expr(:., :c, QuoteNode(:d))
+        Query.shift_access!(:b, ex)
+        @test ex == :((b.c).d)
+        Query.shift_access!(:a, ex)
+        @test ex == :(((a.b).c).d)
+    end
+
 source_df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
 q = @from i in source_df begin
@@ -454,6 +462,18 @@ end
 @test q["John"]==3
 @test q["Sally"]==5
 @test q["Kirk"]==2
+
+q = @from i in source_df begin
+    @let j = i.name
+    @let k = i.children
+    @let l = i.age
+    @select {a=j, b=k, c=l}
+    @collect DataFrame
+end
+
+@test q.a == ["John", "Sally", "Kirk"]
+@test q.b == [3, 5, 2]
+@test q.c == [23., 42., 59.]
 
 @test @count(source_df)==3
 @test @count(source_df, i->i.children>3)==1
