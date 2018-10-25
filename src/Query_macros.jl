@@ -97,23 +97,35 @@ macro rename(args...)
     return :(Query.@map( $prev ) )
 end
 
+"""
+    @mutate(args...)
+Replace all elements in selected columns with specified formulae.
+```
+julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
+3×3 DataFrame
+│ Row │ foo   │ bar     │ bat    │
+│     │ Int64 │ Float64 │ String │
+├─────┼───────┼─────────┼────────┤
+│ 1   │ 1     │ 3.0     │ a      │
+│ 2   │ 2     │ 2.0     │ b      │
+│ 3   │ 3     │ 1.0     │ c      │
 
+julia> df |> Query.@mutate(bar = _.foo + 2 * _.bar, bat = "com" * _.bat) |> DataFrame
+3×3 DataFrame
+│ Row │ foo   │ bar     │ bat    │
+│     │ Int64 │ Float64 │ String │
+├─────┼───────┼─────────┼────────┤
+│ 1   │ 1     │ 7.0     │ coma   │
+│ 2   │ 2     │ 6.0     │ comb   │
+│ 3   │ 3     │ 5.0     │ comc   │
+```
+"""
 macro mutate(args...)
-    @show args
     foo = :_
     for arg in args
-        foo = :( merge($foo, ($arg,)) )
-        @show foo
+        foo = :( merge($foo, ($(esc(arg.args[1])) = $(arg.args[2]),)) )
     end
     return :( Query.@map( $foo ) )
-    # args = :( [$i for $i in $args] )
-    # @show args
-    # foo = :( Tuple([eval(i) for i in $args]) )
-    # foo = $args)
-    # @show foo
-    # @show args
-    # @show :(( merge(_, map(i->eval(i), $args)) ))
-    # return :(Query.@map( merge(_, map(i->eval(i), $args)) ) )
 end
 
 # Optimize
