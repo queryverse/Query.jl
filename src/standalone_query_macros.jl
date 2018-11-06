@@ -182,6 +182,10 @@ macro map(f)
         helper_namedtuples_replacement
 end
 
+macro gather(withIndex = false)
+    :( i -> QueryOperators.gather(QueryOperators.query(i), $(withIndex)))
+end
+
 macro mapmany(source, collectionSelector,resultSelector)
     collectionSelector_as_anonym_func = helper_replace_anon_func_syntax(collectionSelector)
     resultSelector_as_anonym_func = helper_replace_anon_func_syntax(resultSelector)

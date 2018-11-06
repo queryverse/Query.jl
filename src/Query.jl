@@ -16,7 +16,7 @@ import QueryOperators: Enumerable
 export @from, @query, @count, Grouping, key
 
 export @map, @filter, @groupby, @orderby, @orderby_descending,
-	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop
+	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop, @gather
 
 include("query_utils.jl")
 include("query_translation.jl")
