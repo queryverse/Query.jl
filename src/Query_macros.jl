@@ -1,3 +1,5 @@
+using QueryOperators
+
 """
     @select(args...)
 Select columns from a table using commands in order.
@@ -89,7 +91,7 @@ macro rename(args...)
         m1, m2 = m[1], m[2]
         m1, m2 = strip(m1), strip(m2)
         if m !== nothing
-            prev = :( Query.rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
+            prev = :( rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
         end
     end
     return :(Query.@map( $prev ) )
@@ -124,77 +126,4 @@ macro mutate(args...)
         foo = :( merge($foo, ($(esc(arg.args[1])) = $(arg.args[2]),)) )
     end
     return :( Query.@map( $foo ) )
-end
-
-# Optimize
-@generated function select(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
-    names = ((i for i in an if i == bn)...,)
-    types = Tuple{(fieldtype(a, n) for n in names)...}
-    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
-    return :(NamedTuple{$names,$types}(($(vals...),)))
-end
-
-@generated function remove(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
-    names = ((i for i in an if i != bn)...,)
-    types = Tuple{(fieldtype(a, n) for n in names)...}
-    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
-    return :(NamedTuple{$names,$types}(($(vals...),)))
-end
-
-@generated function Base.startswith(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
-    names = ((i for i in an if startswith(String(i), String(bn)))...,)
-    types = Tuple{(fieldtype(a, n) for n in names)...}
-    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
-    return :(NamedTuple{$names,$types}(($(vals...),)))
-end
-
-@generated function Base.endswith(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
-    names = ((i for i in an if endswith(String(i), String(bn)))...,)
-    types = Tuple{(fieldtype(a, n) for n in names)...}
-    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
-    return :(NamedTuple{$names,$types}(($(vals...),)))
-end
-
-@generated function Base.occursin(a::NamedTuple{an}, ::Val{bn}) where {an, bn}
-    names = ((i for i in an if occursin(String(bn), String(i)))...,)
-    types = Tuple{(fieldtype(a, n) for n in names)...}
-    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
-    return :(NamedTuple{$names,$types}(($(vals...),)))
-end
-
-@generated function rename(a::NamedTuple{an}, ::Val{bn}, ::Val{cn}) where {an, bn, cn}
-    names = Symbol[]
-    typesArray = DataType[]
-    vals = Expr[]
-    for n in an
-        if n == bn
-            push!(names, cn)
-        else
-            push!(names, n)
-        end
-        push!(typesArray, fieldtype(a, n))
-        push!(vals, :(getfield(a, $(QuoteNode(n)))))
-    end
-    types = Tuple{typesArray...}
-    return :(NamedTuple{$(names...,),$types}(($(vals...),)))
-end
-
-@generated function Base.range(a::NamedTuple{an}, ::Val{bn}, ::Val{cn}) where {an, bn, cn}
-    rangeStarted = false
-    names = Symbol[]
-    for n in an
-        if n == bn
-            rangeStarted = true
-        end
-        if rangeStarted
-            push!(names, n)
-        end
-        if n == cn
-            rangeStarted = false
-            break
-        end
-    end
-    types = Tuple{(fieldtype(a, n) for n in names)...}
-    vals = Expr[:(getfield(a, $(QuoteNode(n)))) for n in names]
-    return :(NamedTuple{$(names...,),$types}(($(vals...),)))
 end
