@@ -1,5 +1,9 @@
 using QueryOperators
 
+import QueryOperators.NamedTupleUtilities.startswith,
+       QueryOperators.NamedTupleUtilities.endswith,
+       QueryOperators.NamedTupleUtilities.occursin
+
 """
     @select(args...)
 Select columns from a table using commands in order.
@@ -28,7 +32,7 @@ macro select(args...)
     for arg in args
         if typeof(arg) == QuoteNode
             # select
-            prev = :( merge($prev, select(_, Val($(arg)))) )
+            prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
         else
             arg = string(arg)
             # remove
@@ -40,20 +44,20 @@ macro select(args...)
             m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
             if m1 !== nothing
                 if prev == NamedTuple()
-                    prev = :( remove(_, Val($(QuoteNode(Symbol(m1[1]))))) )
+                    prev = :( QueryOperators.NamedTupleUtilities.remove(_, Val($(QuoteNode(Symbol(m1[1]))))) )
                 else
-                    prev = :( remove($prev, Val($(QuoteNode(Symbol(m1[1]))))) )
+                    prev = :( QueryOperators.NamedTupleUtilities.remove($prev, Val($(QuoteNode(Symbol(m1[1]))))) )
                 end
             elseif m2 !== nothing
                 if m2[1] == "startswith"
-                    prev = :( merge($prev, startswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.startswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
                 elseif m2[1] == "endswith"
-                    prev = :( merge($prev, endswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.endswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
                 elseif m2[1] == "occursin"
-                    prev = :( merge($prev, occursin(_, Val($(QuoteNode(Symbol(m2[2])))))) )
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.occursin(_, Val($(QuoteNode(Symbol(m2[2])))))) )
                 end
             elseif m3 !== nothing
-                prev = :( merge($prev, range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3])))))) )
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3])))))) )
             end
         end
     end
@@ -91,7 +95,7 @@ macro rename(args...)
         m1, m2 = m[1], m[2]
         m1, m2 = strip(m1), strip(m2)
         if m !== nothing
-            prev = :( rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
+            prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
         end
     end
     return :(Query.@map( $prev ) )
