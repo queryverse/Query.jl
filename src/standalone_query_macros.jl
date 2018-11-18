@@ -182,8 +182,8 @@ macro map(f)
         helper_namedtuples_replacement
 end
 
-macro gather(withIndex = false)
-    :( i -> QueryOperators.gather(QueryOperators.query(i), $(withIndex)))
+macro gather(args...)
+    :( i -> QueryOperators.gather(QueryOperators.query(i), $(args...)))
 end
 
 macro mapmany(source, collectionSelector,resultSelector)
