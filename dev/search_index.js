@@ -1,7 +1,7 @@
 var documenterSearchIndex = {"docs": [
 
 {
-    "location": "index.html#",
+    "location": "#",
     "page": "Introduction",
     "title": "Introduction",
     "category": "page",
@@ -9,7 +9,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Introduction-1",
+    "location": "#Introduction-1",
     "page": "Introduction",
     "title": "Introduction",
     "category": "section",
@@ -17,7 +17,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Overview-1",
+    "location": "#Overview-1",
     "page": "Introduction",
     "title": "Overview",
     "category": "section",
@@ -25,7 +25,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Installation-1",
+    "location": "#Installation-1",
     "page": "Introduction",
     "title": "Installation",
     "category": "section",
@@ -33,7 +33,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Highlights-1",
+    "location": "#Highlights-1",
     "page": "Introduction",
     "title": "Highlights",
     "category": "section",
@@ -41,7 +41,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted.html#",
+    "location": "gettingstarted/#",
     "page": "Getting Started",
     "title": "Getting Started",
     "category": "page",
@@ -49,7 +49,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted.html#Getting-Started-1",
+    "location": "gettingstarted/#Getting-Started-1",
     "page": "Getting Started",
     "title": "Getting Started",
     "category": "section",
@@ -57,7 +57,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted.html#Result-types-1",
+    "location": "gettingstarted/#Result-types-1",
     "page": "Getting Started",
     "title": "Result types",
     "category": "section",
@@ -65,7 +65,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted.html#Tables-1",
+    "location": "gettingstarted/#Tables-1",
     "page": "Getting Started",
     "title": "Tables",
     "category": "section",
@@ -73,7 +73,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted.html#Missing-values-1",
+    "location": "gettingstarted/#Missing-values-1",
     "page": "Getting Started",
     "title": "Missing values",
     "category": "section",
@@ -81,7 +81,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted.html#Piping-data-through-a-query-1",
+    "location": "gettingstarted/#Piping-data-through-a-query-1",
     "page": "Getting Started",
     "title": "Piping data through a query",
     "category": "section",
@@ -89,7 +89,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#",
+    "location": "querycommands/#",
     "page": "Query Commands",
     "title": "Query Commands",
     "category": "page",
@@ -97,7 +97,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Query-Commands-1",
+    "location": "querycommands/#Query-Commands-1",
     "page": "Query Commands",
     "title": "Query Commands",
     "category": "section",
@@ -105,7 +105,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Sorting-1",
+    "location": "querycommands/#Sorting-1",
     "page": "Query Commands",
     "title": "Sorting",
     "category": "section",
@@ -113,7 +113,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-1",
+    "location": "querycommands/#Example-1",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -121,7 +121,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Filtering-1",
+    "location": "querycommands/#Filtering-1",
     "page": "Query Commands",
     "title": "Filtering",
     "category": "section",
@@ -129,7 +129,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-2",
+    "location": "querycommands/#Example-2",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -137,7 +137,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Projecting-1",
+    "location": "querycommands/#Projecting-1",
     "page": "Query Commands",
     "title": "Projecting",
     "category": "section",
@@ -145,7 +145,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-3",
+    "location": "querycommands/#Example-3",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -153,7 +153,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Flattening-1",
+    "location": "querycommands/#Flattening-1",
     "page": "Query Commands",
     "title": "Flattening",
     "category": "section",
@@ -161,7 +161,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-4",
+    "location": "querycommands/#Example-4",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -169,7 +169,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Joining-1",
+    "location": "querycommands/#Joining-1",
     "page": "Query Commands",
     "title": "Joining",
     "category": "section",
@@ -177,7 +177,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Inner-join-1",
+    "location": "querycommands/#Inner-join-1",
     "page": "Query Commands",
     "title": "Inner join",
     "category": "section",
@@ -185,7 +185,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-5",
+    "location": "querycommands/#Example-5",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -193,7 +193,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Group-join-1",
+    "location": "querycommands/#Group-join-1",
     "page": "Query Commands",
     "title": "Group join",
     "category": "section",
@@ -201,7 +201,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-6",
+    "location": "querycommands/#Example-6",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -209,7 +209,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Left-outer-join-1",
+    "location": "querycommands/#Left-outer-join-1",
     "page": "Query Commands",
     "title": "Left outer join",
     "category": "section",
@@ -217,7 +217,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-7",
+    "location": "querycommands/#Example-7",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -225,7 +225,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Grouping-1",
+    "location": "querycommands/#Grouping-1",
     "page": "Query Commands",
     "title": "Grouping",
     "category": "section",
@@ -233,7 +233,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-8",
+    "location": "querycommands/#Example-8",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -241,7 +241,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Split-Apply-Combine-(a.k.a.-dplyr)-1",
+    "location": "querycommands/#Split-Apply-Combine-(a.k.a.-dplyr)-1",
     "page": "Query Commands",
     "title": "Split-Apply-Combine (a.k.a. dplyr)",
     "category": "section",
@@ -249,7 +249,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-9",
+    "location": "querycommands/#Example-9",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -257,7 +257,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Range-variables-1",
+    "location": "querycommands/#Range-variables-1",
     "page": "Query Commands",
     "title": "Range variables",
     "category": "section",
@@ -265,7 +265,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "querycommands.html#Example-10",
+    "location": "querycommands/#Example-10",
     "page": "Query Commands",
     "title": "Example",
     "category": "section",
@@ -273,7 +273,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#",
+    "location": "sources/#",
     "page": "Data Sources",
     "title": "Data Sources",
     "category": "page",
@@ -281,7 +281,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Data-Sources-1",
+    "location": "sources/#Data-Sources-1",
     "page": "Data Sources",
     "title": "Data Sources",
     "category": "section",
@@ -289,7 +289,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#DataFrame-1",
+    "location": "sources/#DataFrame-1",
     "page": "Data Sources",
     "title": "DataFrame",
     "category": "section",
@@ -297,7 +297,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Example-1",
+    "location": "sources/#Example-1",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -305,7 +305,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#TypedTable-1",
+    "location": "sources/#TypedTable-1",
     "page": "Data Sources",
     "title": "TypedTable",
     "category": "section",
@@ -313,7 +313,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Example-2",
+    "location": "sources/#Example-2",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -321,7 +321,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Arrays-1",
+    "location": "sources/#Arrays-1",
     "page": "Data Sources",
     "title": "Arrays",
     "category": "section",
@@ -329,7 +329,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Example-3",
+    "location": "sources/#Example-3",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -337,7 +337,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#DataStream-1",
+    "location": "sources/#DataStream-1",
     "page": "Data Sources",
     "title": "DataStream",
     "category": "section",
@@ -345,7 +345,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Example-4",
+    "location": "sources/#Example-4",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -353,7 +353,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#IndexedTables-1",
+    "location": "sources/#IndexedTables-1",
     "page": "Data Sources",
     "title": "IndexedTables",
     "category": "section",
@@ -361,7 +361,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Example-5",
+    "location": "sources/#Example-5",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -369,7 +369,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Any-iterable-type-1",
+    "location": "sources/#Any-iterable-type-1",
     "page": "Data Sources",
     "title": "Any iterable type",
     "category": "section",
@@ -377,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources.html#Example-6",
+    "location": "sources/#Example-6",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -385,7 +385,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#",
+    "location": "sinks/#",
     "page": "Data Sinks",
     "title": "Data Sinks",
     "category": "page",
@@ -393,7 +393,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Data-Sinks-1",
+    "location": "sinks/#Data-Sinks-1",
     "page": "Data Sinks",
     "title": "Data Sinks",
     "category": "section",
@@ -401,7 +401,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Array-1",
+    "location": "sinks/#Array-1",
     "page": "Data Sinks",
     "title": "Array",
     "category": "section",
@@ -409,7 +409,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-1",
+    "location": "sinks/#Example-1",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -417,7 +417,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#DataFrame,-DataTable-and-TypedTable-1",
+    "location": "sinks/#DataFrame,-DataTable-and-TypedTable-1",
     "page": "Data Sinks",
     "title": "DataFrame, DataTable and TypedTable",
     "category": "section",
@@ -425,7 +425,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-2",
+    "location": "sinks/#Example-2",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -433,7 +433,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Dict-1",
+    "location": "sinks/#Dict-1",
     "page": "Data Sinks",
     "title": "Dict",
     "category": "section",
@@ -441,7 +441,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-3",
+    "location": "sinks/#Example-3",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -449,7 +449,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#DataStram-sink-1",
+    "location": "sinks/#DataStram-sink-1",
     "page": "Data Sinks",
     "title": "DataStram sink",
     "category": "section",
@@ -457,7 +457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-4",
+    "location": "sinks/#Example-4",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -465,7 +465,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#TimeArray-1",
+    "location": "sinks/#TimeArray-1",
     "page": "Data Sinks",
     "title": "TimeArray",
     "category": "section",
@@ -473,7 +473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-5",
+    "location": "sinks/#Example-5",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -481,7 +481,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Temporal-1",
+    "location": "sinks/#Temporal-1",
     "page": "Data Sinks",
     "title": "Temporal",
     "category": "section",
@@ -489,7 +489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-6",
+    "location": "sinks/#Example-6",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -497,7 +497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#IndexedTable-1",
+    "location": "sinks/#IndexedTable-1",
     "page": "Data Sinks",
     "title": "IndexedTable",
     "category": "section",
@@ -505,7 +505,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks.html#Example-7",
+    "location": "sinks/#Example-7",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -513,7 +513,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#",
+    "location": "experimental/#",
     "page": "Experimental Features",
     "title": "Experimental Features",
     "category": "page",
@@ -521,7 +521,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#Experimental-features-1",
+    "location": "experimental/#Experimental-features-1",
     "page": "Experimental Features",
     "title": "Experimental features",
     "category": "section",
@@ -529,7 +529,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#Standalone-query-operators-1",
+    "location": "experimental/#Standalone-query-operators-1",
     "page": "Experimental Features",
     "title": "Standalone query operators",
     "category": "section",
@@ -537,7 +537,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@map-command-1",
+    "location": "experimental/#The-@map-command-1",
     "page": "Experimental Features",
     "title": "The @map command",
     "category": "section",
@@ -545,7 +545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@filter-command-1",
+    "location": "experimental/#The-@filter-command-1",
     "page": "Experimental Features",
     "title": "The @filter command",
     "category": "section",
@@ -553,7 +553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@groupby-command-1",
+    "location": "experimental/#The-@groupby-command-1",
     "page": "Experimental Features",
     "title": "The @groupby command",
     "category": "section",
@@ -561,7 +561,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1",
+    "location": "experimental/#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1",
     "page": "Experimental Features",
     "title": "The @orderby, @orderby_descending, @thenby and @thenby_descending command",
     "category": "section",
@@ -569,7 +569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@groupjoin-command-1",
+    "location": "experimental/#The-@groupjoin-command-1",
     "page": "Experimental Features",
     "title": "The @groupjoin command",
     "category": "section",
@@ -577,7 +577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@join-command-1",
+    "location": "experimental/#The-@join-command-1",
     "page": "Experimental Features",
     "title": "The @join command",
     "category": "section",
@@ -585,7 +585,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@mapmany-command-1",
+    "location": "experimental/#The-@mapmany-command-1",
     "page": "Experimental Features",
     "title": "The @mapmany command",
     "category": "section",
@@ -593,7 +593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@take-command-1",
+    "location": "experimental/#The-@take-command-1",
     "page": "Experimental Features",
     "title": "The @take command",
     "category": "section",
@@ -601,7 +601,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-@drop-command-1",
+    "location": "experimental/#The-@drop-command-1",
     "page": "Experimental Features",
     "title": "The @drop command",
     "category": "section",
@@ -609,7 +609,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "experimental.html#The-_-and-__-syntax-1",
+    "location": "experimental/#The-_-and-__-syntax-1",
     "page": "Experimental Features",
     "title": "The _ and __ syntax",
     "category": "section",
@@ -617,7 +617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals.html#",
+    "location": "internals/#",
     "page": "Internals",
     "title": "Internals",
     "category": "page",
@@ -625,7 +625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals.html#Internals-1",
+    "location": "internals/#Internals-1",
     "page": "Internals",
     "title": "Internals",
     "category": "section",
@@ -633,7 +633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals.html#Overview-1",
+    "location": "internals/#Overview-1",
     "page": "Internals",
     "title": "Overview",
     "category": "section",
@@ -641,7 +641,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "internals.html#Readings-1",
+    "location": "internals/#Readings-1",
     "page": "Internals",
     "title": "Readings",
     "category": "section",
