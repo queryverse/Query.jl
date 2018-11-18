@@ -23,11 +23,12 @@ println(x)
 # output
 
 3×3 DataFrames.DataFrame
-│ Row │ name    │ age  │ children │
-├─────┼─────────┼──────┼──────────┤
-│ 1   │ "John"  │ 23.0 │ 3        │
-│ 2   │ "Sally" │ 42.0 │ 5        │
-│ 3   │ "Kirk"  │ 59.0 │ 2        │
+│ Row │ name   │ age     │ children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │
 ```
 
 ## TypedTable
@@ -67,14 +68,14 @@ Any array can be a data source for a query. The range variables are of the eleme
 ```jldoctest
 using Query, DataFrames
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end
 
-source = Array{Person}(0)
-push!(source, Person("John", ["Sally", "Miles", "Frank"]))
-push!(source, Person("Sally", ["Don", "Martin"]))
+source = [
+    Person("John", ["Sally", "Miles", "Frank"]),
+    Person("Sally", ["Don", "Martin"])]
 
 result = @from i in source begin
          @where length(i.Friends) > 2
@@ -86,7 +87,7 @@ println(result)
 
 # output
 
-NamedTuples._NT_Name_Friendcount{String,Int64}[(Name = "John", Friendcount = 3)]
+NamedTuple{(:Name, :Friendcount),Tuple{String,Int64}}[(Name = "John", Friendcount = 3)]
 ```
 
 ## DataStream

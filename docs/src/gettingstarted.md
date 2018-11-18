@@ -27,8 +27,9 @@ println(x)
 
 1×2 DataFrames.DataFrame
 │ Row │ name   │ children │
+│     │ String │ Int64    │
 ├─────┼────────┼──────────┤
-│ 1   │ "Kirk" │ 2        │
+│ 1   │ Kirk   │ 2        │
 ```
 
 ## Result types
