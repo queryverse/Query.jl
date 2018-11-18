@@ -12,7 +12,7 @@ println(x)
 
 # output
 
-DataValues.DataValue{String}[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;]</code></pre><h2><a class="nav-anchor" id="DataFrame,-DataTable-and-TypedTable-1" href="#DataFrame,-DataTable-and-TypedTable-1">DataFrame, DataTable and TypedTable</a></h2><p>The statement <code>@collect TableType</code> (with <code>TableType</code> being one of <code>DatFrame</code>, <code>DataTable</code> or <code>TypedTable</code>) will materialize the query results into a new instance of that type. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax.</p><h3><a class="nav-anchor" id="Example-2" href="#Example-2">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
+[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;]</code></pre><h2><a class="nav-anchor" id="DataFrame,-DataTable-and-TypedTable-1" href="#DataFrame,-DataTable-and-TypedTable-1">DataFrame, DataTable and TypedTable</a></h2><p>The statement <code>@collect TableType</code> (with <code>TableType</code> being one of <code>DatFrame</code>, <code>DataTable</code> or <code>TypedTable</code>) will materialize the query results into a new instance of that type. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax.</p><h3><a class="nav-anchor" id="Example-2" href="#Example-2">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
 
@@ -26,16 +26,17 @@ println(x)
 # output
 
 3×3 DataFrames.DataFrame
-│ Row │ name    │ age  │ Children │
-├─────┼─────────┼──────┼──────────┤
-│ 1   │ &quot;John&quot;  │ 23.0 │ 3        │
-│ 2   │ &quot;Sally&quot; │ 42.0 │ 5        │
-│ 3   │ &quot;Kirk&quot;  │ 59.0 │ 2        │</code></pre><h2><a class="nav-anchor" id="Dict-1" href="#Dict-1">Dict</a></h2><p>The statement <code>@collect Dict</code> will materialize the query results into a new <code>Dict</code> instance. This statement only works if the last projection statement transformed the results into a <code>Pair</code>, for example by using the <code>=&gt;</code> syntax.</p><h3><a class="nav-anchor" id="Example-3" href="#Example-3">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
+│ Row │ name   │ age     │ Children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │</code></pre><h2><a class="nav-anchor" id="Dict-1" href="#Dict-1">Dict</a></h2><p>The statement <code>@collect Dict</code> will materialize the query results into a new <code>Dict</code> instance. This statement only works if the last projection statement transformed the results into a <code>Pair</code>, for example by using the <code>=&gt;</code> syntax.</p><h3><a class="nav-anchor" id="Example-3" href="#Example-3">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
 
 x = @from i in df begin
-    @select get(i.name)=&gt;get(i.children)
+    @select i.name=&gt;i.children
     @collect Dict
 end
 
