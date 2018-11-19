@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Overview",
     "category": "section",
-    "text": "Query is a package for querying julia data sources. It can filter, project, join and group data from any iterable data source, including all the sources supported in IterableTables.jl.Query is heavily inspired by LINQ, in fact right now the package is largely an implementation of the LINQ part of the C# specification. Future versions of Query will most likely add features that are not found in the original LINQ design."
+    "text": "Query is a package for querying julia data sources. It can filter, project, join, sort and group data from any iterable data source, including all the sources that support the TableTraits.jl interface (this includes everything listed in IterableTables.jl).Query is heavily inspired by LINQ and dplyr."
 },
 
 {
@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Installation",
     "category": "section",
-    "text": "You can add the package it with:Pkg.add(\"Query\")"
+    "text": "You can install the package at the Pkg REPL-mode with:(v1.0) pkg> add Query"
 },
 
 {
@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Highlights",
     "category": "section",
-    "text": "Query is an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames, DataStreams (including CSV, Feather, SQLite, ODBC), DataTables, IndexedTables, TimeSeries, Temporal, TypedTables, DifferentialEquations (any DESolution), arrays any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames, DataTables, IndexedTables, TimeSeries, Temporal, TypedTables, arrays, dictionaries or any DataStream sink (this includes CSV and Feather files).\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
+    "text": "Query contains an almost complete implementation of the query expression section of the C# specification, with some additional julia specific features added in.\nThe package supports a large number of data sources: DataFrames.jl, Pandas.jl, IndexedTables.jl, JuliaDB.jl, TimeSeries.jl, Temporal.jl, CSVFiles.jl, ExcelFiles.jl, FeatherFiles.jl, ParquetFiles.jl, BedgraphFiles.jl, StatFiles.jl, DifferentialEquations (any DESolution), arrays and any type that can be iterated.\nThe results of a query can be materialized into a range of different data structures: iterators, DataFrames.jl, IndexedTables.jl, JuliaDB.jl, TimeSeries.jl, Temporal.jl, Pandas.jl, StatsModels.jl, CSVFiles.jl, FeatherFiles.jl, ExcelFiles.jl, StatPlots.jl, VegaLite.jl, TableView.jl, DataVoyager.jl, arrays, dictionaries or any array.\nOne can mix and match almost all sources and sinks within one query. For example, one can easily perform a join of a DataFrame with a CSV file and write the results into a Feather file, all within one query.\nThe type instability problems that one can run into with DataFrames do not affect Query, i.e. queries against DataFrames are completely type stable.\nThere are three different APIs that package authors can use to make their data sources queryable with this package. The most simple API only requires a data source to provide an iterator. Another API provides a data source with a complete graph representation of the query and the data source can e.g. rewrite that query graph as a SQL statement to execute the query. The final API allows a data source to provide its own data structures that can represent a query graph.\nThe package is completely documented."
 },
 
 {
@@ -53,7 +53,23 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Getting Started",
     "category": "section",
-    "text": "The basic structure of a query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+    "text": "Query.jl supports two different front-end syntax options: 1) LINQ style queries and 2) standalone query operators that are combined via the pipe operator."
+},
+
+{
+    "location": "gettingstarted/#LINQ-style-queries-1",
+    "page": "Getting Started",
+    "title": "LINQ style queries",
+    "category": "section",
+    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+},
+
+{
+    "location": "gettingstarted/#Standalone-query-operators-1",
+    "page": "Getting Started",
+    "title": "Standalone query operators",
+    "category": "section",
+    "text": "The standalone query operators are typically combined into more complicated queries via the pipe operator. The example from the previous section can also be written like this, using the @filter and @map standalone query operators:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |>\n  @filter(_.age>50) |>\n  @map({_.name, _.children}) |>\n  DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
 },
 
 {
@@ -61,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Result types",
     "category": "section",
-    "text": "A query that is not terminated with a @collect statement will return an iterator that can be used to iterate over the individual elements of the result set. A @collect statement on the other hand materializes the results of a query into a specific data structure, e.g. an array or a DataFrame. The Data Sinks section describes all the available formats for query materialization."
+    "text": "The results of a query can optionally be materialized into a data structure. For LINQ style queries this is done with a @collect statement at the end of the query. For the standalone query option, one can simply pipe things into a data structure type. The Data Sinks section describes all the available formats for query materialization.A query that is not materialized will return an iterator that can be used to iterate over the individual elements of the result set."
 },
 
 {
@@ -69,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Tables",
     "category": "section",
-    "text": "The Query package does not require data sources or sinks to have a table like structure (i.e. rows and columns). When a table like structure is queried, it is treated as a set of NamedTuples, where the set elements correspond to the rows of the source, and the fields of the NamedTuple correspond to the columns. Data sinks that have a table like structure typically require the results of the query to be projected into a NamedTuple. The experimental {} syntax in the Query package provides a simplified way to construct NamedTuples in a @select statement."
+    "text": "The Query package does not require data sources or sinks to have a table like structure (i.e. rows and columns). When a table like structure is queried, it is treated as a set of NamedTuples, where the set elements correspond to the rows of the source, and the fields of the NamedTuple correspond to the columns. Data sinks that have a table like structure typically require the results of the query to be projected into a NamedTuple. The {} syntax in the Query package provides a simplified way to construct NamedTuples in query statements."
 },
 
 {
@@ -81,192 +97,192 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "gettingstarted/#Piping-data-through-a-query-1",
+    "location": "gettingstarted/#Piping-data-through-a-LINQ-style-query-1",
     "page": "Getting Started",
-    "title": "Piping data through a query",
+    "title": "Piping data through a LINQ style query",
     "category": "section",
-    "text": "Queries can also be intgrated into data pipelines that are constructed via the |> operator. Such queries are started with the @query macro instead of the @from macro. The main difference between those two macros is that the @query macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the @query macro looks like this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @query(i, begin\n            @where i.age>50\n            @select {i.name, i.children}\n          end) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │Note how the range variable i is the first argument to the @query macro, and then the second argument is a begin...end block that contains the query operators for the query. Note also that it is recommended to use parenthesis () to call the @query macro, otherwise any continuing pipe operator will not work."
+    "text": "LINQ style queries can also be intgrated into data pipelines that are constructed via the |> operator. Such queries are started with the @query macro instead of the @from macro. The main difference between those two macros is that the @query macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the @query macro looks like this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @query(i, begin\n            @where i.age>50\n            @select {i.name, i.children}\n          end) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │Note how the range variable i is the first argument to the @query macro, and then the second argument is a begin...end block that contains the query operators for the query. Note also that it is recommended to use parenthesis () to call the @query macro, otherwise any continuing pipe operator will not work."
 },
 
 {
-    "location": "querycommands/#",
-    "page": "Query Commands",
-    "title": "Query Commands",
+    "location": "linqquerycommands/#",
+    "page": "LINQ Style Query Commands",
+    "title": "LINQ Style Query Commands",
     "category": "page",
     "text": ""
 },
 
 {
-    "location": "querycommands/#Query-Commands-1",
-    "page": "Query Commands",
-    "title": "Query Commands",
+    "location": "linqquerycommands/#LINQ-Style-Query-Commands-1",
+    "page": "LINQ Style Query Commands",
+    "title": "LINQ Style Query Commands",
     "category": "section",
     "text": ""
 },
 
 {
-    "location": "querycommands/#Sorting-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Sorting-1",
+    "page": "LINQ Style Query Commands",
     "title": "Sorting",
     "category": "section",
     "text": "The @orderby statement sorts the elements from a source by one or more element attributes. The syntax for the @orderby statement is @orderby <attribute>[, <attribute>]. <attribute> can be any julia expression that returns an attribute by which the source elements should be sorted. The default sort order is ascending. By wrapping an <attribute> in a call to descending(<attribute) one can reverse the sort order. The @orderby statement accepts multiple <attribute>s separated by ,s. With multiple sorting attributes, the elements are first sorted by the first attribute. Elements that can\'t be ranked by the first attribute are then sorted by the second attribute etc."
 },
 
 {
-    "location": "querycommands/#Example-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-1",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "using Query, DataFrames\n\ndf = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])\n\nx = @from i in df begin\n    @orderby descending(i.a), i.b\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n6×2 DataFrames.DataFrame\n│ Row │ a     │ b     │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 2     │\n│ 2   │ 2     │ 1     │\n│ 3   │ 2     │ 2     │\n│ 4   │ 1     │ 1     │\n│ 5   │ 1     │ 2     │\n│ 6   │ 1     │ 3     │"
 },
 
 {
-    "location": "querycommands/#Filtering-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Filtering-1",
+    "page": "LINQ Style Query Commands",
     "title": "Filtering",
     "category": "section",
     "text": "The @where statement filters a source so that only those elements are returned that satisfy a filter condition. The syntax for the @where statement is @where <condition>. <condition> can be any arbitrary julia expression that evaluates to true or false."
 },
 
 {
-    "location": "querycommands/#Example-2",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-2",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age > 30. && i.children > 2\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ Sally  │ 42.0    │ 5        │"
 },
 
 {
-    "location": "querycommands/#Projecting-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Projecting-1",
+    "page": "LINQ Style Query Commands",
     "title": "Projecting",
     "category": "section",
     "text": "The @select statement applies a transformation to each element of the source. The syntax for the @select statement is @select <condition>. <condition> can be any arbitrary julia expression that transforms an element from the source into the desired target format."
 },
 
 {
-    "location": "querycommands/#Example-3",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-3",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "The following example transforms each element from the source by squaring it.using Query\n\ndata = [1,2,3]\n\nx = @from i in data begin\n    @select i^2\n    @collect\nend\n\nprintln(x)\n\n# output\n\n[1, 4, 9]One of the most common patterns in Query is to transform elements into named tuples with a @select statement. There are two ways to create a named tuples in Query: a) using the standard syntax from the NamedTuples package, or b) an experimental syntax that only works in a Query @select statement. The experimental syntax is based on curly brackets {}. An example that highlights all options of the experimental syntax is this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, Age=i.age}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ name   │ Age     │\n│     │ String │ Float64 │\n├─────┼────────┼─────────┤\n│ 1   │ John   │ 23.0    │\n│ 2   │ Sally  │ 42.0    │\n│ 3   │ Kirk   │ 59.0    │The elements of the new named tuple are separated by commas ,. One can specify an explicit name for an individual element of a named tuple using the = syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn\'t have to specify a name explicitly, instead the {} syntax automatically infers the name."
+    "text": "The following example transforms each element from the source by squaring it.using Query\n\ndata = [1,2,3]\n\nx = @from i in data begin\n    @select i^2\n    @collect\nend\n\nprintln(x)\n\n# output\n\n[1, 4, 9]One of the most common patterns in Query is to transform elements into named tuples with a @select statement. There are two ways to create a named tuples in Query: a) using the standard syntax from julia for named tuples, or b) a special syntax that only works inside Query.jl macros. This special syntax is based on curly brackets {}. An example that highlights all options of this syntax is this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, Age=i.age}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ name   │ Age     │\n│     │ String │ Float64 │\n├─────┼────────┼─────────┤\n│ 1   │ John   │ 23.0    │\n│ 2   │ Sally  │ 42.0    │\n│ 3   │ Kirk   │ 59.0    │The elements of the new named tuple are separated by commas ,. One can specify an explicit name for an individual element of a named tuple using the = syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn\'t have to specify a name explicitly, instead the {} syntax automatically infers the name."
 },
 
 {
-    "location": "querycommands/#Flattening-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Flattening-1",
+    "page": "LINQ Style Query Commands",
     "title": "Flattening",
     "category": "section",
     "text": "One can project child elements from the elements of a source by using multiple @from statements. The nested child elements are flattened into one stream of results when multiple @from statements are used. The syntax for any additional @from statement (apart from the initial one that starts a query) is @from <range variable> in <selector>. <range variable> is the name of the range variable to be used for the child elements, and <selector> is a julia expression that returns the child elements."
 },
 
 {
-    "location": "querycommands/#Example-4",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-4",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = @from i in source begin\n    @from j in i.second\n    @select {Key=i.first,Value=j}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n5×2 DataFrames.DataFrame\n│ Row │ Key │ Value │\n├─────┼─────┼───────┤\n│ 1   │ a   │ 1     │\n│ 2   │ a   │ 2     │\n│ 3   │ a   │ 3     │\n│ 4   │ b   │ 4     │\n│ 5   │ b   │ 5     │"
+    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = @from i in source begin\n    @from j in i.second\n    @select {Key=i.first,Value=j}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n5×2 DataFrames.DataFrame\n│ Row │ Key    │ Value │\n│     │ Symbol │ Int64 │\n├─────┼────────┼───────┤\n│ 1   │ a      │ 1     │\n│ 2   │ a      │ 2     │\n│ 3   │ a      │ 3     │\n│ 4   │ b      │ 4     │\n│ 5   │ b      │ 5     │"
 },
 
 {
-    "location": "querycommands/#Joining-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Joining-1",
+    "page": "LINQ Style Query Commands",
     "title": "Joining",
     "category": "section",
     "text": "The @join statement combines data from two different sources. There are two variants of the statement: an inner join and a group join. The @left_outer_join statement provides a traditional left outer join option."
 },
 
 {
-    "location": "querycommands/#Inner-join-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Inner-join-1",
+    "page": "LINQ Style Query Commands",
     "title": "Inner join",
     "category": "section",
     "text": "The syntax for an inner join is @join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values."
 },
 
 {
-    "location": "querycommands/#Example-5",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-5",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ a     │ b       │ c     │ d      │\n│     │ Int64 │ Float64 │ Int64 │ String │\n├─────┼───────┼─────────┼───────┼────────┤\n│ 1   │ 2     │ 2.0     │ 2     │ John   │\n│ 2   │ 2     │ 2.0     │ 2     │ Sally  │"
 },
 
 {
-    "location": "querycommands/#Group-join-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Group-join-1",
+    "page": "LINQ Style Query Commands",
     "title": "Group join",
     "category": "section",
     "text": "The syntax for a group join is @join <range variable> in <source> on <left key> equals <right key> into <group variable>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. <group variable> is the name of the variable that will hold all the elements from the right source that are joined to a given element from the left source."
 },
 
 {
-    "location": "querycommands/#Example-6",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-6",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c into k\n    @select {t1=i.a,t2=length(k)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ t1    │ t2    │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 1     │ 0     │\n│ 2   │ 2     │ 2     │\n│ 3   │ 3     │ 0     │"
 },
 
 {
-    "location": "querycommands/#Left-outer-join-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Left-outer-join-1",
+    "page": "LINQ Style Query Commands",
     "title": "Left outer join",
     "category": "section",
     "text": "They syntax for a left outer join is @left_outer_join <range variable> in <source> on <left key> equals <right key>. <range variable> is the name of the variable that should reference elements from the right source in the join. <source> is the name of the right source in the join operation. <left key> and <right key> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don\'t have any corresponding element in the right source, <range variable> is assigned the default value returned by the default_if_empty function based on the element types of <source>. If the right source has elements of type NamedTuple, and the fields of that named tuple are all of type DataValue, then an instance of that named tuple with all fields having NA values will be used."
 },
 
 {
-    "location": "querycommands/#Example-7",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-7",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\nsource_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\nsource_df2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nq = @from i in source_df1 begin\n    @left_outer_join j in source_df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n4×4 DataFrames.DataFrame\n│ Row │ a │ b   │ c  │ d       │\n├─────┼───┼─────┼────┼─────────┤\n│ 1   │ 1 │ 1.0 │ NA │ NA      │\n│ 2   │ 2 │ 2.0 │ 2  │ \"John\"  │\n│ 3   │ 2 │ 2.0 │ 2  │ \"Sally\" │\n│ 4   │ 3 │ 3.0 │ NA │ NA      │"
+    "text": "using Query, DataFrames\n\nsource_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\nsource_df2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nq = @from i in source_df1 begin\n    @left_outer_join j in source_df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n4×4 DataFrames.DataFrame\n│ Row │ a     │ b       │ c       │ d       │\n│     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │\n├─────┼───────┼─────────┼─────────┼─────────┤\n│ 1   │ 1     │ 1.0     │ missing │ missing │\n│ 2   │ 2     │ 2.0     │ 2       │ John    │\n│ 3   │ 2     │ 2.0     │ 2       │ Sally   │\n│ 4   │ 3     │ 3.0     │ missing │ missing │"
 },
 
 {
-    "location": "querycommands/#Grouping-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Grouping-1",
+    "page": "LINQ Style Query Commands",
     "title": "Grouping",
     "category": "section",
     "text": "The @group statement groups elements from the source by some attribute. The syntax for the group statement is @group <element selector> by <key selector> [into <range variable>]. <element selector> is an arbitrary julia expression that determines the content of the group elements. <key selector> is an arbitrary julia expression that returns the values by which the elements are grouped. A @group statement without an into clause ends a query statement, i.e. no further @select statement is needed. When a @group statement has an into clause, the <range variable> sets the name of the range variable for the groups, and further query statements can operate on these groups by referencing that range variable."
 },
 
 {
-    "location": "querycommands/#Example-8",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-8",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nGrouping{Int64,String}[[\"John\"], [\"Sally\", \"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=key(g),Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key   │ Count │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 1     │\n│ 2   │ 2     │ 2     │"
 },
 
 {
-    "location": "querycommands/#Split-Apply-Combine-(a.k.a.-dplyr)-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Split-Apply-Combine-(a.k.a.-dplyr)-1",
+    "page": "LINQ Style Query Commands",
     "title": "Split-Apply-Combine (a.k.a. dplyr)",
     "category": "section",
-    "text": "Query.jl provides special syntax to summarise data in a Query.Grouping as above. Summarising here is synonymous to aggregating or collapsing the dataset over a certain grouping variable. Summarising thus requires an aggregating function like mean, maximum, or any other function that takes a vector and returns a scalar. The special syntax is @select new_var = agg_fun(g.var), where agg_fun is your aggregation function (e.g. mean), g is your grouping, and var is the relevant column that you want to summarise."
+    "text": "Query.jl provides special syntax to summarize data in a Query.Grouping as above. Summarizing here is synonymous to aggregating or collapsing the dataset over a certain grouping variable. Summarizing thus requires an aggregating function like mean, maximum, or any other function that takes a vector and returns a scalar. The special syntax is @select new_var = agg_fun(g.var), where agg_fun is your aggregation function (e.g. mean), g is your grouping, and var is the relevant column that you want to summarize."
 },
 
 {
-    "location": "querycommands/#Example-9",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-9",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "using Query, DataFrames, Statistics\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ group  │ mage    │ oldest  │ youngest │\n│     │ Symbol │ Float64 │ Float64 │ Float64  │\n├─────┼────────┼─────────┼─────────┼──────────┤\n│ 1   │ a      │ 20.0    │ 30.0    │ 10.0     │\n│ 2   │ b      │ 23.0    │ 33.0    │ 13.0     │"
 },
 
 {
-    "location": "querycommands/#Range-variables-1",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Range-variables-1",
+    "page": "LINQ Style Query Commands",
     "title": "Range variables",
     "category": "section",
     "text": "The @let statement introduces new range variables in a query expression. The syntax for the range statement is @let <range variable> = <value selector>. <range variable> specifies the name of the new range variable and <value selector> is any julia expression that returns the value that should be assigned to the new range variable."
 },
 
 {
-    "location": "querycommands/#Example-10",
-    "page": "Query Commands",
+    "location": "linqquerycommands/#Example-10",
+    "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
     "text": "using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @let count = length(i.name)\n    @let kids_per_year = i.children / i.age\n    @where count > 4\n    @select {Name=i.name, Count=count, KidsPerYear=kids_per_year}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ Name   │ Count │ KidsPerYear │\n│     │ String │ Int64 │ Float64     │\n├─────┼────────┼───────┼─────────────┤\n│ 1   │ Sally  │ 5     │ 0.047619    │"
@@ -317,7 +333,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames, TypedTables\n\ntt = @Table(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in tt begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name    │ age  │ children │\n├─────┼─────────┼──────┼──────────┤\n│ 1   │ \"John\"  │ 23.0 │ 3        │\n│ 2   │ \"Sally\" │ 42.0 │ 5        │\n│ 3   │ \"Kirk\"  │ 59.0 │ 2        │"
+    "text": "using Query, DataFrames, TypedTables\n\ntt = Table(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in tt begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
 },
 
 {
@@ -337,22 +353,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources/#DataStream-1",
-    "page": "Data Sources",
-    "title": "DataStream",
-    "category": "section",
-    "text": "Any DataStream source can be a source in a query. This includes CSV.jl, Feather.jl and SQLite.jl sources (these are currenlty tested as part of Query.jl). Individual rows of these sources are represented as NamedTuple elements that have fields for all the columns of the data source. DataStreams sources are implemented as Enumerable data sources and can therefore be combined with any other Enumerable data source in a single query."
-},
-
-{
-    "location": "sources/#Example-4",
-    "page": "Data Sources",
-    "title": "Example",
-    "category": "section",
-    "text": "This example reads a CSV file:using Query, DataStreams, CSV\n\nq = @from i in CSV.Source(joinpath(Pkg.dir(\"Query\"),\"example\", \"data.csv\")) begin\n    @where i.Children > 2\n    @select i.Name\n    @collect\nend\n\nprintln(q)\n\n# output\n\nDataValues.DataValue{String}[\"John\", \"Kirk\"]This example reads a Feather file:using Query, DataStreams, Feather\n\nq = @from i in Feather.Source(joinpath(Pkg.dir(\"Feather\"),\"test\", \"data\", \"airquality.feather\")) begin\n    @where i.Day==2\n    @select i.Month\n    @collect\nend\n\nprintln(q)\n\n# output\n\nWARNING: This Feather file is old and will not be readable beyond the 0.3.0 release\nDataValues.DataValue{Int32}[5, 6, 7, 8, 9]"
-},
-
-{
     "location": "sources/#IndexedTables-1",
     "page": "Data Sources",
     "title": "IndexedTables",
@@ -361,11 +361,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources/#Example-5",
+    "location": "sources/#Example-4",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, IndexedTables\n\nsource_indexedtable = IndexedTable(Columns(city = [fill(\"New York\",3); fill(\"Boston\",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), Columns(value=[91,89,91,95,83,76]))\n\nq = @from i in source_indexedtable begin\n    @where i.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91, 89, 91]"
+    "text": "using Query, IndexedTables, Dates\n\nsource_indexedtable = table((city=[fill(\"New York\",3); fill(\"Boston\",3)], date=repeat(Date(2016,7,6):Day(1):Date(2016,7,8), 2), value=[91,89,91,95,83,76]))\nq = @from i in source_indexedtable begin\n    @where i.city==\"New York\"\n    @select i.value\n    @collect\nend\n\nprintln(q)\n\n# output\n\n[91, 89, 91]"
 },
 
 {
@@ -377,7 +377,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sources/#Example-6",
+    "location": "sources/#Example-5",
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
@@ -449,22 +449,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks/#DataStram-sink-1",
-    "page": "Data Sinks",
-    "title": "DataStram sink",
-    "category": "section",
-    "text": "If a DataStreams sink is passed to the @collect statement, the results of the query will be written into that sink. The syntax for this is @collect sink, where sink can be any DataStreams sink instance. This statement only works if the last projection statement transformed the results into a NamedTuple, for example by using the {} syntax. Currently sinks of type CSV and Feather are regularly tested."
-},
-
-{
-    "location": "sinks/#Example-4",
-    "page": "Data Sinks",
-    "title": "Example",
-    "category": "section",
-    "text": "[TODO]"
-},
-
-{
     "location": "sinks/#TimeArray-1",
     "page": "Data Sinks",
     "title": "TimeArray",
@@ -473,7 +457,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks/#Example-5",
+    "location": "sinks/#Example-4",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -489,7 +473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks/#Example-6",
+    "location": "sinks/#Example-5",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
@@ -505,7 +489,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "sinks/#Example-7",
+    "location": "sinks/#Example-6",
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
