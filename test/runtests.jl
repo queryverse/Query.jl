@@ -493,5 +493,6 @@ q = collect(@map(source_df, i->i.children))
 
 include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
+include("test_macros.jl")
 
 end
