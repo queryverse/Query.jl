@@ -377,7 +377,7 @@ function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in
 	for (i,child_ex) in enumerate(ex.args)
 		if isa(child_ex, Expr)
 			replace_transparent_identifier_in_anonym_func(child_ex, names_to_put_in_scope)
-		elseif isa(child_ex, Symbol)
+		elseif isa(child_ex, Symbol) && !(ex.head == :(=) && i==1) # Don't replace names if they appear to the left of an assignment
 			index_of_name = findfirst(j->child_ex==j[2], names_to_put_in_scope)
 			if index_of_name!==nothing && !(ex.head==Symbol("=>") && i==1)
 				ex.args[i] = Expr(:., names_to_put_in_scope[index_of_name][1], QuoteNode(child_ex))
