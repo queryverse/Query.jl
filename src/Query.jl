@@ -18,6 +18,8 @@ export @from, @query, @count, Grouping, key
 export @map, @filter, @groupby, @orderby, @orderby_descending,
 	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop
 
+export @select, @rename, @mutate
+
 include("query_utils.jl")
 include("query_translation.jl")
 include("standalone_query_macros.jl")

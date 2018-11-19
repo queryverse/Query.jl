@@ -1,14 +1,10 @@
 using QueryOperators
 
-import QueryOperators.NamedTupleUtilities.startswith,
-       QueryOperators.NamedTupleUtilities.endswith,
-       QueryOperators.NamedTupleUtilities.occursin
-
 """
     @select(args...)
 Select columns from a table using commands in order.
 ```
-julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
+julia> df = DataFrame(foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"])
 3×3 DataFrame
 │ Row │ foo   │ bar     │ bat    │
 │     │ Int64 │ Float64 │ String │
@@ -17,7 +13,7 @@ julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
 │ 2   │ 2     │ 2.0     │ b      │
 │ 3   │ 3     │ 1.0     │ c      │
 
-julia> df |> Query.@select(startswith("b"), -:bar) |> DataFrame
+julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 3×1 DataFrame
 │ Row │ bat    │
 │     │ String │
@@ -69,7 +65,7 @@ end
     @rename(args...)
 Replace column names in a table with new given names.
 ```
-julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
+julia> df = DataFrame(foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"])
 3×3 DataFrame
 │ Row │ foo   │ bar     │ bat    │
 │     │ Int64 │ Float64 │ String │
@@ -78,7 +74,7 @@ julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
 │ 2   │ 2     │ 2.0     │ b      │
 │ 3   │ 3     │ 1.0     │ c      │
 
-julia> df |> Query.@rename(:foo => :fat, :bar => :ban) |> DataFrame
+julia> df |> @rename(:foo => :fat, :bar => :ban) |> DataFrame
 3×3 DataFrame
 │ Row │ fat   │ ban     │ bat    │
 │     │ Int64 │ Float64 │ String │
@@ -105,7 +101,7 @@ end
     @mutate(args...)
 Replace all elements in selected columns with specified formulae.
 ```
-julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
+julia> df = DataFrame(foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"])
 3×3 DataFrame
 │ Row │ foo   │ bar     │ bat    │
 │     │ Int64 │ Float64 │ String │
@@ -114,7 +110,7 @@ julia> df = (foo=[1,2,3], bar=[3.0,2.0,1.0], bat=["a","b","c"]) |> DataFrame
 │ 2   │ 2     │ 2.0     │ b      │
 │ 3   │ 3     │ 1.0     │ c      │
 
-julia> df |> Query.@mutate(bar = _.foo + 2 * _.bar, bat = "com" * _.bat) |> DataFrame
+julia> df |> @mutate(bar = _.foo + 2 * _.bar, bat = "com" * _.bat) |> DataFrame
 3×3 DataFrame
 │ Row │ foo   │ bar     │ bat    │
 │     │ Int64 │ Float64 │ String │
