@@ -1,7 +1,7 @@
-function Base.collect(enumerable::Enumerable, ::Type{T}) where {T}
+function Base.collect(enumerable::QueryOperators.Enumerable, ::Type{T}) where {T}
     return T(enumerable)
 end
 
-function Base.collect(enumerable::Enumerable, f::Function)
+function Base.collect(enumerable::QueryOperators.Enumerable, f::Function)
     return f(enumerable)
 end
