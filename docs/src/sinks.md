@@ -77,14 +77,6 @@ println(x)
 Dict("Sally"=>5,"John"=>3,"Kirk"=>2)
 ````
 
-## DataStram sink
-
-If a `DataStreams` sink is passed to the `@collect` statement, the results of the query will be written into that sink. The syntax for this is `@collect sink`, where `sink` can be any DataStreams sink instance. This statement only works if the last projection statement transformed the results into a `NamedTuple`, for example by using the `{}` syntax. Currently sinks of type `CSV` and `Feather` are regularly tested.
-
-### Example
-
-[TODO]
-
 ## TimeArray
 
 The statement `@collect TimeArray` will materialize the query results into

@@ -1,4 +1,4 @@
-# Query Commands
+# LINQ Style Query Commands
 
 ## Sorting
 
@@ -85,7 +85,7 @@ println(x)
 
 [1, 4, 9]
 ```
-One of the most common patterns in Query is to transform elements into [named tuples](https://github.com/blackrock/NamedTuples.jl) with a `@select` statement. There are two ways to create a [named tuples](https://github.com/blackrock/NamedTuples.jl) in Query: a) using the standard syntax from the [NamedTuples](https://github.com/blackrock/NamedTuples.jl) package, or b) an experimental syntax that *only* works in a Query `@select` statement. The experimental syntax is based on curly brackets `{}`. An example that highlights all options of the experimental syntax is this:
+One of the most common patterns in Query is to transform elements into named tuples with a `@select` statement. There are two ways to create a named tuples in Query: a) using the standard syntax from julia for named tuples, or b) a special syntax that *only* works inside Query.jl macros. This special syntax is based on curly brackets `{}`. An example that highlights all options of this syntax is this:
 
 ```jldoctest
 using Query, DataFrames
@@ -109,6 +109,7 @@ println(x)
 │ 2   │ Sally  │ 42.0    │
 │ 3   │ Kirk   │ 59.0    │
 ```
+
 The elements of the new named tuple are separated by commas `,`. One can specify an explicit name for an individual element of a named tuple using the `=` syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn't have to specify a name explicitly, instead the `{}` syntax automatically infers the name.
 
 ## Flattening
@@ -133,13 +134,14 @@ println(q)
 # output
 
 5×2 DataFrames.DataFrame
-│ Row │ Key │ Value │
-├─────┼─────┼───────┤
-│ 1   │ a   │ 1     │
-│ 2   │ a   │ 2     │
-│ 3   │ a   │ 3     │
-│ 4   │ b   │ 4     │
-│ 5   │ b   │ 5     │
+│ Row │ Key    │ Value │
+│     │ Symbol │ Int64 │
+├─────┼────────┼───────┤
+│ 1   │ a      │ 1     │
+│ 2   │ a      │ 2     │
+│ 3   │ a      │ 3     │
+│ 4   │ b      │ 4     │
+│ 5   │ b      │ 5     │
 ```
 
 ## Joining
@@ -230,12 +232,13 @@ println(q)
 # output
 
 4×4 DataFrames.DataFrame
-│ Row │ a │ b   │ c  │ d       │
-├─────┼───┼─────┼────┼─────────┤
-│ 1   │ 1 │ 1.0 │ NA │ NA      │
-│ 2   │ 2 │ 2.0 │ 2  │ "John"  │
-│ 3   │ 2 │ 2.0 │ 2  │ "Sally" │
-│ 4   │ 3 │ 3.0 │ NA │ NA      │
+│ Row │ a     │ b       │ c       │ d       │
+│     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │
+├─────┼───────┼─────────┼─────────┼─────────┤
+│ 1   │ 1     │ 1.0     │ missing │ missing │
+│ 2   │ 2     │ 2.0     │ 2       │ John    │
+│ 3   │ 2     │ 2.0     │ 2       │ Sally   │
+│ 4   │ 3     │ 3.0     │ missing │ missing │
 ```
 
 ## Grouping
@@ -290,7 +293,7 @@ println(x)
 
 ## Split-Apply-Combine (a.k.a. `dplyr`)
 
-`Query.jl` provides special syntax to summarise data in a `Query.Grouping` as above. *Summarising* here is synonymous to *aggregating* or *collapsing* the dataset over a certain grouping variable. Summarising thus requires an aggregating function like `mean`, `maximum`, or any other function that takes a vector and returns a scalar. The special syntax is `@select new_var = agg_fun(g.var)`, where `agg_fun` is your aggregation function (e.g. `mean`), `g` is your grouping, and `var` is the relevant column that you want to summarise.
+Query.jl provides special syntax to summarize data in a `Query.Grouping` as above. *Summarizing* here is synonymous to *aggregating* or *collapsing* the dataset over a certain grouping variable. Summarizing thus requires an aggregating function like `mean`, `maximum`, or any other function that takes a vector and returns a scalar. The special syntax is `@select new_var = agg_fun(g.var)`, where `agg_fun` is your aggregation function (e.g. `mean`), `g` is your grouping, and `var` is the relevant column that you want to summarize.
 
 #### Example
 
