@@ -17,7 +17,6 @@ include("query_utils.jl")
 include("query_translation.jl")
 include("standalone_query_macros.jl")
 include("table_query_macros.jl")
-include("sinks/sink_type.jl")
 
 macro from(range::Expr, body::Expr)
 	if range.head!=:call || (range.args[1]!=:in && range.args[1]!=in)

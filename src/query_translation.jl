@@ -465,7 +465,7 @@ function query_expression_translation_phase_D(qe)
 			if length(clause.args)==2
 				qe[i-1] = :( collect($previous_clause) )
 			else
-				qe[i-1] = :( collect($previous_clause, $(esc(clause.args[3]))) )
+				qe[i-1] = :( $(esc(clause.args[3]))($previous_clause) )
 			end
 			deleteat!(qe,i)
 		else
