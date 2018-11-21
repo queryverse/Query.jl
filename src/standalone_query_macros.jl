@@ -183,7 +183,18 @@ macro map(f)
 end
 
 macro gather(args...)
-    :( i -> QueryOperators.gather(QueryOperators.query(i), $(args...)))
+    parsedArgs = ()
+    for arg in args
+        # println("arg ", arg)
+        # println("type of arg ", typeof(arg))
+        if typeof(arg) == Expr
+            m1 = match(r"^-:(.+)", string(arg))
+            parsedArgs = (parsedArgs..., :(QueryOperators.Not($(QuoteNode(Symbol(m1[1]))))))
+        else
+            parsedArgs = (parsedArgs..., arg)
+        end
+    end
+    :( i -> QueryOperators.gather(QueryOperators.query(i), $(parsedArgs...)))
 end
 
 macro mapmany(source, collectionSelector,resultSelector)
