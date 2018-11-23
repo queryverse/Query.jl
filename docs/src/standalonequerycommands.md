@@ -239,7 +239,7 @@ println(q)
 
 # output
 
-[1,2,3]
+[1, 2, 3]
 ```
 
 ### The `@drop` command
@@ -259,5 +259,5 @@ println(q)
 
 # output
 
-[4,5]
+[4, 5]
 ```
