@@ -53,15 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Getting Started",
     "category": "section",
-    "text": "Query.jl supports two different front-end syntax options: 1) LINQ style queries and 2) standalone query operators that are combined via the pipe operator."
-},
-
-{
-    "location": "gettingstarted/#LINQ-style-queries-1",
-    "page": "Getting Started",
-    "title": "LINQ style queries",
-    "category": "section",
-    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+    "text": "Query.jl supports two different front-end syntax options: 1) standalone query operators that are combined via the pipe operator and 2) LINQ style queries."
 },
 
 {
@@ -70,6 +62,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Standalone query operators",
     "category": "section",
     "text": "The standalone query operators are typically combined into more complicated queries via the pipe operator. The example from the previous section can also be written like this, using the @filter and @map standalone query operators:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |>\n  @filter(_.age>50) |>\n  @map({_.name, _.children}) |>\n  DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+},
+
+{
+    "location": "gettingstarted/#LINQ-style-queries-1",
+    "page": "Getting Started",
+    "title": "LINQ style queries",
+    "category": "section",
+    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
 },
 
 {
@@ -102,6 +102,174 @@ var documenterSearchIndex = {"docs": [
     "title": "Piping data through a LINQ style query",
     "category": "section",
     "text": "LINQ style queries can also be intgrated into data pipelines that are constructed via the |> operator. Such queries are started with the @query macro instead of the @from macro. The main difference between those two macros is that the @query macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the @query macro looks like this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @query(i, begin\n            @where i.age>50\n            @select {i.name, i.children}\n          end) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │Note how the range variable i is the first argument to the @query macro, and then the second argument is a begin...end block that contains the query operators for the query. Note also that it is recommended to use parenthesis () to call the @query macro, otherwise any continuing pipe operator will not work."
+},
+
+{
+    "location": "standalonequerycommands/#",
+    "page": "Standalone Query Commands",
+    "title": "Standalone Query Commands",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "standalonequerycommands/#Standalone-query-operators-1",
+    "page": "Standalone Query Commands",
+    "title": "Standalone query operators",
+    "category": "section",
+    "text": "The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:using Query, DataFrames, Statistics\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=key(_), b=mean(_.b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrame"
+},
+
+{
+    "location": "standalonequerycommands/#Standalone-query-operators-2",
+    "page": "Standalone Query Commands",
+    "title": "Standalone query operators",
+    "category": "section",
+    "text": "All standalone query commands can either take a source as their first argument, or one can pipe the source into the command, as in the above example. For example, one can either writedf = df |> @groupby(_.a)ordf = @groupby(df, _.a)both forms are equivalent.The remaining arguments of each query demand are command specific.The following discussion will present each command in the version where a source is piped into the command."
+},
+
+{
+    "location": "standalonequerycommands/#The-@map-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @map command",
+    "category": "section",
+    "text": "The @map command has the form source |> @map(element_selector). source can be any source that can be queried. element_selector must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element."
+},
+
+{
+    "location": "standalonequerycommands/#Example-1",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query\n\ndata = [1,2,3]\n\nx = data |> @map(_^2) |> collect\n\nprintln(x)\n\n# output\n\n[1, 4, 9]\n"
+},
+
+{
+    "location": "standalonequerycommands/#The-@filter-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @filter command",
+    "category": "section",
+    "text": "The @filter command has the form source |> @filter(filter_condition). source can be any source that can be queried. filter_condition must be an anonymous function that accepts one element of the element type of the source and returns true if that element should be retained, and false if that element should be filtered out."
+},
+
+{
+    "location": "standalonequerycommands/#Example-2",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @filter(_.age > 30 && _.children > 2) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ Sally  │ 42.0    │ 5        │"
+},
+
+{
+    "location": "standalonequerycommands/#The-@groupby-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @groupby command",
+    "category": "section",
+    "text": "There are two versions of the @groupby command. The simple version has the form source |> @groupby(key_selector). source can be any source that can be queried. key_selector must be an anonymous function that returns a value for each element of source by which the source elements should be grouped.The second variant has the form source |> @groupby(source, key_selector, element_selector). The definition of source and key_selector is the same as in the simple variant. element_selector must be an anonymous function that is applied to each element of the source before that element is placed into a group, i.e. this is a projection function.The return value of @groupby is an iterable of groups. Each group is itself a collection of data rows, and has a key field that is equal to the value the rows were grouped by. Often the next step in the pipeline will be to use @map with a function that acts on each group, summarizing it in a new data row."
+},
+
+{
+    "location": "standalonequerycommands/#Example-3",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = df |>\n    @groupby(_.children) |>\n    @map({Key=key(_), Count=length(_)}) |>\n    DataFrame\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key   │ Count │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 1     │\n│ 2   │ 2     │ 2     │"
+},
+
+{
+    "location": "standalonequerycommands/#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @orderby, @orderby_descending, @thenby and @thenby_descending command",
+    "category": "section",
+    "text": "There are four commands that are used to sort data. Any sorting has to start with either a @orderby or @orderby_descending command. @thenby and @thenby_descending commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.The general sorting command form is source |> @orderby(key_selector). source can be any source than can be queried. key_selector must be an anonymous function that returns a value for each element of source. The elements of the source are then sorted is ascending order by the value returned from the key_selector function. The @orderby_descending command works in the same way, but sorts things in descending order. The @thenby and @thenby_descending command only accept the return value of any of the four sorting commands as their source, otherwise they have the same syntax as the @orderby and @orderby_descending commands."
+},
+
+{
+    "location": "standalonequerycommands/#Example-4",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query, DataFrames\n\ndf = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])\n\nx = df |> @orderby_descending(_.a) |> @thenby(_.b) |> DataFrame\n\nprintln(x)\n\n# output\n\n6×2 DataFrames.DataFrame\n│ Row │ a     │ b     │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 2     │\n│ 2   │ 2     │ 1     │\n│ 3   │ 2     │ 2     │\n│ 4   │ 1     │ 1     │\n│ 5   │ 1     │ 2     │\n│ 6   │ 1     │ 3     │"
+},
+
+{
+    "location": "standalonequerycommands/#The-@groupjoin-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @groupjoin command",
+    "category": "section",
+    "text": "The @groupjoin command has the form outer |> @groupjoin(inner, outer_selector, inner_selector, result_selector). outer and inner can be any source that can be queried. outer_selector and inner_selector must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The result_selector must be an anonymous function that takes two arguments, first the element from the outer source, and second an array of those elements from the second source that are grouped together."
+},
+
+{
+    "location": "standalonequerycommands/#Example-5",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = df1 |> @groupjoin(df2, _.a, _.c, {t1=_.a, t2=length(__)}) |> DataFrame\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ t1    │ t2    │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 1     │ 0     │\n│ 2   │ 2     │ 2     │\n│ 3   │ 3     │ 0     │"
+},
+
+{
+    "location": "standalonequerycommands/#The-@join-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @join command",
+    "category": "section",
+    "text": "The @join command has the form outer |> @join(inner, outer_selector, inner_selector, result_selector). outer and inner can be any source that can be queried. outer_selector and inner_selector must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The result_selector must be an anonymous function that takes two arguments. It will be called for each element in the result set, and the first argument will hold the element from the outer source and the second argument will hold the element from the inner source."
+},
+
+{
+    "location": "standalonequerycommands/#Example-6",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = df1 |> @join(df2, _.a, _.c, {_.a, _.b, __.c, __.d}) |> DataFrame\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ a     │ b       │ c     │ d      │\n│     │ Int64 │ Float64 │ Int64 │ String │\n├─────┼───────┼─────────┼───────┼────────┤\n│ 1   │ 2     │ 2.0     │ 2     │ John   │\n│ 2   │ 2     │ 2.0     │ 2     │ Sally  │"
+},
+
+{
+    "location": "standalonequerycommands/#The-@mapmany-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @mapmany command",
+    "category": "section",
+    "text": "The @mapmany command has the form source |> @mapmany(collection_selector, result_selector). source can be any source that can be queried. collection_selector must be an anonymous function that takes one argument and returns a collection. result_selector must be an anonymous function that takes two arguments. It will be applied to each element of the intermediate collection."
+},
+
+{
+    "location": "standalonequerycommands/#Example-7",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = source |> @mapmany(_.second, {Key=_.first, Value=__}) |> DataFrame\n\nprintln(q)\n\n# output\n\n5×2 DataFrames.DataFrame\n│ Row │ Key    │ Value │\n│     │ Symbol │ Int64 │\n├─────┼────────┼───────┤\n│ 1   │ a      │ 1     │\n│ 2   │ a      │ 2     │\n│ 3   │ a      │ 3     │\n│ 4   │ b      │ 4     │\n│ 5   │ b      │ 5     │"
+},
+
+{
+    "location": "standalonequerycommands/#The-@take-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @take command",
+    "category": "section",
+    "text": "The @take command has the form source |> @take(n). source can be any source that can be queried. n must be an integer, and it specifies how many elements from the beginning of the source should be kept."
+},
+
+{
+    "location": "standalonequerycommands/#Example-8",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query\n\nsource = [1,2,3,4,5]\n\nq = source |> @take(3) |> collect\n\nprintln(q)\n\n# output\n\n[1,2,3]"
+},
+
+{
+    "location": "standalonequerycommands/#The-@drop-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @drop command",
+    "category": "section",
+    "text": "The @drop command has the form source |> @drop(n). source can be any source that can be queried. n must be an integer, and it specifies how many elements from the beginning of the source should be dropped from the results."
+},
+
+{
+    "location": "standalonequerycommands/#Example-9",
+    "page": "Standalone Query Commands",
+    "title": "Example",
+    "category": "section",
+    "text": "using Query\n\nsource = [1,2,3,4,5]\n\nq = source |> @drop(3) |> collect\n\nprintln(q)\n\n# output\n\n[4,5]"
 },
 
 {
