@@ -253,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query\n\nsource = [1,2,3,4,5]\n\nq = source |> @take(3) |> collect\n\nprintln(q)\n\n# output\n\n[1,2,3]"
+    "text": "using Query\n\nsource = [1,2,3,4,5]\n\nq = source |> @take(3) |> collect\n\nprintln(q)\n\n# output\n\n[1, 2, 3]"
 },
 
 {
@@ -269,7 +269,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query\n\nsource = [1,2,3,4,5]\n\nq = source |> @drop(3) |> collect\n\nprintln(q)\n\n# output\n\n[4,5]"
+    "text": "using Query\n\nsource = [1,2,3,4,5]\n\nq = source |> @drop(3) |> collect\n\nprintln(q)\n\n# output\n\n[4, 5]"
 },
 
 {
