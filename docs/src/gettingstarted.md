@@ -1,6 +1,31 @@
 # Getting Started
 
-Query.jl supports two different front-end syntax options: 1) LINQ style queries and 2) standalone query operators that are combined via the pipe operator.
+Query.jl supports two different front-end syntax options: 1) standalone query operators that are combined via the pipe operator and 2) LINQ style queries.
+
+## Standalone query operators
+
+The standalone query operators are typically combined into more complicated queries via the pipe operator. The example from the previous section can also be written like this, using the `@filter` and `@map` standalone query operators:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
+
+x = df |>
+  @filter(_.age>50) |>
+  @map({_.name, _.children}) |>
+  DataFrame
+
+println(x)
+
+# output
+
+1×2 DataFrames.DataFrame
+│ Row │ name   │ children │
+│     │ String │ Int64    │
+├─────┼────────┼──────────┤
+│ 1   │ Kirk   │ 2        │
+```
 
 ## LINQ style queries
 
@@ -36,30 +61,7 @@ println(x)
 │ 1   │ Kirk   │ 2        │
 ```
 
-## Standalone query operators
 
-The standalone query operators are typically combined into more complicated queries via the pipe operator. The example from the previous section can also be written like this, using the `@filter` and `@map` standalone query operators:
-
-```jldoctest
-using Query, DataFrames
-
-df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
-
-x = df |>
-  @filter(_.age>50) |>
-  @map({_.name, _.children}) |>
-  DataFrame
-
-println(x)
-
-# output
-
-1×2 DataFrames.DataFrame
-│ Row │ name   │ children │
-│     │ String │ Int64    │
-├─────┼────────┼──────────┤
-│ 1   │ Kirk   │ 2        │
-```
 
 ## Result types
 
