@@ -33,7 +33,7 @@ The remaining arguments of each query demand are command specific.
 
 The following discussion will present each command in the version where a source is piped into the command.
 
-### The `@map` command
+## The `@map` command
 
 The `@map` command has the form `source |> @map(element_selector)`. `source` can be any source that can be queried. `element_selector` must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element.
 
@@ -54,7 +54,7 @@ println(x)
 
 ```
 
-### The `@filter` command
+## The `@filter` command
 
 The `@filter` command has the form `source |> @filter(filter_condition)`. `source` can be any source that can be queried. `filter_condition` must be an anonymous function that accepts one element of the element type of the source and returns `true` if that element should be retained, and `false` if that element should be filtered out.
 
@@ -78,7 +78,7 @@ println(x)
 │ 1   │ Sally  │ 42.0    │ 5        │
 ```
 
-### The `@groupby` command
+## The `@groupby` command
 
 There are two versions of the `@groupby` command. The simple version has the form `source |> @groupby(key_selector)`. `source` can be any source that can be queried. `key_selector` must be an anonymous function that returns a value for each element of `source` by which the source elements should be grouped.
 
@@ -110,7 +110,7 @@ println(x)
 │ 2   │ 2     │ 2     │
 ```
 
-### The `@orderby`, `@orderby_descending`, `@thenby` and `@thenby_descending` command
+## The `@orderby`, `@orderby_descending`, `@thenby` and `@thenby_descending` command
 
 There are four commands that are used to sort data. Any sorting has to start with either a `@orderby` or `@orderby_descending` command. `@thenby` and `@thenby_descending` commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.
 
@@ -141,7 +141,7 @@ println(x)
 │ 6   │ 1     │ 3     │
 ```
 
-### The `@groupjoin` command
+## The `@groupjoin` command
 
 The `@groupjoin` command has the form `outer |> @groupjoin(inner, outer_selector, inner_selector, result_selector)`. `outer` and `inner` can be any source that can be queried. `outer_selector` and `inner_selector` must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The `result_selector` must be an anonymous function that takes two arguments, first the element from the `outer` source, and second an array of those elements from the second source that are grouped together.
 
@@ -168,7 +168,7 @@ println(x)
 │ 3   │ 3     │ 0     │
 ```
 
-### The `@join` command
+## The `@join` command
 
 The `@join` command has the form `outer |> @join(inner, outer_selector, inner_selector, result_selector)`. `outer` and `inner` can be any source that can be queried. `outer_selector` and `inner_selector` must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The `result_selector` must be an anonymous function that takes two arguments. It will be called for each element in the result set, and the first argument will hold the element from the outer source and the second argument will hold the element from the inner source.
 
@@ -194,7 +194,7 @@ println(x)
 │ 2   │ 2     │ 2.0     │ 2     │ Sally  │
 ```
 
-### The `@mapmany` command
+## The `@mapmany` command
 
 The `@mapmany` command has the form `source |> @mapmany(collection_selector, result_selector)`. `source` can be any source that can be queried. `collection_selector` must be an anonymous function that takes one argument and returns a collection. `result_selector` must be an anonymous function that takes two arguments. It will be applied to each element of the intermediate collection.
 
@@ -222,7 +222,7 @@ println(q)
 │ 5   │ b      │ 5     │
 ```
 
-### The `@take` command
+## The `@take` command
 
 The `@take` command has the form `source |> @take(n)`. `source` can be any source that can be queried. `n` must be an integer, and it specifies how many elements from the beginning of the source should be kept.
 
@@ -242,7 +242,7 @@ println(q)
 [1, 2, 3]
 ```
 
-### The `@drop` command
+## The `@drop` command
 
 The `@drop` command has the form `source |> @drop(n)`. `source` can be any source that can be queried. `n` must be an integer, and it specifies how many elements from the beginning of the source should be dropped from the results.
 
