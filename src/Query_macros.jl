@@ -26,12 +26,14 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 macro select(args...)
     prev = NamedTuple()
     for arg in args
-        #TODO: everything
-        if typeof(arg) == Int
-            # select by index
+        if typeof(arg) == Symbol && (string(arg) == "everything" || string(arg) == "all")
+            # select everything
+            prev = :_
+        elseif typeof(arg) == Int
+            # select by position
             if arg > 0
                 prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
-            # remove by index
+            # remove by position
             elseif arg < 0
                 sel = ifelse(prev == NamedTuple(), :_, prev)
                 prev = :( QueryOperators.NamedTupleUtilities.remove($sel, Val(keys($sel)[-$arg])) )
@@ -43,7 +45,7 @@ macro select(args...)
             arg = string(arg)
             # remove by name
             m_rem = match(r"^-:(.+)", arg)
-            # select by range
+            # select by range, with multiple syntaxes supported
             m_range = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
             m_range_ind = match(r"^([0-9]+) *: *([0-9]+)", arg)
             if m_range == nothing && m_range_ind == nothing
@@ -63,14 +65,9 @@ macro select(args...)
                 prev = :( QueryOperators.NamedTupleUtilities.remove($s, Val($(QuoteNode(Symbol(m_rem[1]))))) )
             elseif m_range !== nothing || m_range_ind !== nothing
                 if m_range_ind !== nothing
-                    #TODO range by index
-                    # m_range = :( (keys(_)[parse($m_range_ind[1], Int)], keys(_)[parse($m_range_ind[2], Int)]) )
                     a = parse(Int, m_range_ind[1])
                     b = parse(Int, m_range_ind[2])
-                    @show a, b
-                    nt = (c = 1, d = 20, e = 5)
-                    @show range(nt, 1, 2)
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, $a, $b)) )
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val(keys(_)[$a]), Val(keys(_)[$b]))) )
                 else
                     prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m_range[1])))), Val($(QuoteNode(Symbol(m_range[2])))))) )
                 end
@@ -128,10 +125,12 @@ macro rename(args...)
     for arg in args
         n = match(r"^(.+) *=> *:(.+)", string(arg))
         try
+            # rename by position
             n1 = parse(Int, n[1])
             n2 = strip(n[2])
             prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val(keys(_)[$n1]), Val($(QuoteNode(Symbol(n2))))) )
         catch
+            # rename by name
             m = match(r"^:(.+) *=> *:(.+)", string(arg))
             m1, m2 = strip(m[1]), strip(m[2])
             if m !== nothing
