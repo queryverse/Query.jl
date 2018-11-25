@@ -26,34 +26,40 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 macro select(args...)
     prev = NamedTuple()
     for arg in args
-        if typeof(arg) == QuoteNode
-            # select
+        if typeof(arg) == Int
+            # select by index
+            if arg > 0
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
+            # remove by index
+            elseif arg < 0
+                s = ifelse(prev == NamedTuple(), :_, prev)
+                prev = :( QueryOperators.NamedTupleUtilities.remove($s, Val(keys($s)[-$arg])) )
+            end
+        elseif typeof(arg) == QuoteNode
+            # select by name
             prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
         else
             arg = string(arg)
-            # remove
+            # remove by name
             m1 = match(r"^-:(.+)", arg)
             #TODO: variable case
             # single-parameter functions
-            m2 = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
+            m3 = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
             # dual-parameter functions
-            m3 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
+            m4 = match(r"^(rangeat)\(:([^,]+), *:([^,]+)\)", arg)
             if m1 !== nothing
-                if prev == NamedTuple()
-                    prev = :( QueryOperators.NamedTupleUtilities.remove(_, Val($(QuoteNode(Symbol(m1[1]))))) )
-                else
-                    prev = :( QueryOperators.NamedTupleUtilities.remove($prev, Val($(QuoteNode(Symbol(m1[1]))))) )
-                end
-            elseif m2 !== nothing
-                if m2[1] == "startswith"
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.startswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
-                elseif m2[1] == "endswith"
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.endswith(_, Val($(QuoteNode(Symbol(m2[2])))))) )
-                elseif m2[1] == "occursin"
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.occursin(_, Val($(QuoteNode(Symbol(m2[2])))))) )
-                end
+                s = ifelse(prev == NamedTuple(), :_, prev)
+                prev = :( QueryOperators.NamedTupleUtilities.remove($s, Val($(QuoteNode(Symbol(m1[1]))))) )
             elseif m3 !== nothing
-                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m3[2])))), Val($(QuoteNode(Symbol(m3[3])))))) )
+                if m3[1] == "startswith"
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.startswith(_, Val($(QuoteNode(Symbol(m3[2])))))) )
+                elseif m3[1] == "endswith"
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.endswith(_, Val($(QuoteNode(Symbol(m3[2])))))) )
+                elseif m3[1] == "occursin"
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.occursin(_, Val($(QuoteNode(Symbol(m3[2])))))) )
+                end
+            elseif m4 !== nothing
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m4[2])))), Val($(QuoteNode(Symbol(m4[3])))))) )
             end
         end
     end
@@ -87,11 +93,17 @@ julia> df |> @rename(:foo => :fat, :bar => :ban) |> DataFrame
 macro rename(args...)
     prev = :_
     for arg in args
-        m = match(r"^:(.+) *=> *:(.+)", string(arg))
-        m1, m2 = m[1], m[2]
-        m1, m2 = strip(m1), strip(m2)
-        if m !== nothing
-            prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
+        n = match(r"^(.+) *=> *:(.+)", string(arg))
+        try
+            n1 = parse(Int, n[1])
+            n2 = strip(n[2])
+            prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val(keys(_)[$n1]), Val($(QuoteNode(Symbol(n2))))) )
+        catch
+            m = match(r"^:(.+) *=> *:(.+)", string(arg))
+            m1, m2 = strip(m[1]), strip(m[2])
+            if m !== nothing
+                prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
+            end
         end
     end
     return :(Query.@map( $prev ) )
