@@ -11,8 +11,9 @@ using Test
     @test DataFrame(df |> @select(-:far)) == df
     @test DataFrame(df |> @select(startswith("b"))) == DataFrame(bar=[3.,2.,1.], bat=["a","b","c"])
     @test DataFrame(df |> @select(endswith("ar"))) == DataFrame(bar=[3.,2.,1.],)
-    @test DataFrame(df |> @select(occursin("a"))) == DataFrame(bar=[3.,2.,1.], bat=["a","b","c"])
+    @test DataFrame(df |> @select(!occursin("a"))) == DataFrame(foo=[1,2,3],)
     @test DataFrame(df |> @select(rangeat(:foo, :bar))) == DataFrame(foo=[1,2,3], bar=[3.,2.,1.])
+    @test_skip DataFrame(df |> @select(2:3)) == DataFrame(bar=[3.,2.,1.], bat=["a","b","c"])
 
     @test DataFrame(df |> @select(:foo, :bar, :bat)) == df
     @test DataFrame(df |> @select(startswith("f"), endswith("t"))) == DataFrame(foo=[1,2,3], bat=["a","b","c"])

@@ -26,14 +26,15 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 macro select(args...)
     prev = NamedTuple()
     for arg in args
+        #TODO: everything
         if typeof(arg) == Int
             # select by index
             if arg > 0
                 prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
             # remove by index
             elseif arg < 0
-                s = ifelse(prev == NamedTuple(), :_, prev)
-                prev = :( QueryOperators.NamedTupleUtilities.remove($s, Val(keys($s)[-$arg])) )
+                sel = ifelse(prev == NamedTuple(), :_, prev)
+                prev = :( QueryOperators.NamedTupleUtilities.remove($sel, Val(keys($sel)[-$arg])) )
             end
         elseif typeof(arg) == QuoteNode
             # select by name
@@ -43,25 +44,55 @@ macro select(args...)
             # remove by name
             m_rem = match(r"^-:(.+)", arg)
             # select by range
-            m_rangen = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
-            m_ranger = match(r"^rangeat\(:([^,]+), *:([^,]+)\)", arg)
+            m_range = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
+            m_range_ind = match(r"^([0-9]+) *: *([0-9]+)", arg)
+            if m_range == nothing && m_range_ind == nothing
+                m_range = match(r"^rangeat\(:([^,]+), *:([^,]+)\)", arg)
+                m_range_ind = match(r"^rangeat\(([0-9]+), *([0-9]+)\)", arg)
+            end
             # select by predicate functions
             m_pred = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
-            m_neg_pred = match(r"^!(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
+            is_neg_pred = false
+            if m_pred == nothing
+                m_pred = match(r"^!\(*(startswith|endswith|occursin)\(\"(.+)\"\)+", arg)
+                is_neg_pred = true
+            end
+
             if m_rem !== nothing
                 s = ifelse(prev == NamedTuple(), :_, prev)
                 prev = :( QueryOperators.NamedTupleUtilities.remove($s, Val($(QuoteNode(Symbol(m_rem[1]))))) )
-            elseif m_rangen !== nothing || m_ranger !== nothing
-                m_range = ifelse(m_rangen !== nothing, m_rangen, m_ranger)
-                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m_range[1])))), Val($(QuoteNode(Symbol(m_range[2])))))) )
-            elseif m_pred !== nothing
-                if m_pred[1] == "startswith"
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.startswith(_, Val($(QuoteNode(Symbol(m_pred[2])))))) )
-                elseif m_pred[1] == "endswith"
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.endswith(_, Val($(QuoteNode(Symbol(m_pred[2])))))) )
-                elseif m_pred[1] == "occursin"
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.occursin(_, Val($(QuoteNode(Symbol(m_pred[2])))))) )
+            elseif m_range !== nothing || m_range_ind !== nothing
+                if m_range_ind !== nothing
+                    #TODO range by index
+                    # m_range = :( (keys(_)[parse($m_range_ind[1], Int)], keys(_)[parse($m_range_ind[2], Int)]) )
+                    a = parse(Int, m_range_ind[1])
+                    b = parse(Int, m_range_ind[2])
+                    @show a, b
+                    nt = (c = 1, d = 20, e = 5)
+                    @show range(nt, 1, 2)
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, $a, $b)) )
+                else
+                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m_range[1])))), Val($(QuoteNode(Symbol(m_range[2])))))) )
                 end
+            elseif m_pred !== nothing
+                if is_neg_pred == false
+                    if m_pred[1] == "startswith"
+                        sel = :( QueryOperators.NamedTupleUtilities.startswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                    elseif m_pred[1] == "endswith"
+                        sel = :( QueryOperators.NamedTupleUtilities.endswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                    elseif m_pred[1] == "occursin"
+                        sel = :( QueryOperators.NamedTupleUtilities.occursin(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                    end
+                else
+                    if m_pred[1] == "startswith"
+                        sel = :( QueryOperators.NamedTupleUtilities.not_startswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                    elseif m_pred[1] == "endswith"
+                        sel = :( QueryOperators.NamedTupleUtilities.not_endswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                    elseif m_pred[1] == "occursin"
+                        sel = :( QueryOperators.NamedTupleUtilities.not_occursin(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                    end
+                end
+                prev = :( merge($prev, $sel) )
             end
         end
     end
