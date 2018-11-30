@@ -26,7 +26,8 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 macro select(args...)
     prev = NamedTuple()
     for arg in args
-        if typeof(arg) == Symbol && (string(arg) == "everything" || string(arg) == "all")
+        #TODO: drop variables with - using predicate functions
+        if typeof(arg) == Expr && (string(arg) == "everything()")
             # select everything
             prev = :_
         elseif typeof(arg) == Int
@@ -45,6 +46,8 @@ macro select(args...)
             arg = string(arg)
             # remove by name
             m_rem = match(r"^-:(.+)", arg)
+            # remove by predicate functions
+            m_rem_pred = match(r"^-\(*(startswith|endswith|occursin)\(\"(.+)\"\)+", arg)
             # select by range, with multiple syntaxes supported
             m_range = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
             m_range_ind = match(r"^([0-9]+) *: *([0-9]+)", arg)
@@ -61,8 +64,17 @@ macro select(args...)
             end
 
             if m_rem !== nothing
-                s = ifelse(prev == NamedTuple(), :_, prev)
-                prev = :( QueryOperators.NamedTupleUtilities.remove($s, Val($(QuoteNode(Symbol(m_rem[1]))))) )
+                prev = ifelse(prev == NamedTuple(), :_, prev)
+                prev = :( QueryOperators.NamedTupleUtilities.remove($prev, Val($(QuoteNode(Symbol(m_rem[1]))))) )
+            elseif m_rem_pred !== nothing
+                prev = ifelse(prev == NamedTuple(), :_, prev)
+                if m_rem_pred[1] == "startswith"
+                    prev = :( QueryOperators.NamedTupleUtilities.not_startswith($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
+                elseif m_rem_pred[1] == "endswith"
+                    prev = :( QueryOperators.NamedTupleUtilities.not_endswith($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
+                elseif m_rem_pred[1] == "occursin"
+                    prev = :( QueryOperators.NamedTupleUtilities.not_occursin($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
+                end
             elseif m_range !== nothing || m_range_ind !== nothing
                 if m_range_ind !== nothing
                     a = parse(Int, m_range_ind[1])
