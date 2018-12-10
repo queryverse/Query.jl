@@ -32,7 +32,7 @@ end
     @test DataFrame(df |> @rename(:bar => :ban, :bat => :far)) == DataFrame(foo=[1,2,3], ban=[3.,2.,1.], far=["a","b","c"])
     @test DataFrame(df |> @rename(:bar => :ban, :ban => :far)) == DataFrame(foo=[1,2,3], far=[3.,2.,1.], bat=["a","b","c"])
     @test DataFrame(df |> @rename(3 => :three)) == DataFrame(foo=[1,2,3], bar=[3.,2.,1.], three=["a","b","c"])
-
+  
     @test DataFrame(df |> @rename(:bar => :far) |> @select(startswith("f"))) == DataFrame(foo=[1,2,3], far=[3.,2.,1.])
 
 end

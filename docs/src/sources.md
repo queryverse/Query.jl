@@ -23,11 +23,12 @@ println(x)
 # output
 
 3×3 DataFrames.DataFrame
-│ Row │ name    │ age  │ children │
-├─────┼─────────┼──────┼──────────┤
-│ 1   │ "John"  │ 23.0 │ 3        │
-│ 2   │ "Sally" │ 42.0 │ 5        │
-│ 3   │ "Kirk"  │ 59.0 │ 2        │
+│ Row │ name   │ age     │ children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │
 ```
 
 ## TypedTable
@@ -39,7 +40,7 @@ The `TypedTables` package provides an alternative implementation of a DataFrame-
 ```jldoctest
 using Query, DataFrames, TypedTables
 
-tt = @Table(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
+tt = Table(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
 x = @from i in tt begin
     @select i
@@ -51,11 +52,12 @@ println(x)
 # output
 
 3×3 DataFrames.DataFrame
-│ Row │ name    │ age  │ children │
-├─────┼─────────┼──────┼──────────┤
-│ 1   │ "John"  │ 23.0 │ 3        │
-│ 2   │ "Sally" │ 42.0 │ 5        │
-│ 3   │ "Kirk"  │ 59.0 │ 2        │
+│ Row │ name   │ age     │ children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │
 ```
 
 ## Arrays
@@ -67,14 +69,14 @@ Any array can be a data source for a query. The range variables are of the eleme
 ```jldoctest
 using Query, DataFrames
 
-immutable Person
+struct Person
     Name::String
     Friends::Vector{String}
 end
 
-source = Array{Person}(0)
-push!(source, Person("John", ["Sally", "Miles", "Frank"]))
-push!(source, Person("Sally", ["Don", "Martin"]))
+source = [
+    Person("John", ["Sally", "Miles", "Frank"]),
+    Person("Sally", ["Don", "Martin"])]
 
 result = @from i in source begin
          @where length(i.Friends) > 2
@@ -86,50 +88,7 @@ println(result)
 
 # output
 
-NamedTuples._NT_Name_Friendcount{String,Int64}[(Name = "John", Friendcount = 3)]
-```
-
-## DataStream
-
-Any `DataStream` source can be a source in a query. This includes CSV.jl, Feather.jl and SQLite.jl sources (these are currenlty tested as part of Query.jl). Individual rows of these sources are represented as `NamedTuple` elements that have fields for all the columns of the data source. `DataStreams` sources are implemented as `Enumerable` data sources and can therefore be combined with any other `Enumerable` data source in a single query.
-
-### Example
-
-This example reads a CSV file:
-
-```jldoctest
-using Query, DataStreams, CSV
-
-q = @from i in CSV.Source(joinpath(Pkg.dir("Query"),"example", "data.csv")) begin
-    @where i.Children > 2
-    @select i.Name
-    @collect
-end
-
-println(q)
-
-# output
-
-DataValues.DataValue{String}["John", "Kirk"]
-```
-
-This example reads a Feather file:
-
-```jldoctest
-using Query, DataStreams, Feather
-
-q = @from i in Feather.Source(joinpath(Pkg.dir("Feather"),"test", "data", "airquality.feather")) begin
-    @where i.Day==2
-    @select i.Month
-    @collect
-end
-
-println(q)
-
-# output
-
-WARNING: This Feather file is old and will not be readable beyond the 0.3.0 release
-DataValues.DataValue{Int32}[5, 6, 7, 8, 9]
+NamedTuple{(:Name, :Friendcount),Tuple{String,Int64}}[(Name = "John", Friendcount = 3)]
 ```
 
 ## IndexedTables
@@ -139,10 +98,9 @@ DataValues.DataValue{Int32}[5, 6, 7, 8, 9]
 ### Example
 
 ```jldoctest
-using Query, IndexedTables
+using Query, IndexedTables, Dates
 
-source_indexedtable = IndexedTable(Columns(city = [fill("New York",3); fill("Boston",3)], date = repmat(Date(2016,7,6):Date(2016,7,8), 2)), Columns(value=[91,89,91,95,83,76]))
-
+source_indexedtable = table((city=[fill("New York",3); fill("Boston",3)], date=repeat(Date(2016,7,6):Day(1):Date(2016,7,8), 2), value=[91,89,91,95,83,76]))
 q = @from i in source_indexedtable begin
     @where i.city=="New York"
     @select i.value

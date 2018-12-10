@@ -1,0 +1,9 @@
+[deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+IndexedTables = "6deec6e2-d858-57c5-ab9b-e6ca5bd20e43"
+Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
+TypedTables = "9d95f2ec-7b3d-5a63-8d20-e2491e220bb9"
+
+[compat]
+Documenter = "~0.20"
