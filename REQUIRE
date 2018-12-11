@@ -1,7 +1,6 @@
 julia 0.7
 TableTraits 0.3.1
-Documenter 0.19.3
 IterableTables 0.8.2
 DataValues 0.4.4
 MacroTools 0.4.4
-QueryOperators 0.4.0
+QueryOperators 0.5.1

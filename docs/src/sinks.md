@@ -22,7 +22,7 @@ println(x)
 
 # output
 
-DataValues.DataValue{String}["John", "Sally", "Kirk"]
+["John", "Sally", "Kirk"]
 ```
 
 ## DataFrame, DataTable and TypedTable
@@ -46,11 +46,12 @@ println(x)
 # output
 
 3×3 DataFrames.DataFrame
-│ Row │ name    │ age  │ Children │
-├─────┼─────────┼──────┼──────────┤
-│ 1   │ "John"  │ 23.0 │ 3        │
-│ 2   │ "Sally" │ 42.0 │ 5        │
-│ 3   │ "Kirk"  │ 59.0 │ 2        │
+│ Row │ name   │ age     │ Children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │
 ```
 
 ## Dict
@@ -65,7 +66,7 @@ using Query, DataFrames
 df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,5,2])
 
 x = @from i in df begin
-    @select get(i.name)=>get(i.children)
+    @select i.name=>i.children
     @collect Dict
 end
 
@@ -75,14 +76,6 @@ println(x)
 
 Dict("Sally"=>5,"John"=>3,"Kirk"=>2)
 ````
-
-## DataStram sink
-
-If a `DataStreams` sink is passed to the `@collect` statement, the results of the query will be written into that sink. The syntax for this is `@collect sink`, where `sink` can be any DataStreams sink instance. This statement only works if the last projection statement transformed the results into a `NamedTuple`, for example by using the `{}` syntax. Currently sinks of type `CSV` and `Feather` are regularly tested.
-
-### Example
-
-[TODO]
 
 ## TimeArray
 
