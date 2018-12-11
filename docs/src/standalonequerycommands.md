@@ -261,3 +261,70 @@ println(q)
 
 [4, 5]
 ```
+
+## The `@select` command
+
+The `@select` command has the form `source |> @select(selectors...)`. `source` can be any source that can be queried. Each selector of `selectors...` can either select elements from `source` and add them to the result set, or select elements from the result set and remove them. A selector may select or remove an element by name, by position, or using a predicate function. All `selectors...` are executed in order and may not commute.
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
+q1 = df |> @select(2:3, occursin("ui"), -:amount) |> DataFrame
+
+println(q1)
+
+# output
+
+3×2 DataFrame
+│ Row │ price   │ fruit  │
+│     │ Float64 │ String │
+├─────┼─────────┼────────┤
+│ 1   │ 1.2     │ Apple  │
+│ 2   │ 2.0     │ Banana │
+│ 3   │ 0.4     │ Cherry │
+```
+
+```jldoctest
+q2 = df |> @select(!endswith("t"), 1) |> DataFrame
+
+println(q2)
+
+# output
+
+3×3 DataFrame
+│ Row │ price   │ isyellow │ fruit  │
+│     │ Float64 │ Bool     │ String │
+├─────┼─────────┼──────────┼────────┤
+│ 1   │ 1.2     │ false    │ Apple  │
+│ 2   │ 2.0     │ true     │ Banana │
+│ 3   │ 0.4     │ false    │ Cherry │
+```
+
+## The `@rename` command
+
+The `@rename` command has the form `source |> @rename(args...)`. `source` can be any source that can be queried. Each argument from `args...` must specify the name or index of the element, as well as the new name for the element. All `args...` are executed in order, and the result set of the previous renaming is the source of each current selector.
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
+q = df |> @rename(:fruit => :food, :price => :cost, :food => :name) |> DataFrame
+
+println(q)
+
+# output
+
+3×4 DataFrame
+│ Row │ name   │ amount │ cost    │ isyellow │
+│     │ String │ Int64  │ Float64 │ Bool     │
+├─────┼────────┼────────┼─────────┼──────────┤
+│ 1   │ Apple  │ 2      │ 1.2     │ false    │
+│ 2   │ Banana │ 6      │ 2.0     │ true     │
+│ 3   │ Cherry │ 1000   │ 0.4     │ false    │
+```
+
+## The `@mutate` command
+The `@mutate` command has the form `source |> @rename(args...)`. `source` can be any source that can be queried.
