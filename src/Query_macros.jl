@@ -26,7 +26,6 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 macro select(args...)
     prev = NamedTuple()
     for arg in args
-        #TODO: drop variables with - using predicate functions
         if typeof(arg) == Expr && (string(arg) == "everything()")
             # select everything
             prev = :_
@@ -44,6 +43,8 @@ macro select(args...)
             prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
         else
             arg = string(arg)
+            # select by element type
+            m_type = match(r":\(:(.+)\)", arg)
             # remove by name
             m_rem = match(r"^-:(.+)", arg)
             # remove by predicate functions
@@ -63,7 +64,10 @@ macro select(args...)
                 is_neg_pred = true
             end
 
-            if m_rem !== nothing
+            # TODO: eltype
+            if m_type !== nothing
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.oftype(_, parse(DataType, @datatype($m_type[1])))) )
+            elseif m_rem !== nothing
                 prev = ifelse(prev == NamedTuple(), :_, prev)
                 prev = :( QueryOperators.NamedTupleUtilities.remove($prev, Val($(QuoteNode(Symbol(m_rem[1]))))) )
             elseif m_rem_pred !== nothing
@@ -177,9 +181,13 @@ julia> df |> @mutate(bar = _.foo + 2 * _.bar, bat = "com" * _.bat) |> DataFrame
 ```
 """
 macro mutate(args...)
-    foo = :_
+    prev = :_
     for arg in args
-        foo = :( merge($foo, ($(esc(arg.args[1])) = $(arg.args[2]),)) )
+        prev = :( merge($prev, ($(esc(arg.args[1])) = $(arg.args[2]),)) )
     end
-    return :( Query.@map( $foo ) )
+    return :( Query.@map( $prev ) )
+end
+
+macro datatype(str)
+    :($(Symbol(str)))
 end
