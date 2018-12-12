@@ -304,7 +304,7 @@ println(q2)
 
 ## The `@rename` command
 
-The `@rename` command has the form `source |> @rename(args...)`. `source` can be any source that can be queried. Each argument from `args...` must specify the name or index of the element, as well as the new name for the element. All `args...` are executed in order, and the result set of the previous renaming is the source of each current selector.
+The `@rename` command has the form `source |> @rename(args...)`. `source` can be any source that can be queried. Each argument from `args...` must specify the name or index of the element, as well as the new name for the element. All `args...` are executed in order, and the result set of the previous renaming is the source of each current operation.
 
 ```jldoctest
 using Query, DataFrames
@@ -327,4 +327,23 @@ println(q)
 ```
 
 ## The `@mutate` command
-The `@mutate` command has the form `source |> @rename(args...)`. `source` can be any source that can be queried.
+The `@mutate` command has the form `source |> @mutate(args...)`. `source` can be any source that can be queried. Each argument from `args...` must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of `source`. All `args...` are executed in order, and the result set of the previous mutation is the source of each current mutation.
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
+q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = fruit == "Apple") |> DataFrame
+
+println(q)
+
+# output
+
+3×4 DataFrame
+│ Row │ fruit  │ amount │ price   │ isyellow │
+│     │ String │ Int64  │ Float64 │ Bool     │
+├─────┼────────┼────────┼─────────┼──────────┤
+│ 1   │ Apple  │ 2      │ 4.4     │ true     │
+│ 2   │ Banana │ 6      │ 10.0    │ false    │
+│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │
+``` 
