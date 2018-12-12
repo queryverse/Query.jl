@@ -16,8 +16,6 @@ export @select, @rename, @mutate
 include("query_utils.jl")
 include("query_translation.jl")
 include("standalone_query_macros.jl")
-include("Query_macros.jl")
-include("sinks/sink_type.jl")
 include("table_query_macros.jl")
 
 macro from(range::Expr, body::Expr)
