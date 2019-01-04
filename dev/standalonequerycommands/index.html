@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Standalone Query Commands · Query.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Query.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Introduction</a></li><li><a class="toctext" href="../gettingstarted/">Getting Started</a></li><li class="current"><a class="toctext" href>Standalone Query Commands</a><ul class="internal"><li><a class="toctext" href="#Standalone-query-operators-2">Standalone query operators</a></li><li><a class="toctext" href="#The-@map-command-1">The <code>@map</code> command</a></li><li><a class="toctext" href="#The-@filter-command-1">The <code>@filter</code> command</a></li><li><a class="toctext" href="#The-@groupby-command-1">The <code>@groupby</code> command</a></li><li><a class="toctext" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1">The <code>@orderby</code>, <code>@orderby_descending</code>, <code>@thenby</code> and <code>@thenby_descending</code> command</a></li><li><a class="toctext" href="#The-@groupjoin-command-1">The <code>@groupjoin</code> command</a></li><li><a class="toctext" href="#The-@join-command-1">The <code>@join</code> command</a></li><li><a class="toctext" href="#The-@mapmany-command-1">The <code>@mapmany</code> command</a></li><li><a class="toctext" href="#The-@take-command-1">The <code>@take</code> command</a></li><li><a class="toctext" href="#The-@drop-command-1">The <code>@drop</code> command</a></li></ul></li><li><a class="toctext" href="../linqquerycommands/">LINQ Style Query Commands</a></li><li><a class="toctext" href="../sources/">Data Sources</a></li><li><a class="toctext" href="../sinks/">Data Sinks</a></li><li><a class="toctext" href="../experimental/">Experimental Features</a></li><li><a class="toctext" href="../internals/">Internals</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Standalone Query Commands</a></li></ul><a class="edit-page" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/standalonequerycommands.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Standalone Query Commands</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Standalone-query-operators-1" href="#Standalone-query-operators-1">Standalone query operators</a></h1><p>The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:</p><pre><code class="language-julia">using Query, DataFrames, Statistics
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Standalone Query Commands · Query.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Query.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Introduction</a></li><li><a class="toctext" href="../gettingstarted/">Getting Started</a></li><li class="current"><a class="toctext" href>Standalone Query Commands</a><ul class="internal"><li><a class="toctext" href="#Standalone-query-operators-2">Standalone query operators</a></li><li><a class="toctext" href="#The-@map-command-1">The <code>@map</code> command</a></li><li><a class="toctext" href="#The-@filter-command-1">The <code>@filter</code> command</a></li><li><a class="toctext" href="#The-@groupby-command-1">The <code>@groupby</code> command</a></li><li><a class="toctext" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1">The <code>@orderby</code>, <code>@orderby_descending</code>, <code>@thenby</code> and <code>@thenby_descending</code> command</a></li><li><a class="toctext" href="#The-@groupjoin-command-1">The <code>@groupjoin</code> command</a></li><li><a class="toctext" href="#The-@join-command-1">The <code>@join</code> command</a></li><li><a class="toctext" href="#The-@mapmany-command-1">The <code>@mapmany</code> command</a></li><li><a class="toctext" href="#The-@take-command-1">The <code>@take</code> command</a></li><li><a class="toctext" href="#The-@drop-command-1">The <code>@drop</code> command</a></li><li><a class="toctext" href="#The-@select-command-1">The <code>@select</code> command</a></li><li><a class="toctext" href="#The-@rename-command-1">The <code>@rename</code> command</a></li><li><a class="toctext" href="#The-@mutate-command-1">The <code>@mutate</code> command</a></li></ul></li><li><a class="toctext" href="../linqquerycommands/">LINQ Style Query Commands</a></li><li><a class="toctext" href="../sources/">Data Sources</a></li><li><a class="toctext" href="../sinks/">Data Sinks</a></li><li><a class="toctext" href="../experimental/">Experimental Features</a></li><li><a class="toctext" href="../internals/">Internals</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Standalone Query Commands</a></li></ul><a class="edit-page" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/standalonequerycommands.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Standalone Query Commands</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Standalone-query-operators-1" href="#Standalone-query-operators-1">Standalone query operators</a></h1><p>The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:</p><pre><code class="language-julia">using Query, DataFrames, Statistics
 
 df = DataFrame(a=[1,1,2,3], b=[4,5,6,8])
 
@@ -141,4 +141,64 @@ println(q)
 
 # output
 
-[4, 5]</code></pre><footer><hr/><a class="previous" href="../gettingstarted/"><span class="direction">Previous</span><span class="title">Getting Started</span></a><a class="next" href="../linqquerycommands/"><span class="direction">Next</span><span class="title">LINQ Style Query Commands</span></a></footer></article></body></html>
+[4, 5]</code></pre><h2><a class="nav-anchor" id="The-@select-command-1" href="#The-@select-command-1">The <code>@select</code> command</a></h2><p>The <code>@select</code> command has the form <code>source |&gt; @select(selectors...)</code>. <code>source</code> can be any source that can be queried. Each selector of <code>selectors...</code> can either select elements from <code>source</code> and add them to the result set, or select elements from the result set and remove them. A selector may select or remove an element by name, by position, or using a predicate function. All <code>selectors...</code> are executed in order and may not commute.</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
+q1 = df |&gt; @select(2:3, occursin(&quot;ui&quot;), -:amount) |&gt; DataFrame
+
+println(q1)
+
+# output
+
+3×2 DataFrame
+│ Row │ price   │ fruit  │
+│     │ Float64 │ String │
+├─────┼─────────┼────────┤
+│ 1   │ 1.2     │ Apple  │
+│ 2   │ 2.0     │ Banana │
+│ 3   │ 0.4     │ Cherry │</code></pre><pre><code class="language-julia">q2 = df |&gt; @select(!endswith(&quot;t&quot;), 1) |&gt; DataFrame
+
+println(q2)
+
+# output
+
+3×3 DataFrame
+│ Row │ price   │ isyellow │ fruit  │
+│     │ Float64 │ Bool     │ String │
+├─────┼─────────┼──────────┼────────┤
+│ 1   │ 1.2     │ false    │ Apple  │
+│ 2   │ 2.0     │ true     │ Banana │
+│ 3   │ 0.4     │ false    │ Cherry │</code></pre><h2><a class="nav-anchor" id="The-@rename-command-1" href="#The-@rename-command-1">The <code>@rename</code> command</a></h2><p>The <code>@rename</code> command has the form <code>source |&gt; @rename(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name or index of the element, as well as the new name for the element. All <code>args...</code> are executed in order, and the result set of the previous renaming is the source of each current operation.</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
+q = df |&gt; @rename(:fruit =&gt; :food, :price =&gt; :cost, :food =&gt; :name) |&gt; DataFrame
+
+println(q)
+
+# output
+
+3×4 DataFrame
+│ Row │ name   │ amount │ cost    │ isyellow │
+│     │ String │ Int64  │ Float64 │ Bool     │
+├─────┼────────┼────────┼─────────┼──────────┤
+│ 1   │ Apple  │ 2      │ 1.2     │ false    │
+│ 2   │ Banana │ 6      │ 2.0     │ true     │
+│ 3   │ Cherry │ 1000   │ 0.4     │ false    │</code></pre><h2><a class="nav-anchor" id="The-@mutate-command-1" href="#The-@mutate-command-1">The <code>@mutate</code> command</a></h2><p>The <code>@mutate</code> command has the form <code>source |&gt; @mutate(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of <code>source</code>. All <code>args...</code> are executed in order, and the result set of the previous mutation is the source of each current mutation.</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
+q = df |&gt; @mutate(price = 2 * _.price + _.amount, isyellow = fruit == &quot;Apple&quot;) |&gt; DataFrame
+
+println(q)
+
+# output
+
+3×4 DataFrame
+│ Row │ fruit  │ amount │ price   │ isyellow │
+│     │ String │ Int64  │ Float64 │ Bool     │
+├─────┼────────┼────────┼─────────┼──────────┤
+│ 1   │ Apple  │ 2      │ 4.4     │ true     │
+│ 2   │ Banana │ 6      │ 10.0    │ false    │
+│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │</code></pre><footer><hr/><a class="previous" href="../gettingstarted/"><span class="direction">Previous</span><span class="title">Getting Started</span></a><a class="next" href="../linqquerycommands/"><span class="direction">Next</span><span class="title">LINQ Style Query Commands</span></a></footer></article></body></html>
