@@ -1,5 +1,5 @@
 # Query.jl v0.11.0 Release Notes
-* Add @select, @rename and @mutate standalone macros
+* Add @unique, @select, @rename and @mutate standalone macros
 * Fix all doctest errors
 * Various bugfixes
 
