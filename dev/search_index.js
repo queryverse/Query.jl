@@ -273,6 +273,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "standalonequerycommands/#The-@unique-command-1",
+    "page": "Standalone Query Commands",
+    "title": "The @unique command",
+    "category": "section",
+    "text": "The @unique command has the formsource |> @unique().source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation."
+},
+
+{
+    "location": "standalonequerycommands/#Exmample-1",
+    "page": "Standalone Query Commands",
+    "title": "Exmample",
+    "category": "section",
+    "text": "using Query\n\nsource = [1,1,2,2,3]\n\nq = source |> @unique() |> collect\n\nprintln(q)\n\n# output\n\n[1, 2, 3]"
+},
+
+{
     "location": "standalonequerycommands/#The-@select-command-1",
     "page": "Standalone Query Commands",
     "title": "The @select command",
@@ -710,6 +726,14 @@ var documenterSearchIndex = {"docs": [
     "title": "The _ and __ syntax",
     "category": "section",
     "text": "This syntax only works in the standalone query commands. Instead of writing a full anonymous function, for example @map(i->i.a), one can write @map(_.a), where _ stands for the current element, i.e. has the same role as the argument of the anonymous function.If one uses both _ and __, Query will automatically create an anonymous function with two arguments. For example, the result selector in the @join command requires an anonymous function that takes two arguments. This can be written succinctly like this:using DataFrames, Query\n\ndf_parents = DataFrame(Name=[\"John\", \"Sally\"])\ndf_children = DataFrame(Name=[\"Bill\", \"Joe\", \"Mary\"], Parent=[\"John\", \"John\", \"Sally\"])\n\ndf_parents |> @join(df_children, _.Name, _.Parent, {Parent=_.Name, Child=__.Name}) |> DataFrame"
+},
+
+{
+    "location": "experimental/#Key-selector-in-the-@unique-standalone-command-1",
+    "page": "Experimental Features",
+    "title": "Key selector in the @unique standalone command",
+    "category": "section",
+    "text": "As an experimental feature, one can specify a key selector for the @unique command. In that case uniqueness is tested based on that key.using Query\n\nsource = [1,-1,2,2,3]\n\nq = source |> @unique(abs(_)) |> collect\n\nprintln(q)\n\n# output\n\n[1, 2, 3]"
 },
 
 {
