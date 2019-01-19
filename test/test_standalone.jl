@@ -44,4 +44,11 @@ end
     @test df2[:c] == ["b","c"]
 end
 
+@testset "@unique operator" begin
+    df = DataFrame(a=[1,2,1], b=[3.,3.,3.])
+
+    @test df |> @unique() |> collect == [(a=1,b=3.), (a=2,b=3.)]
+    @test df |> @unique(_.b) |> collect == [(a=1,b=3.)]
+end
+
 end

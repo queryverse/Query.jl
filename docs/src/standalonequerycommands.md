@@ -262,6 +262,26 @@ println(q)
 [4, 5]
 ```
 
+## The `@unique` command
+
+The `@unique command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
+
+#### Exmample
+
+```jldoctest
+using Query
+
+source = [1,1,2,2,3]
+
+q = source |> @unique() |> collect
+
+println(q)
+
+# output
+
+[1, 2, 3]
+```
+
 ## The `@select` command
 
 The `@select` command has the form `source |> @select(selectors...)`. `source` can be any source that can be queried. Each selector of `selectors...` can either select elements from `source` and add them to the result set, or select elements from the result set and remove them. A selector may select or remove an element by name, by position, or using a predicate function. All `selectors...` are executed in order and may not commute.

@@ -26,3 +26,21 @@ df_children = DataFrame(Name=["Bill", "Joe", "Mary"], Parent=["John", "John", "S
 
 df_parents |> @join(df_children, _.Name, _.Parent, {Parent=_.Name, Child=__.Name}) |> DataFrame
 ```
+
+## Key selector in the `@unique` standalone command
+
+As an experimental feature, one can specify a key selector for the `@unique` command. In that case uniqueness is tested based on that key.
+
+```jldoctest
+using Query
+
+source = [1,-1,2,2,3]
+
+q = source |> @unique(abs(_)) |> collect
+
+println(q)
+
+# output
+
+[1, 2, 3]
+```
