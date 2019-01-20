@@ -50,4 +50,11 @@ end
     @test eltype((Year=[2017,2018,2019], US=[1,2,3], EU=[1,2,3], CN=[1,2,3]) |> @gather(:US, :EU, :CN)) == NamedTuple{(:key, :value, :Year),T} where T<:Tuple
 end
 
+@testset "@unique operator" begin
+    df = DataFrame(a=[1,2,1], b=[3.,3.,3.])
+
+    @test df |> @unique() |> collect == [(a=1,b=3.), (a=2,b=3.)]
+    @test df |> @unique(_.b) |> collect == [(a=1,b=3.)]
+end
+
 end

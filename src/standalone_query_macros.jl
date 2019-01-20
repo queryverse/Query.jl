@@ -252,3 +252,15 @@ end
 macro drop(n)
     return :( i -> QueryOperators.drop(QueryOperators.query(i), $(esc(n))))
 end
+
+macro unique()
+    return :( i -> QueryOperators.unique(QueryOperators.query(i), q->q, :(q->q))) |>
+        helper_namedtuples_replacement
+end
+
+macro unique(f)
+    f_as_anonym_func = helper_replace_anon_func_syntax(f)
+    q = Expr(:quote, helper_replace_anon_func_syntax(f_as_anonym_func))
+    return :( i -> QueryOperators.unique(QueryOperators.query(i), $(esc(f_as_anonym_func)), $(esc(q)))) |>
+        helper_namedtuples_replacement
+end

@@ -72,7 +72,7 @@ function query_expression_translation_phase_A(qe)
 			x1 = clause.args[3].args[2]
 			push!(clause.args, :into)
 			push!(clause.args, temp_name)
-			nested_from = :(@from $x1 in QueryOperators.default_if_empty($temp_name))
+			nested_from = :(@from $x1 in $(QueryOperators.default_if_empty)($temp_name))
 			insert!(qe,i+1,nested_from)
 		end
 		i+=1
@@ -97,14 +97,14 @@ function query_expression_translation_phase_B(qe)
 			# and then we don't escape things.
 			subq = clause.args[3].args[3]
 			if isa(subq, Expr) && subq.head==:call && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:QueryOperators
-				clause.args[3].args[3] = :(QueryOperators.query($(subq)))
+				clause.args[3].args[3] = :($(QueryOperators.query)($(subq)))
 			elseif !(isa(subq, Expr) && subq.head==:macrocall && isa(subq.args[1],Expr) && subq.args[1].head==:. && subq.args[1].args[1]==:QueryOperators)
-				clause.args[3].args[3] = :(QueryOperators.query($(esc(subq))))
+				clause.args[3].args[3] = :($(QueryOperators.query)($(esc(subq))))
 			end
 		elseif ismacro(clause, "@from")
-			clause.args[3].args[3] = :(QueryOperators.query($(clause.args[3].args[3])))
+			clause.args[3].args[3] = :($(QueryOperators.query)($(clause.args[3].args[3])))
 		elseif ismacro(clause, "@join")
-			clause.args[3].args[3] = :(QueryOperators.query($(esc(clause.args[3].args[3]))))
+			clause.args[3].args[3] = :($(QueryOperators.query)($(esc(clause.args[3].args[3]))))
 		end
 		i+=1
 	end
@@ -377,7 +377,7 @@ function replace_transparent_identifier_in_anonym_func(ex::Expr, names_to_put_in
 	for (i,child_ex) in enumerate(ex.args)
 		if isa(child_ex, Expr)
 			replace_transparent_identifier_in_anonym_func(child_ex, names_to_put_in_scope)
-		elseif isa(child_ex, Symbol)
+		elseif isa(child_ex, Symbol) && !(ex.head == :(=) && i==1) # Don't replace names if they appear to the left of an assignment
 			index_of_name = findfirst(j->child_ex==j[2], names_to_put_in_scope)
 			if index_of_name!==nothing && !(ex.head==Symbol("=>") && i==1)
 				ex.args[i] = Expr(:., names_to_put_in_scope[index_of_name][1], QuoteNode(child_ex))
@@ -465,7 +465,7 @@ function query_expression_translation_phase_D(qe)
 			if length(clause.args)==2
 				qe[i-1] = :( collect($previous_clause) )
 			else
-				qe[i-1] = :( collect($previous_clause, $(esc(clause.args[3]))) )
+				qe[i-1] = :( $(esc(clause.args[3]))($previous_clause) )
 			end
 			deleteat!(qe,i)
 		else

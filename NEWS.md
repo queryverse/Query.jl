@@ -1,3 +1,8 @@
+# Query.jl v0.11.0 Release Notes
+* Add @unique, @select, @rename and @mutate standalone macros
+* Fix all doctest errors
+* Various bugfixes
+
 # Query.jl v0.10.1 Release Notes
 * Fix transparent identifier related bug
 

@@ -423,11 +423,11 @@ end
 @test q[3,:children]==8
 @test q[4,:children]==2
 
-q = Query.collect(QueryOperators.default_if_empty(DataValue{String}[]))
+q = collect(QueryOperators.default_if_empty(DataValue{String}[]))
 @test length(q)==1
 @test isna(q[1])
 
-q = Query.collect(QueryOperators.default_if_empty(DataValue{String}["John", "Sally"]))
+q = collect(QueryOperators.default_if_empty(DataValue{String}["John", "Sally"]))
 @test length(q)==2
 @test q==DataValue{String}["John", "Sally"]
 
@@ -478,7 +478,7 @@ end
 @test @count(source_df)==3
 @test @count(source_df, i->i.children>3)==1
 
-q = collect(@filter(source_df, i->i.age>30. && i.children > 2), DataFrame)
+q = DataFrame(@filter(source_df, i->i.age>30. && i.children > 2))
 
 @test isa(q, DataFrame)
 @test size(q)==(1,3)
@@ -494,4 +494,6 @@ q = collect(@map(source_df, i->i.children))
 include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
 include("test_standalone.jl")
+include("test_macros.jl")
+
 end
