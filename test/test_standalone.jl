@@ -1,4 +1,5 @@
 using Query
+using QueryOperators
 using DataFrames
 using Test
 
@@ -45,11 +46,8 @@ end
 end
 
 @testset "@gather operator" begin
-
-    @test iterate((Year=[2017,2018,2019], US=[1,2,3], EU=[1,2,3], CN=[1,2,3]) |> @gather) == nothing
-    @test iterate((Year=[2017,2018,2019], US=[1,2,3], EU=[1,2,3], CN=[1,2,3]) |> @gather(:US, :EU, :CN)) == ((key = :US, value = 1, Year = 2017), (Any[(key = :US, value = 1, Year = 2017), (key = :EU, value = 1, Year = 2017), (key = :CN, value = 1, Year = 2017), (key = :US, value = 2, Year = 2018), (key = :EU, value = 2, Year = 2018), (key = :CN, value = 2, Year = 2018), (key = :US, value = 3, Year = 2019), (key = :EU, value = 3, Year = 2019), (key = :CN, value = 3, Year = 2019)], 2))
-    @test eltype((Year=[2017,2018,2019], US=[1,2,3], EU=[1,2,3], CN=[1,2,3]) |> @gather(:US, :EU, :CN)) == NamedTuple{(:key, :value, :Year),Tuple{Symbol,Int64,Int64}}
-
+    @test sprint(QueryOperators.show,(Year=[2017,2018,2019], US=[1,2,3], EU=[1,2,3], CN=[1,2,3]) |> @gather(:US, :EU, :CN)) == "9x3 query result\nkey │ value │ Year\n────┼───────┼─────\n:US │ 1     │ 2017\n:EU │ 1     │ 2017\n:CN │ 1     │ 2017\n:US │ 2     │ 2018\n:EU │ 2     │ 2018\n:CN │ 2     │ 2018\n:US │ 3     │ 2019\n:EU │ 3     │ 2019\n:CN │ 3     │ 2019"
+    @test eltype((Year=[2017,2018,2019], US=[1,2,3], EU=[1,2,3], CN=[1,2,3]) |> @gather(:US, :EU, :CN)) == NamedTuple{(:key, :value, :Year),T} where T<:Tuple
 end
 
 end
