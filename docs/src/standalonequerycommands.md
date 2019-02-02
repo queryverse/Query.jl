@@ -18,21 +18,6 @@ df2 = df |>
 
 ## Standalone query operators
 
-All standalone query commands can either take a source as their first argument, or one can pipe the source into the command, as in the above example. For example, one can either write
-
-```julia
-df = df |> @groupby(_.a)
-```
-or
-```julia
-df = @groupby(df, _.a)
-```
-both forms are equivalent.
-
-The remaining arguments of each query demand are command specific.
-
-The following discussion will present each command in the version where a source is piped into the command.
-
 ## The `@map` command
 
 The `@map` command has the form `source |> @map(element_selector)`. `source` can be any source that can be queried. `element_selector` must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element.
