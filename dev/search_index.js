@@ -125,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Standalone query operators",
     "category": "section",
-    "text": "All standalone query commands can either take a source as their first argument, or one can pipe the source into the command, as in the above example. For example, one can either writedf = df |> @groupby(_.a)ordf = @groupby(df, _.a)both forms are equivalent.The remaining arguments of each query demand are command specific.The following discussion will present each command in the version where a source is piped into the command."
+    "text": ""
 },
 
 {
@@ -718,6 +718,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Experimental features",
     "category": "section",
     "text": "The following features are experimental, i.e. they might change significantly in the future. You are advised to only use them if you are prepared to deal with significant changes to these features in future versions of Query.jl. At the same time any feedback on these features would be especially welcome."
+},
+
+{
+    "location": "experimental/#Source-as-the-first-argument-to-standalone-query-commands-1",
+    "page": "Experimental Features",
+    "title": "Source as the first argument to standalone query commands",
+    "category": "section",
+    "text": "Some standalone query commands accept the source argument as the first argument, in addition to accepting it via the pipe operator. For example, source |> @map(_) and @map(source, _)` are equivalent. These source-as-the-first-argument versions of the standalone query operators are considered experimental and might disappear in future releases."
 },
 
 {
