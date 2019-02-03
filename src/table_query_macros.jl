@@ -68,12 +68,12 @@ macro select(args...)
                 end
 
             # select by element type
-            :(::typ) =>
+            :(::$typ) =>
                 :( merge($prev, QueryOperators.NamedTupleUtilities.oftype(_, typ)) )
 
             # select by range, with multiple syntaxes supported
-           :(rangeat(a, b)) || :(a : b) =>
-                if start isa Int && end_ isa Int
+           :(rangeat($a, $b)) || :($a : $b) =>
+                if a isa Int && b isa Int
                     :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val(keys(_)[$a]), Val(keys(_)[$b]))) )
                 else
                     :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($a), Val($b))) )
