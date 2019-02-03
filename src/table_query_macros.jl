@@ -49,7 +49,7 @@ end
 macro select(args...)
     foldl(args, init=NamedTuple()) do prev, arg
         @match arg begin
-            :(everywhere()) => :_
+            :(everything()) => :_
 
             ::Int && if arg > 0 end =>
                 :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
@@ -81,23 +81,23 @@ macro select(args...)
             Predicate(op, kind, arg) =>
             let
                 pos_f = @match kind begin
-                            :startswith => :(QueryOperators.NamedTupleUtilities.startswith)
-                            :endswith => :(QueryOperators.NamedTupleUtilities.endswith)
-                            :occursin => :(QueryOperators.NamedTupleUtilities.occursin)
+                        :startswith => :(QueryOperators.NamedTupleUtilities.startswith)
+                        :endswith => :(QueryOperators.NamedTupleUtilities.endswith)
+                        :occursin => :(QueryOperators.NamedTupleUtilities.occursin)
                 end
 
                 neg_f = @match kind begin
-                            :startswith => :(QueryOperators.NamedTupleUtilities.not_startswith)
-                            :endswith => :(QueryOperators.NamedTupleUtilities.not_endswith)
-                            :occursin => :(QueryOperators.NamedTupleUtilities.not_occursin)
+                        :startswith => :(QueryOperators.NamedTupleUtilities.not_startswith)
+                        :endswith => :(QueryOperators.NamedTupleUtilities.not_endswith)
+                        :occursin => :(QueryOperators.NamedTupleUtilities.not_occursin)
                 end
 
                 # select by predicate functions
                 select_by_predicate(pred) = Expr(:call, merge, prev, Expr(:call, pred, :_, Expr(:call, Val, arg)))
 
                 @match op begin
-                    nothing => select_by_predicate(pos_f)
-                    :!      => select_by_predicate(neg_f)
+                    if op === nothing end => select_by_predicate(pos_f)
+                    :!                    => select_by_predicate(neg_f)
 
                     # remove by predicate functions
                     :- =>
