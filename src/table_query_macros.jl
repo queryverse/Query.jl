@@ -39,7 +39,7 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
     if res !== nothing
         (kind, arg) = res
         if arg isa String
-            arg = Symbol(arg)
+            arg = QuoteNode(Symbol(arg))
         end
         (op, kind, arg)
     end
@@ -48,12 +48,13 @@ end
 
 macro select(args...)
     foldl(args, init=NamedTuple()) do prev, arg
-
         @match arg begin
-            ::Expr && :(everywhere()) => :_
-            ::Int && if arg > 0 =>
+            :(everywhere()) => :_
+
+            ::Int && if arg > 0 end =>
                 :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
-            ::Int && if arg < 0 =>
+
+            ::Int && if arg < 0 end =>
                 let sel = ifelse(prev == NamedTuple(), :_, prev)
                     :( QueryOperators.NamedTupleUtilities.remove($sel, Val(keys($sel)[-$arg])) )
                 end
@@ -78,39 +79,33 @@ macro select(args...)
                     :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($a), Val($b))) )
                 end
             Predicate(op, kind, arg) =>
-            @match op begin
-                #
-                nothing =>
-                    let f =
-                        @match kind begin
+            let
+                pos_f = @match kind begin
                             :startswith => :(QueryOperators.NamedTupleUtilities.startswith)
                             :endswith => :(QueryOperators.NamedTupleUtilities.endswith)
                             :occursin => :(QueryOperators.NamedTupleUtilities.occursin)
-                        end
+                end
 
-                        Expr(:call, f, prev, Expr(:call, Val, arg))
-                    end
-                :- =>
-                    let f =
-                        @match kind begin
+                neg_f = @match kind begin
                             :startswith => :(QueryOperators.NamedTupleUtilities.not_startswith)
                             :endswith => :(QueryOperators.NamedTupleUtilities.not_endswith)
                             :occursin => :(QueryOperators.NamedTupleUtilities.not_occursin)
+                end
+
+                # select by predicate functions
+                select_by_predicate(pred) = Expr(:call, merge, prev, Expr(:call, pred, :_, Expr(:call, Val, arg)))
+
+                @match op begin
+                    nothing => select_by_predicate(pos_f)
+                    :!      => select_by_predicate(neg_f)
+
+                    # remove by predicate functions
+                    :- =>
+                        let prev = ifelse(prev == NamedTuple(), :_, prev)
+                            Expr(:call, neg_f, prev, Expr(:call, Val, arg))
                         end
 
-                        prev = ifelse(prev == NamedTuple(), :_, prev)
-                        Expr(:call, f, prev, Expr(:call, Val, arg))
-                    end
-                :! =>
-                    let f =
-                        @match kind begin
-                            :startswith => :(QueryOperators.NamedTupleUtilities.not_startswith)
-                            :endswith => :(QueryOperators.NamedTupleUtilities.not_endswith)
-                            :occursin => :(QueryOperators.NamedTupleUtilities.not_occursin)
-                        end
-
-                        Expr(:call, :mergh, prev, Expr(:call, f, :_, Expr(:call, Val, arg)))
-                    end
+                end
             end
         end
     end |> prev ->
