@@ -5,6 +5,7 @@ import IterableTables
 using DataValues
 using MacroTools: postwalk
 using QueryOperators
+using MLStyle
 
 export @from, @query, @count, Grouping, key
 

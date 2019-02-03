@@ -23,94 +23,98 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 │ 3   │ c      │
 ```
 """
-macro select(args...)
-    prev = NamedTuple()
-    for arg in args
-        if typeof(arg) == Expr && (string(arg) == "everything()")
-            # select everything
-            prev = :_
-        elseif typeof(arg) == Int
-            # select by position
-            if arg > 0
-                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
-            # remove by position
-            elseif arg < 0
-                sel = ifelse(prev == NamedTuple(), :_, prev)
-                prev = :( QueryOperators.NamedTupleUtilities.remove($sel, Val(keys($sel)[-$arg])) )
-            end
-        elseif typeof(arg) == QuoteNode
-            # select by name
-            prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
-        else
-            arg = string(arg)
-            # select by element type
-            m_type = match(r":\(:(.+)\)", arg)
-            # remove by name
-            m_rem = match(r"^-:(.+)", arg)
-            # remove by predicate functions
-            m_rem_pred = match(r"^-\(*(startswith|endswith|occursin)\(\"(.+)\"\)+", arg)
-            # select by range, with multiple syntaxes supported
-            m_range = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
-            m_range_ind = match(r"^([0-9]+) *: *([0-9]+)", arg)
-            if m_range == nothing && m_range_ind == nothing
-                m_range = match(r"^rangeat\(:([^,]+), *:([^,]+)\)", arg)
-                m_range_ind = match(r"^rangeat\(([0-9]+), *([0-9]+)\)", arg)
-            end
-            # select by predicate functions
-            m_pred = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
-            is_neg_pred = false
-            if m_pred == nothing
-                m_pred = match(r"^!\(*(startswith|endswith|occursin)\(\"(.+)\"\)+", arg)
-                is_neg_pred = true
-            end
 
-            # TODO: eltype
-            if m_type !== nothing
-                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.oftype(_, parse(DataType, @datatype($m_type[1])))) )
-            elseif m_rem !== nothing
-                prev = ifelse(prev == NamedTuple(), :_, prev)
-                prev = :( QueryOperators.NamedTupleUtilities.remove($prev, Val($(QuoteNode(Symbol(m_rem[1]))))) )
-            elseif m_rem_pred !== nothing
-                prev = ifelse(prev == NamedTuple(), :_, prev)
-                if m_rem_pred[1] == "startswith"
-                    prev = :( QueryOperators.NamedTupleUtilities.not_startswith($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
-                elseif m_rem_pred[1] == "endswith"
-                    prev = :( QueryOperators.NamedTupleUtilities.not_endswith($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
-                elseif m_rem_pred[1] == "occursin"
-                    prev = :( QueryOperators.NamedTupleUtilities.not_occursin($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
+@active Predicate(x) begin
+    (op :: Any, x) = @match x begin
+        :(-$x) => (:-, x)
+        :(!$x) => (:!, x)
+        _      => (nothing, x)
+    end
+    res = @match x begin
+        :(startswith($arg)) => (:startswith, arg)
+        :(endswith($arg)) => (:endswith, arg)
+        :(occursin($arg)) => (:occursin, arg)
+        _                 => nothing
+    end
+    if res !== nothing
+        (kind, arg) = res
+        if arg isa String
+            arg = Symbol(arg)
+        end
+        (op, kind, arg)
+    end
+end
+
+
+macro select(args...)
+    foldl(args, init=NamedTuple()) do prev, arg
+
+        @match arg begin
+            ::Expr && :(everywhere()) => :_
+            ::Int && if arg > 0 =>
+                :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
+            ::Int && if arg < 0 =>
+                let sel = ifelse(prev == NamedTuple(), :_, prev)
+                    :( QueryOperators.NamedTupleUtilities.remove($sel, Val(keys($sel)[-$arg])) )
                 end
-            elseif m_range !== nothing || m_range_ind !== nothing
-                if m_range_ind !== nothing
-                    a = parse(Int, m_range_ind[1])
-                    b = parse(Int, m_range_ind[2])
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val(keys(_)[$a]), Val(keys(_)[$b]))) )
+            ::QuoteNode =>
+                :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
+
+            # remove by name
+            :(-$(name :: QuoteNode)) && if name.value isa Symbol end =>
+                let prev = ifelse(prev == NamedTuple(), :_, prev)
+                    :( QueryOperators.NamedTupleUtilities.remove($prev, Val($name)) )
+                end
+
+            # select by element type
+            :(::typ) =>
+                :( merge($prev, QueryOperators.NamedTupleUtilities.oftype(_, typ)) )
+
+            # select by range, with multiple syntaxes supported
+           :(rangeat(a, b)) || :(a : b) =>
+                if start isa Int && end_ isa Int
+                    :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val(keys(_)[$a]), Val(keys(_)[$b]))) )
                 else
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m_range[1])))), Val($(QuoteNode(Symbol(m_range[2])))))) )
+                    :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($a), Val($b))) )
                 end
-            elseif m_pred !== nothing
-                if is_neg_pred == false
-                    if m_pred[1] == "startswith"
-                        sel = :( QueryOperators.NamedTupleUtilities.startswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
-                    elseif m_pred[1] == "endswith"
-                        sel = :( QueryOperators.NamedTupleUtilities.endswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
-                    elseif m_pred[1] == "occursin"
-                        sel = :( QueryOperators.NamedTupleUtilities.occursin(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+            Predicate(op, kind, arg) =>
+            @match op begin
+                #
+                nothing =>
+                    let f =
+                        @match kind begin
+                            :startswith => :(QueryOperators.NamedTupleUtilities.startswith)
+                            :endswith => :(QueryOperators.NamedTupleUtilities.endswith)
+                            :occursin => :(QueryOperators.NamedTupleUtilities.occursin)
+                        end
+
+                        Expr(:call, f, prev, Expr(:call, Val, arg))
                     end
-                else
-                    if m_pred[1] == "startswith"
-                        sel = :( QueryOperators.NamedTupleUtilities.not_startswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
-                    elseif m_pred[1] == "endswith"
-                        sel = :( QueryOperators.NamedTupleUtilities.not_endswith(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
-                    elseif m_pred[1] == "occursin"
-                        sel = :( QueryOperators.NamedTupleUtilities.not_occursin(_, Val($(QuoteNode(Symbol(m_pred[2]))))) )
+                :- =>
+                    let f =
+                        @match kind begin
+                            :startswith => :(QueryOperators.NamedTupleUtilities.not_startswith)
+                            :endswith => :(QueryOperators.NamedTupleUtilities.not_endswith)
+                            :occursin => :(QueryOperators.NamedTupleUtilities.not_occursin)
+                        end
+
+                        prev = ifelse(prev == NamedTuple(), :_, prev)
+                        Expr(:call, f, prev, Expr(:call, Val, arg))
                     end
-                end
-                prev = :( merge($prev, $sel) )
+                :! =>
+                    let f =
+                        @match kind begin
+                            :startswith => :(QueryOperators.NamedTupleUtilities.not_startswith)
+                            :endswith => :(QueryOperators.NamedTupleUtilities.not_endswith)
+                            :occursin => :(QueryOperators.NamedTupleUtilities.not_occursin)
+                        end
+
+                        Expr(:call, :mergh, prev, Expr(:call, f, :_, Expr(:call, Val, arg)))
+                    end
             end
         end
-    end
-
-    return :(Query.@map( $prev ) )
+    end |> prev ->
+    :(Query.@map($prev))
 end
 
 """
