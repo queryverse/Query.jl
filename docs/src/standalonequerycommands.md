@@ -338,7 +338,7 @@ using Query, DataFrames
 
 df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
-q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = fruit == "Apple") |> DataFrame
+q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == "Apple") |> DataFrame
 
 println(q)
 
