@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Standalone query operators",
     "category": "section",
-    "text": "The standalone query operators are typically combined into more complicated queries via the pipe operator. The example from the previous section can also be written like this, using the @filter and @map standalone query operators:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |>\n  @filter(_.age>50) |>\n  @map({_.name, _.children}) |>\n  DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+    "text": "The standalone query operators are typically combined into more complicated queries via the pipe operator. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |>\n  @filter(_.age>50) |>\n  @map({_.name, _.children}) |>\n  DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "LINQ style queries",
     "category": "section",
-    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. The example from the previous section can also be written like this using LINQ style queryies:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
 },
 
 {
@@ -277,7 +277,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "The @unique command",
     "category": "section",
-    "text": "The @unique command has the formsource |> @unique().source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation."
+    "text": "The @unique command has the form source |> @unique(). source can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation."
 },
 
 {
@@ -309,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "The @mutate command",
     "category": "section",
-    "text": "The @mutate command has the form source |> @mutate(args...). source can be any source that can be queried. Each argument from args... must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of source. All args... are executed in order, and the result set of the previous mutation is the source of each current mutation.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq = df |> @mutate(price = 2 * _.price + _.amount, isyellow = fruit == \"Apple\") |> DataFrame\n\nprintln(q)\n\n# output\n\n3×4 DataFrame\n│ Row │ fruit  │ amount │ price   │ isyellow │\n│     │ String │ Int64  │ Float64 │ Bool     │\n├─────┼────────┼────────┼─────────┼──────────┤\n│ 1   │ Apple  │ 2      │ 4.4     │ true     │\n│ 2   │ Banana │ 6      │ 10.0    │ false    │\n│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │"
+    "text": "The @mutate command has the form source |> @mutate(args...). source can be any source that can be queried. Each argument from args... must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of source. All args... are executed in order, and the result set of the previous mutation is the source of each current mutation.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq = df |> @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == \"Apple\") |> DataFrame\n\nprintln(q)\n\n# output\n\n3×4 DataFrame\n│ Row │ fruit  │ amount │ price   │ isyellow │\n│     │ String │ Int64  │ Float64 │ Bool     │\n├─────┼────────┼────────┼─────────┼──────────┤\n│ 1   │ Apple  │ 2      │ 4.4     │ true     │\n│ 2   │ Banana │ 6      │ 10.0    │ false    │\n│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │"
 },
 
 {

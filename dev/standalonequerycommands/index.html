@@ -141,7 +141,7 @@ println(q)
 
 # output
 
-[4, 5]</code></pre><h2><a class="nav-anchor" id="The-@unique-command-1" href="#The-@unique-command-1">The <code>@unique</code> command</a></h2><p>The <code>@unique command has the form</code>source |&gt; @unique()<code>.</code>source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.</p><h4><a class="nav-anchor" id="Exmample-1" href="#Exmample-1">Exmample</a></h4><pre><code class="language-julia">using Query
+[4, 5]</code></pre><h2><a class="nav-anchor" id="The-@unique-command-1" href="#The-@unique-command-1">The <code>@unique</code> command</a></h2><p>The <code>@unique</code> command has the form <code>source |&gt; @unique()</code>. <code>source</code> can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.</p><h4><a class="nav-anchor" id="Exmample-1" href="#Exmample-1">Exmample</a></h4><pre><code class="language-julia">using Query
 
 source = [1,1,2,2,3]
 
@@ -199,7 +199,7 @@ println(q)
 
 df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
-q = df |&gt; @mutate(price = 2 * _.price + _.amount, isyellow = fruit == &quot;Apple&quot;) |&gt; DataFrame
+q = df |&gt; @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == &quot;Apple&quot;) |&gt; DataFrame
 
 println(q)
 
