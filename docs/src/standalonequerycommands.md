@@ -249,7 +249,7 @@ println(q)
 
 ## The `@unique` command
 
-The `@unique command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
+The `@unique` command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
 
 #### Exmample
 
