@@ -3,7 +3,7 @@ using Documenter, Query
 makedocs(
 	modules = [Query],
 	sitename = "Query.jl",
-	format=HTML(analytics="UA-132838790-1"),
+	format=Documenter.HTML(analytics="UA-132838790-1"),
 	pages = [
 		"Introduction" => "index.md",
 		"Getting Started" => "gettingstarted.md",
