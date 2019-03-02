@@ -99,7 +99,7 @@ println(x)
 
 There are four commands that are used to sort data. Any sorting has to start with either a `@orderby` or `@orderby_descending` command. `@thenby` and `@thenby_descending` commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.
 
-The general sorting command form is `source |> @orderby(key_selector)`. `source` can be any source than can be queried. `key_selector` must be an anonymous function that returns a value for each element of `source`. The elements of the source are then sorted is ascending order by the value returned from the `key_selector` function. The `@orderby_descending` command works in the same way, but sorts things in descending order. The `@thenby` and `@thenby_descending` command only accept the return value of any of the four sorting commands as their `source`, otherwise they have the same syntax as the `@orderby` and `@orderby_descending` commands.
+The general sorting command form is `source |> @orderby(key_selector)`. `source` can be any source than can be queried. `key_selector` must be an anonymous function that returns a value for each element of `source`. The elements of the source are then sorted is in ascending order by the value returned from the `key_selector` function. The `@orderby_descending` command works in the same way, but sorts things in descending order. The `@thenby` and `@thenby_descending` command only accept the return value of any of the four sorting commands as their `source`, otherwise they have the same syntax as the `@orderby` and `@orderby_descending` commands.
 
 #### Example
 
@@ -249,7 +249,7 @@ println(q)
 
 ## The `@unique` command
 
-The `@unique command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
+The `@unique` command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
 
 #### Exmample
 
@@ -338,7 +338,7 @@ using Query, DataFrames
 
 df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
-q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = fruit == "Apple") |> DataFrame
+q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == "Apple") |> DataFrame
 
 println(q)
 

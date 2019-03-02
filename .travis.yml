@@ -13,7 +13,7 @@ branches:
   only:
   - master
   - /release-.*/
-  - /v(\d+)\.(\d+)\.(\d+)/   
+  - /v(\d+)\.(\d+)\.(\d+)/
 matrix:
   allow_failures:
   - julia: nightly
@@ -23,7 +23,7 @@ after_success:
 jobs:
   include:
     - stage: "Documentation"
-      julia: 1.0
+      julia: 1.1
       os: linux
       script:
         - julia --project=docs/ -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
