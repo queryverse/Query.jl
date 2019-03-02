@@ -46,6 +46,10 @@ julia> df |> @select(startswith("b"), -:bar) |> DataFrame
 end
 
 
+@active QuoteNodeP(x) begin
+    x isa QuoteNode ? x.value : nothing
+end
+
 macro select(args...)
     foldl(args, init=NamedTuple()) do prev, arg
         @match arg begin
@@ -136,24 +140,15 @@ julia> df |> @rename(:foo => :fat, :bar => :ban) |> DataFrame
 ```
 """
 macro rename(args...)
-    prev = :_
-    for arg in args
-        n = match(r"^(.+) *=> *:(.+)", string(arg))
-        try
-            # rename by position
-            n1 = parse(Int, n[1])
-            n2 = strip(n[2])
-            prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val(keys(_)[$n1]), Val($(QuoteNode(Symbol(n2))))) )
-        catch
-            # rename by name
-            m = match(r"^:(.+) *=> *:(.+)", string(arg))
-            m1, m2 = strip(m[1]), strip(m[2])
-            if m !== nothing
-                prev = :( QueryOperators.NamedTupleUtilities.rename($prev, Val($(QuoteNode(Symbol(m1)))), Val($(QuoteNode(Symbol(m2))))) )
-            end
+    foldl(args, init = :_) do prev, arg
+        @match arg begin
+            :($(n1 :: Int) => $n2) =>
+                :( QueryOperators.NamedTupleUtilities.rename($prev, Val(keys(_)[$n1]), Val($n2)) )
+            :($m1 => $m2) =>
+                :( QueryOperators.NamedTupleUtilities.rename($prev, Val($m1), Val($m2)))
         end
-    end
-    return :(Query.@map( $prev ) )
+    end |> prev ->
+    :(Query.@map( $prev ) )
 end
 
 """
@@ -180,11 +175,12 @@ julia> df |> @mutate(bar = _.foo + 2 * _.bar, bat = "com" * _.bat) |> DataFrame
 ```
 """
 macro mutate(args...)
-    prev = :_
-    for arg in args
-        prev = :( merge($prev, ($(esc(arg.args[1])) = $(arg.args[2]),)) )
-    end
-    return :( Query.@map( $prev ) )
+    foldl(args, init=:_) do prev, arg
+        @match arg begin
+            :($alias = $expr) => :( merge($prev, ($(esc(alias)) = $(expr),)) )
+        end
+    end |> prev ->
+    :( Query.@map( $prev ) )
 end
 
 macro datatype(str)
