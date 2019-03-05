@@ -282,7 +282,8 @@ println(q1)
 
 # output
 
-3×2 DataFrame
+3×2
+DataFrames.DataFrame
 │ Row │ price   │ fruit  │
 │     │ Float64 │ String │
 ├─────┼─────────┼────────┤
@@ -292,13 +293,16 @@ println(q1)
 ```
 
 ```jldoctest
+using Query, DataFrames
+
 q2 = df |> @select(!endswith("t"), 1) |> DataFrame
 
 println(q2)
 
 # output
 
-3×3 DataFrame
+3×3
+DataFrames.DataFrame
 │ Row │ price   │ isyellow │ fruit  │
 │     │ Float64 │ Bool     │ String │
 ├─────┼─────────┼──────────┼────────┤
@@ -322,7 +326,8 @@ println(q)
 
 # output
 
-3×4 DataFrame
+3×4
+DataFrames.DataFrame
 │ Row │ name   │ amount │ cost    │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
@@ -344,7 +349,8 @@ println(q)
 
 # output
 
-3×4 DataFrame
+3×4
+DataFrames.DataFrame
 │ Row │ fruit  │ amount │ price   │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
