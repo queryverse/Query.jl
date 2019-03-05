@@ -168,19 +168,23 @@ println(q1)
 
 # output
 
-3×2 DataFrame
+3×2
+DataFrames.DataFrame
 │ Row │ price   │ fruit  │
 │     │ Float64 │ String │
 ├─────┼─────────┼────────┤
 │ 1   │ 1.2     │ Apple  │
 │ 2   │ 2.0     │ Banana │
-│ 3   │ 0.4     │ Cherry │</code></pre><pre><code class="language-julia">q2 = df |&gt; @select(!endswith(&quot;t&quot;), 1) |&gt; DataFrame
+│ 3   │ 0.4     │ Cherry │</code></pre><pre><code class="language-julia">using Query, DataFrames
+
+q2 = df |&gt; @select(!endswith(&quot;t&quot;), 1) |&gt; DataFrame
 
 println(q2)
 
 # output
 
-3×3 DataFrame
+3×3
+DataFrames.DataFrame
 │ Row │ price   │ isyellow │ fruit  │
 │     │ Float64 │ Bool     │ String │
 ├─────┼─────────┼──────────┼────────┤
@@ -196,7 +200,8 @@ println(q)
 
 # output
 
-3×4 DataFrame
+3×4
+DataFrames.DataFrame
 │ Row │ name   │ amount │ cost    │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
@@ -212,7 +217,8 @@ println(q)
 
 # output
 
-3×4 DataFrame
+3×4
+DataFrames.DataFrame
 │ Row │ fruit  │ amount │ price   │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
