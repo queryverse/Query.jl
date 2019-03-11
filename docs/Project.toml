@@ -6,4 +6,4 @@ Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
 TypedTables = "9d95f2ec-7b3d-5a63-8d20-e2491e220bb9"
 
 [compat]
-Documenter = "~0.20"
+Documenter = "~0.21"

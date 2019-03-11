@@ -4,7 +4,7 @@
 
 Query is a package for querying julia data sources. It can filter, project, join, sort and group data from any iterable data source, including all the sources that support the [TableTraits.jl](https://github.com/queryverse/TableTraits.jl) interface (this includes everything listed in [IterableTables.jl](https://github.com/queryverse/IterableTables.jl)).
 
-Query is heavily inspired by [LINQ](https://msdn.microsoft.com/en-us/library/bb397926.aspx) and [dplyr](https://dplyr.tidyverse.org/).
+Query is heavily inspired by [LINQ](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/index) and [dplyr](https://dplyr.tidyverse.org/).
 
 ## Installation
 
