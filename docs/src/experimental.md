@@ -6,6 +6,10 @@ deal with significant changes to these features in future versions of
 Query.jl. At the same time any feedback on these features would be
 especially welcome.
 
+## Source as the first argument to standalone query commands
+
+Some standalone query commands accept the source argument as the first argument, in addition to accepting it via the pipe operator. For example, `source |> @map(_)` and @map(source, _)` are equivalent. These source-as-the-first-argument versions of the standalone query operators are considered experimental and might disappear in future releases.
+
 ## The `_` and `__` syntax
 
 This syntax only works in the standalone query commands. Instead of writing

@@ -4,7 +4,7 @@ Query.jl supports two different front-end syntax options: 1) standalone query op
 
 ## Standalone query operators
 
-The standalone query operators are typically combined into more complicated queries via the pipe operator. The example from the previous section can also be written like this, using the `@filter` and `@map` standalone query operators:
+The standalone query operators are typically combined into more complicated queries via the pipe operator. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:
 
 ```jldoctest
 using Query, DataFrames
@@ -37,7 +37,7 @@ q = @from <range variable> in <source> begin
 end
 ```
 
-Multiple `<query statements>` are separated by line breaks. Probably the most simple example is a query that filters a `DataFrame` and returns a subset of its columns:
+Multiple `<query statements>` are separated by line breaks. The example from the previous section can also be written like this using LINQ style queryies:
 
 ```jldoctest
 using Query, DataFrames

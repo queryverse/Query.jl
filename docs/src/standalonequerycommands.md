@@ -18,21 +18,6 @@ df2 = df |>
 
 ## Standalone query operators
 
-All standalone query commands can either take a source as their first argument, or one can pipe the source into the command, as in the above example. For example, one can either write
-
-```julia
-df = df |> @groupby(_.a)
-```
-or
-```julia
-df = @groupby(df, _.a)
-```
-both forms are equivalent.
-
-The remaining arguments of each query demand are command specific.
-
-The following discussion will present each command in the version where a source is piped into the command.
-
 ## The `@map` command
 
 The `@map` command has the form `source |> @map(element_selector)`. `source` can be any source that can be queried. `element_selector` must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element.
@@ -114,7 +99,7 @@ println(x)
 
 There are four commands that are used to sort data. Any sorting has to start with either a `@orderby` or `@orderby_descending` command. `@thenby` and `@thenby_descending` commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.
 
-The general sorting command form is `source |> @orderby(key_selector)`. `source` can be any source than can be queried. `key_selector` must be an anonymous function that returns a value for each element of `source`. The elements of the source are then sorted is ascending order by the value returned from the `key_selector` function. The `@orderby_descending` command works in the same way, but sorts things in descending order. The `@thenby` and `@thenby_descending` command only accept the return value of any of the four sorting commands as their `source`, otherwise they have the same syntax as the `@orderby` and `@orderby_descending` commands.
+The general sorting command form is `source |> @orderby(key_selector)`. `source` can be any source than can be queried. `key_selector` must be an anonymous function that returns a value for each element of `source`. The elements of the source are then sorted is in ascending order by the value returned from the `key_selector` function. The `@orderby_descending` command works in the same way, but sorts things in descending order. The `@thenby` and `@thenby_descending` command only accept the return value of any of the four sorting commands as their `source`, otherwise they have the same syntax as the `@orderby` and `@orderby_descending` commands.
 
 #### Example
 
@@ -264,7 +249,7 @@ println(q)
 
 ## The `@unique` command
 
-The `@unique command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
+The `@unique` command has the form `source |> @unique()`. `source` can be any source that can be queried. The command will filter out any duplicates from the input source. Note that there is also an experimental version of this command that accepts a key selector, see the experimental section in the documentation.
 
 #### Exmample
 
@@ -297,7 +282,7 @@ println(q1)
 
 # output
 
-3×2 DataFrame
+3×2 DataFrames.DataFrame
 │ Row │ price   │ fruit  │
 │     │ Float64 │ String │
 ├─────┼─────────┼────────┤
@@ -307,13 +292,17 @@ println(q1)
 ```
 
 ```jldoctest
+using Query, DataFrames
+
+df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
+
 q2 = df |> @select(!endswith("t"), 1) |> DataFrame
 
 println(q2)
 
 # output
 
-3×3 DataFrame
+3×3 DataFrames.DataFrame
 │ Row │ price   │ isyellow │ fruit  │
 │     │ Float64 │ Bool     │ String │
 ├─────┼─────────┼──────────┼────────┤
@@ -337,7 +326,7 @@ println(q)
 
 # output
 
-3×4 DataFrame
+3×4 DataFrames.DataFrame
 │ Row │ name   │ amount │ cost    │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
@@ -353,13 +342,13 @@ using Query, DataFrames
 
 df = DataFrame(fruit=["Apple","Banana","Cherry"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
-q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = fruit == "Apple") |> DataFrame
+q = df |> @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == "Apple") |> DataFrame
 
 println(q)
 
 # output
 
-3×4 DataFrame
+3×4 DataFrames.DataFrame
 │ Row │ fruit  │ amount │ price   │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
