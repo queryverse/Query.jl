@@ -11,21 +11,72 @@ function Base.showerror(io::IO, ex::QueryException)
 	end
 end
 
+######### BETTER MERGE IN PROGRESS ##########
+# function helper_namedtuples_replacement(ex)
+# 	return postwalk(ex) do x
+# 		if x isa Expr && x.head==:braces
+# 			new_ex = Expr(:tuple, x.args...)
+# 			merge_ex = Expr(:call, :merge)
+# 			# merge_lis = Any[:merge]
+# 			curr = 1
+
+# 			for (j,field_in_NT) in enumerate(new_ex.args)
+# 				if isa(field_in_NT, Expr) && field_in_NT.head==:.
+# 					println("there's a dot")
+# 					name_to_use = field_in_NT.args[2].value
+# 					new_ex.args[j] = Expr(:(=), name_to_use, field_in_NT)
+# 					to_merge = :($to_merge, )
+# 					# new_ex.args[j] = Expr(:(=), name_to_use, field_in_NT)
+# 				elseif isa(field_in_NT, Expr) && field_in_NT.head==:...
+# 					println("substitution!")
+# 					to_merge = ""
+# 					for arg in new_ex.args[curr:j-1]
+# 						to_merge += 1
+# 					end
+# 					push!(merge_ex.args, :())
+# 					# push!(merge_ex.args, Tuple(new_ex.args[curr:j-1]))
+# 					push!(merge_ex.args, new_ex.args[j].args[1])
+# 					curr = j + 1
+# 				elseif isa(field_in_NT, Symbol)
+# 					println("there's a symbol")
+# 					new_ex.args[j] = Expr(:(=), field_in_NT, field_in_NT)
+# 					# new_ex.args[j] = Expr(:(=), field_in_NT, field_in_NT)
+# 				end
+# 			end
+			
+# 			curr == 1 && return new_ex
+
+# 			push!(merge_ex.args, Tuple(new_ex.args[curr:end]))
+# 			# println(merge_lis)
+# 			return merge_ex
+# 		else
+# 			return x
+# 		end
+# 	end
+# end
+
 function helper_namedtuples_replacement(ex)
 	return postwalk(ex) do x
 		if x isa Expr && x.head==:braces
 			new_ex = Expr(:tuple, x.args...)
+			merge_ex = Expr(:call, :merge)
 
 			for (j,field_in_NT) in enumerate(new_ex.args)
-				if isa(field_in_NT, Expr) && field_in_NT.head==:.
-					name_to_use = field_in_NT.args[2].value
-					new_ex.args[j] = Expr(:(=), name_to_use, field_in_NT)
-				elseif isa(field_in_NT, Symbol)
-					new_ex.args[j] = Expr(:(=), field_in_NT, field_in_NT)
+				if isa(field_in_NT, Expr) && field_in_NT.head==:...
+					push!(merge_ex.args, new_ex.args[j].args[1])
+				else
+					if isa(field_in_NT, Expr) && field_in_NT.head==:.
+						# FIXME
+						name_to_use = field_in_NT.args[2].value
+						new_ex.args[j] = Expr(:(=), name_to_use, field_in_NT)
+					elseif isa(field_in_NT, Symbol)
+						new_ex.args[j] = Expr(:(=), field_in_NT, field_in_NT)
+					end
+					push!(merge_ex.args, eval(:($(new_ex.args[j]),)))
 				end
 			end
-
-			return new_ex
+			
+			return merge_ex
 		else
 			return x
 		end
