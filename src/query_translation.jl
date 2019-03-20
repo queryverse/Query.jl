@@ -14,14 +14,14 @@ end
 function helper_namedtuples_replacement(ex)
 	return postwalk(ex) do x
 		if x isa Expr && x.head==:braces
-			new_ex = Expr(:tuple, x.args...)
+			new_ex = Expr(:tuple, Expr(:parameters, x.args...))
 
-			for (j,field_in_NT) in enumerate(new_ex.args)
+			for (j,field_in_NT) in enumerate(new_ex.args[1].args)
 				if isa(field_in_NT, Expr) && field_in_NT.head==:.
 					name_to_use = field_in_NT.args[2].value
-					new_ex.args[j] = Expr(:(=), name_to_use, field_in_NT)
+					new_ex.args[1].args[j] = Expr(:(=), name_to_use, field_in_NT)
 				elseif isa(field_in_NT, Symbol)
-					new_ex.args[j] = Expr(:(=), field_in_NT, field_in_NT)
+					new_ex.args[1].args[j] = Expr(:(=), field_in_NT, field_in_NT)
 				end
 			end
 
