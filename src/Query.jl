@@ -1,6 +1,5 @@
 module Query
 
-using TableTraits
 import IterableTables
 using DataValues
 using MacroTools: postwalk
