@@ -1,6 +1,6 @@
 name = "Query"
 uuid = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
-version = "0.12.0"
+version = "0.12.1-DEV"
 
 [deps]
 DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
