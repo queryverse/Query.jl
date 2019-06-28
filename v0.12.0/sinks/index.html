@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Data Sinks · Query.jl</title><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-132838790-1', 'auto');
+ga('send', 'pageview');
+</script><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Query.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Introduction</a></li><li><a class="toctext" href="../gettingstarted/">Getting Started</a></li><li><a class="toctext" href="../standalonequerycommands/">Standalone Query Commands</a></li><li><a class="toctext" href="../linqquerycommands/">LINQ Style Query Commands</a></li><li><a class="toctext" href="../sources/">Data Sources</a></li><li class="current"><a class="toctext" href>Data Sinks</a><ul class="internal"><li><a class="toctext" href="#Array-1">Array</a></li><li><a class="toctext" href="#DataFrame,-DataTable-and-TypedTable-1">DataFrame, DataTable and TypedTable</a></li><li><a class="toctext" href="#Dict-1">Dict</a></li><li><a class="toctext" href="#TimeArray-1">TimeArray</a></li><li><a class="toctext" href="#Temporal-1">Temporal</a></li><li><a class="toctext" href="#IndexedTable-1">IndexedTable</a></li></ul></li><li><a class="toctext" href="../experimental/">Experimental Features</a></li><li><a class="toctext" href="../internals/">Internals</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Data Sinks</a></li></ul><a class="edit-page" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/sinks.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Data Sinks</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Data-Sinks-1" href="#Data-Sinks-1">Data Sinks</a></h1><p>Query supports a number of different data sink types. One can materialize the results of a query into a specific sink by using the <code>@collect</code> statement. Queries that don&#39;t end with a <code>@collect</code> statement return an iterator that can be used to iterate over the results of the query.</p><h2><a class="nav-anchor" id="Array-1" href="#Array-1">Array</a></h2><p>Using the <code>@collect</code> statement without any further argument will materialize the query results into an array. The array will be a vector, and the element type of the array is the type of the elements returned by the last projection statement.</p><h3><a class="nav-anchor" id="Example-1" href="#Example-1">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select i.name
+    @collect
+end
+
+println(x)
+
+# output
+
+[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;]</code></pre><h2><a class="nav-anchor" id="DataFrame,-DataTable-and-TypedTable-1" href="#DataFrame,-DataTable-and-TypedTable-1">DataFrame, DataTable and TypedTable</a></h2><p>The statement <code>@collect TableType</code> (with <code>TableType</code> being one of <code>DatFrame</code>, <code>DataTable</code> or <code>TypedTable</code>) will materialize the query results into a new instance of that type. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax.</p><h3><a class="nav-anchor" id="Example-2" href="#Example-2">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select {i.name, i.age, Children=i.children}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+3×3 DataFrames.DataFrame
+│ Row │ name   │ age     │ Children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │</code></pre><h2><a class="nav-anchor" id="Dict-1" href="#Dict-1">Dict</a></h2><p>The statement <code>@collect Dict</code> will materialize the query results into a new <code>Dict</code> instance. This statement only works if the last projection statement transformed the results into a <code>Pair</code>, for example by using the <code>=&gt;</code> syntax.</p><h3><a class="nav-anchor" id="Example-3" href="#Example-3">Example</a></h3><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select i.name=&gt;i.children
+    @collect Dict
+end
+
+println(x)
+
+# output
+
+Dict(&quot;Sally&quot;=&gt;5,&quot;John&quot;=&gt;3,&quot;Kirk&quot;=&gt;2)</code></pre><h2><a class="nav-anchor" id="TimeArray-1" href="#TimeArray-1">TimeArray</a></h2><p>The statement <code>@collect TimeArray</code> will materialize the query results into a new <code>TimeSeries.TimeArray</code> instance. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax, and this <code>NamedTuple</code> has one field named <code>timestamp</code> that is of a type that can be used as a time index in the <code>TimeArray</code> type.</p><h3><a class="nav-anchor" id="Example-4" href="#Example-4">Example</a></h3><p>[TODO]</p><h2><a class="nav-anchor" id="Temporal-1" href="#Temporal-1">Temporal</a></h2><p>The statement <code>@collect TS</code> will materialize the query results into a new <code>Temporal.TS</code> instance. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax, and this <code>NamedTuple</code> has one field named <code>Index</code> that is of a type that can be used as a time index in the <code>TS</code> type.</p><h3><a class="nav-anchor" id="Example-5" href="#Example-5">Example</a></h3><p>[TODO]</p><h2><a class="nav-anchor" id="IndexedTable-1" href="#IndexedTable-1">IndexedTable</a></h2><p>The statement <code>@collect IndexedTable</code> will materialize the query results into a new <code>IndexedTables.IndexedTable</code> instance. This statement only works if the last projection statement transformed the results into a <code>NamedTuple</code>, for example by using the <code>{}</code> syntax. The last column of the result table will be the data column, all other columns will be index columns.</p><h3><a class="nav-anchor" id="Example-6" href="#Example-6">Example</a></h3><p>[TODO]</p><footer><hr/><a class="previous" href="../sources/"><span class="direction">Previous</span><span class="title">Data Sources</span></a><a class="next" href="../experimental/"><span class="direction">Next</span><span class="title">Experimental Features</span></a></footer></article></body></html>
