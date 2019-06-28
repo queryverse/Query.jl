@@ -1,6 +1,7 @@
-# Query.jl v1.0.0 Release Notes
+# Query.jl v0.12.0 Release Notes
 * Drop julia 0.7 support
 * Move to Project.toml
+* Export isna and NA
 
 # Query.jl v0.11.0 Release Notes
 * Add @unique, @select, @rename and @mutate standalone macros
