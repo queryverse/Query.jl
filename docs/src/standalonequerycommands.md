@@ -14,6 +14,15 @@ df2 = df |>
     @filter(_.b > 5) |>
     @orderby_descending(_.b) |>
     DataFrame
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b       │
+│     │ Int64 │ Float64 │
+├─────┼───────┼─────────┤
+│ 1   │ 3     │ 8.0     │
+│ 2   │ 2     │ 6.0     │
 ```
 
 ## Standalone query operators
@@ -56,7 +65,7 @@ println(x)
 
 # output
 
-1×3 DataFrames.DataFrame
+1×3 DataFrame
 │ Row │ name   │ age     │ children │
 │     │ String │ Float64 │ Int64    │
 ├─────┼────────┼─────────┼──────────┤
@@ -87,7 +96,7 @@ println(x)
 
 # output
 
-2×2 DataFrames.DataFrame
+2×2 DataFrame
 │ Row │ Key   │ Count │
 │     │ Int64 │ Int64 │
 ├─────┼───────┼───────┤
@@ -114,7 +123,7 @@ println(x)
 
 # output
 
-6×2 DataFrames.DataFrame
+6×2 DataFrame
 │ Row │ a     │ b     │
 │     │ Int64 │ Int64 │
 ├─────┼───────┼───────┤
@@ -144,7 +153,7 @@ println(x)
 
 # output
 
-3×2 DataFrames.DataFrame
+3×2 DataFrame
 │ Row │ t1    │ t2    │
 │     │ Int64 │ Int64 │
 ├─────┼───────┼───────┤
@@ -171,7 +180,7 @@ println(x)
 
 # output
 
-2×4 DataFrames.DataFrame
+2×4 DataFrame
 │ Row │ a     │ b       │ c     │ d      │
 │     │ Int64 │ Float64 │ Int64 │ String │
 ├─────┼───────┼─────────┼───────┼────────┤
@@ -196,7 +205,7 @@ println(q)
 
 # output
 
-5×2 DataFrames.DataFrame
+5×2 DataFrame
 │ Row │ Key    │ Value │
 │     │ Symbol │ Int64 │
 ├─────┼────────┼───────┤
@@ -282,7 +291,7 @@ println(q1)
 
 # output
 
-3×2 DataFrames.DataFrame
+3×2 DataFrame
 │ Row │ price   │ fruit  │
 │     │ Float64 │ String │
 ├─────┼─────────┼────────┤
@@ -302,7 +311,7 @@ println(q2)
 
 # output
 
-3×3 DataFrames.DataFrame
+3×3 DataFrame
 │ Row │ price   │ isyellow │ fruit  │
 │     │ Float64 │ Bool     │ String │
 ├─────┼─────────┼──────────┼────────┤
@@ -326,7 +335,7 @@ println(q)
 
 # output
 
-3×4 DataFrames.DataFrame
+3×4 DataFrame
 │ Row │ name   │ amount │ cost    │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
@@ -348,7 +357,7 @@ println(q)
 
 # output
 
-3×4 DataFrames.DataFrame
+3×4 DataFrame
 │ Row │ fruit  │ amount │ price   │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
