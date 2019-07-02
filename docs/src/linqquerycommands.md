@@ -21,7 +21,7 @@ println(x)
 
 # output
 
-6×2 DataFrames.DataFrame
+6×2 DataFrame
 │ Row │ a     │ b     │
 │     │ Int64 │ Int64 │
 ├─────┼───────┼───────┤
@@ -54,7 +54,7 @@ println(x)
 
 # output
 
-1×3 DataFrames.DataFrame
+1×3 DataFrame
 │ Row │ name   │ age     │ children │
 │     │ String │ Float64 │ Int64    │
 ├─────┼────────┼─────────┼──────────┤
@@ -101,7 +101,7 @@ println(x)
 
 # output
 
-3×2 DataFrames.DataFrame
+3×2 DataFrame
 │ Row │ name   │ Age     │
 │     │ String │ Float64 │
 ├─────┼────────┼─────────┤
@@ -133,7 +133,7 @@ println(q)
 
 # output
 
-5×2 DataFrames.DataFrame
+5×2 DataFrame
 │ Row │ Key    │ Value │
 │     │ Symbol │ Int64 │
 ├─────┼────────┼───────┤
@@ -170,7 +170,7 @@ println(x)
 
 # output
 
-2×4 DataFrames.DataFrame
+2×4 DataFrame
 │ Row │ a     │ b       │ c     │ d      │
 │     │ Int64 │ Float64 │ Int64 │ String │
 ├─────┼───────┼─────────┼───────┼────────┤
@@ -200,7 +200,7 @@ println(x)
 
 # output
 
-3×2 DataFrames.DataFrame
+3×2 DataFrame
 │ Row │ t1    │ t2    │
 │     │ Int64 │ Int64 │
 ├─────┼───────┼───────┤
@@ -231,7 +231,7 @@ println(q)
 
 # output
 
-4×4 DataFrames.DataFrame
+4×4 DataFrame
 │ Row │ a     │ b       │ c       │ d       │
 │     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │
 ├─────┼───────┼─────────┼─────────┼─────────┤
@@ -283,7 +283,7 @@ println(x)
 
 # output
 
-2×2 DataFrames.DataFrame
+2×2 DataFrame
 │ Row │ Key   │ Count │
 │     │ Int64 │ Int64 │
 ├─────┼───────┼───────┤
@@ -314,7 +314,7 @@ println(x)
 
 # output
 
-2×4 DataFrames.DataFrame
+2×4 DataFrame
 │ Row │ group  │ mage    │ oldest  │ youngest │
 │     │ Symbol │ Float64 │ Float64 │ Float64  │
 ├─────┼────────┼─────────┼─────────┼──────────┤
@@ -345,7 +345,7 @@ println(x)
 
 # output
 
-1×3 DataFrames.DataFrame
+1×3 DataFrame
 │ Row │ Name   │ Count │ KidsPerYear │
 │     │ String │ Int64 │ Float64     │
 ├─────┼────────┼───────┼─────────────┤

@@ -1,4 +1,4 @@
-using Documenter, Query
+using Documenter, Query, DataFrames
 
 makedocs(
 	modules = [Query],

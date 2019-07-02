@@ -20,7 +20,7 @@ println(x)
 
 # output
 
-1×2 DataFrames.DataFrame
+1×2 DataFrame
 │ Row │ name   │ children │
 │     │ String │ Int64    │
 ├─────┼────────┼──────────┤
@@ -54,7 +54,7 @@ println(x)
 
 # output
 
-1×2 DataFrames.DataFrame
+1×2 DataFrame
 │ Row │ name   │ children │
 │     │ String │ Int64    │
 ├─────┼────────┼──────────┤
@@ -102,7 +102,7 @@ println(x)
 
 # output
 
-1×2 DataFrames.DataFrame
+1×2 DataFrame
 │ Row │ name   │ children │
 ├─────┼────────┼──────────┤
 │ 1   │ "Kirk" │ 2        │
