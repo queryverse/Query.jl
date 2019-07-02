@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Standalone query operators",
     "category": "section",
-    "text": "The standalone query operators are typically combined into more complicated queries via the pipe operator. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |>\n  @filter(_.age>50) |>\n  @map({_.name, _.children}) |>\n  DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+    "text": "The standalone query operators are typically combined into more complicated queries via the pipe operator. Probably the most simple example is a query that filters a DataFrame and returns a subset of its columns:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |>\n  @filter(_.age>50) |>\n  @map({_.name, _.children}) |>\n  DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
 },
 
 {
@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "LINQ style queries",
     "category": "section",
-    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. The example from the previous section can also be written like this using LINQ style queryies:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
+    "text": "The basic structure of a LINQ style query statement isq = @from <range variable> in <source> begin\n    <query statements>\nendMultiple <query statements> are separated by line breaks. The example from the previous section can also be written like this using LINQ style queryies:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age>50\n    @select {i.name, i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×2 DataFrame\n│ Row │ name   │ children │\n│     │ String │ Int64    │\n├─────┼────────┼──────────┤\n│ 1   │ Kirk   │ 2        │"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Piping data through a LINQ style query",
     "category": "section",
-    "text": "LINQ style queries can also be intgrated into data pipelines that are constructed via the |> operator. Such queries are started with the @query macro instead of the @from macro. The main difference between those two macros is that the @query macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the @query macro looks like this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @query(i, begin\n            @where i.age>50\n            @select {i.name, i.children}\n          end) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrames.DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │Note how the range variable i is the first argument to the @query macro, and then the second argument is a begin...end block that contains the query operators for the query. Note also that it is recommended to use parenthesis () to call the @query macro, otherwise any continuing pipe operator will not work."
+    "text": "LINQ style queries can also be intgrated into data pipelines that are constructed via the |> operator. Such queries are started with the @query macro instead of the @from macro. The main difference between those two macros is that the @query macro does not take an argument for the data source, instead the data source needs to be piped into the query. In practice the syntax for the @query macro looks like this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @query(i, begin\n            @where i.age>50\n            @select {i.name, i.children}\n          end) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×2 DataFrame\n│ Row │ name   │ children │\n├─────┼────────┼──────────┤\n│ 1   │ \"Kirk\" │ 2        │Note how the range variable i is the first argument to the @query macro, and then the second argument is a begin...end block that contains the query operators for the query. Note also that it is recommended to use parenthesis () to call the @query macro, otherwise any continuing pipe operator will not work."
 },
 
 {
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Standalone query operators",
     "category": "section",
-    "text": "The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:using Query, DataFrames, Statistics\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=key(_), b=mean(_.b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrame"
+    "text": "The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:using Query, DataFrames, Statistics\n\ndf = DataFrame(a=[1,1,2,3], b=[4,5,6,8])\n\ndf2 = df |>\n    @groupby(_.a) |>\n    @map({a=key(_), b=mean(_.b)}) |>\n    @filter(_.b > 5) |>\n    @orderby_descending(_.b) |>\n    DataFrame\n\n# output\n\n2×2 DataFrame\n│ Row │ a     │ b       │\n│     │ Int64 │ Float64 │\n├─────┼───────┼─────────┤\n│ 1   │ 3     │ 8.0     │\n│ 2   │ 2     │ 6.0     │"
 },
 
 {
@@ -157,7 +157,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @filter(_.age > 30 && _.children > 2) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ Sally  │ 42.0    │ 5        │"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = df |> @filter(_.age > 30 && _.children > 2) |> DataFrame\n\nprintln(x)\n\n# output\n\n1×3 DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ Sally  │ 42.0    │ 5        │"
 },
 
 {
@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = df |>\n    @groupby(_.children) |>\n    @map({Key=key(_), Count=length(_)}) |>\n    DataFrame\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key   │ Count │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 1     │\n│ 2   │ 2     │ 2     │"
+    "text": "using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = df |>\n    @groupby(_.children) |>\n    @map({Key=key(_), Count=length(_)}) |>\n    DataFrame\n\nprintln(x)\n\n# output\n\n2×2 DataFrame\n│ Row │ Key   │ Count │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 1     │\n│ 2   │ 2     │ 2     │"
 },
 
 {
@@ -189,7 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])\n\nx = df |> @orderby_descending(_.a) |> @thenby(_.b) |> DataFrame\n\nprintln(x)\n\n# output\n\n6×2 DataFrames.DataFrame\n│ Row │ a     │ b     │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 2     │\n│ 2   │ 2     │ 1     │\n│ 3   │ 2     │ 2     │\n│ 4   │ 1     │ 1     │\n│ 5   │ 1     │ 2     │\n│ 6   │ 1     │ 3     │"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])\n\nx = df |> @orderby_descending(_.a) |> @thenby(_.b) |> DataFrame\n\nprintln(x)\n\n# output\n\n6×2 DataFrame\n│ Row │ a     │ b     │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 2     │\n│ 2   │ 2     │ 1     │\n│ 3   │ 2     │ 2     │\n│ 4   │ 1     │ 1     │\n│ 5   │ 1     │ 2     │\n│ 6   │ 1     │ 3     │"
 },
 
 {
@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = df1 |> @groupjoin(df2, _.a, _.c, {t1=_.a, t2=length(__)}) |> DataFrame\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ t1    │ t2    │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 1     │ 0     │\n│ 2   │ 2     │ 2     │\n│ 3   │ 3     │ 0     │"
+    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = df1 |> @groupjoin(df2, _.a, _.c, {t1=_.a, t2=length(__)}) |> DataFrame\n\nprintln(x)\n\n# output\n\n3×2 DataFrame\n│ Row │ t1    │ t2    │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 1     │ 0     │\n│ 2   │ 2     │ 2     │\n│ 3   │ 3     │ 0     │"
 },
 
 {
@@ -221,7 +221,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = df1 |> @join(df2, _.a, _.c, {_.a, _.b, __.c, __.d}) |> DataFrame\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ a     │ b       │ c     │ d      │\n│     │ Int64 │ Float64 │ Int64 │ String │\n├─────┼───────┼─────────┼───────┼────────┤\n│ 1   │ 2     │ 2.0     │ 2     │ John   │\n│ 2   │ 2     │ 2.0     │ 2     │ Sally  │"
+    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = df1 |> @join(df2, _.a, _.c, {_.a, _.b, __.c, __.d}) |> DataFrame\n\nprintln(x)\n\n# output\n\n2×4 DataFrame\n│ Row │ a     │ b       │ c     │ d      │\n│     │ Int64 │ Float64 │ Int64 │ String │\n├─────┼───────┼─────────┼───────┼────────┤\n│ 1   │ 2     │ 2.0     │ 2     │ John   │\n│ 2   │ 2     │ 2.0     │ 2     │ Sally  │"
 },
 
 {
@@ -237,7 +237,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = source |> @mapmany(_.second, {Key=_.first, Value=__}) |> DataFrame\n\nprintln(q)\n\n# output\n\n5×2 DataFrames.DataFrame\n│ Row │ Key    │ Value │\n│     │ Symbol │ Int64 │\n├─────┼────────┼───────┤\n│ 1   │ a      │ 1     │\n│ 2   │ a      │ 2     │\n│ 3   │ a      │ 3     │\n│ 4   │ b      │ 4     │\n│ 5   │ b      │ 5     │"
+    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = source |> @mapmany(_.second, {Key=_.first, Value=__}) |> DataFrame\n\nprintln(q)\n\n# output\n\n5×2 DataFrame\n│ Row │ Key    │ Value │\n│     │ Symbol │ Int64 │\n├─────┼────────┼───────┤\n│ 1   │ a      │ 1     │\n│ 2   │ a      │ 2     │\n│ 3   │ a      │ 3     │\n│ 4   │ b      │ 4     │\n│ 5   │ b      │ 5     │"
 },
 
 {
@@ -293,7 +293,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "The @select command",
     "category": "section",
-    "text": "The @select command has the form source |> @select(selectors...). source can be any source that can be queried. Each selector of selectors... can either select elements from source and add them to the result set, or select elements from the result set and remove them. A selector may select or remove an element by name, by position, or using a predicate function. All selectors... are executed in order and may not commute.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq1 = df |> @select(2:3, occursin(\"ui\"), -:amount) |> DataFrame\n\nprintln(q1)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ price   │ fruit  │\n│     │ Float64 │ String │\n├─────┼─────────┼────────┤\n│ 1   │ 1.2     │ Apple  │\n│ 2   │ 2.0     │ Banana │\n│ 3   │ 0.4     │ Cherry │using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq2 = df |> @select(!endswith(\"t\"), 1) |> DataFrame\n\nprintln(q2)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ price   │ isyellow │ fruit  │\n│     │ Float64 │ Bool     │ String │\n├─────┼─────────┼──────────┼────────┤\n│ 1   │ 1.2     │ false    │ Apple  │\n│ 2   │ 2.0     │ true     │ Banana │\n│ 3   │ 0.4     │ false    │ Cherry │"
+    "text": "The @select command has the form source |> @select(selectors...). source can be any source that can be queried. Each selector of selectors... can either select elements from source and add them to the result set, or select elements from the result set and remove them. A selector may select or remove an element by name, by position, or using a predicate function. All selectors... are executed in order and may not commute.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq1 = df |> @select(2:3, occursin(\"ui\"), -:amount) |> DataFrame\n\nprintln(q1)\n\n# output\n\n3×2 DataFrame\n│ Row │ price   │ fruit  │\n│     │ Float64 │ String │\n├─────┼─────────┼────────┤\n│ 1   │ 1.2     │ Apple  │\n│ 2   │ 2.0     │ Banana │\n│ 3   │ 0.4     │ Cherry │using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq2 = df |> @select(!endswith(\"t\"), 1) |> DataFrame\n\nprintln(q2)\n\n# output\n\n3×3 DataFrame\n│ Row │ price   │ isyellow │ fruit  │\n│     │ Float64 │ Bool     │ String │\n├─────┼─────────┼──────────┼────────┤\n│ 1   │ 1.2     │ false    │ Apple  │\n│ 2   │ 2.0     │ true     │ Banana │\n│ 3   │ 0.4     │ false    │ Cherry │"
 },
 
 {
@@ -301,7 +301,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "The @rename command",
     "category": "section",
-    "text": "The @rename command has the form source |> @rename(args...). source can be any source that can be queried. Each argument from args... must specify the name or index of the element, as well as the new name for the element. All args... are executed in order, and the result set of the previous renaming is the source of each current operation.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq = df |> @rename(:fruit => :food, :price => :cost, :food => :name) |> DataFrame\n\nprintln(q)\n\n# output\n\n3×4 DataFrames.DataFrame\n│ Row │ name   │ amount │ cost    │ isyellow │\n│     │ String │ Int64  │ Float64 │ Bool     │\n├─────┼────────┼────────┼─────────┼──────────┤\n│ 1   │ Apple  │ 2      │ 1.2     │ false    │\n│ 2   │ Banana │ 6      │ 2.0     │ true     │\n│ 3   │ Cherry │ 1000   │ 0.4     │ false    │"
+    "text": "The @rename command has the form source |> @rename(args...). source can be any source that can be queried. Each argument from args... must specify the name or index of the element, as well as the new name for the element. All args... are executed in order, and the result set of the previous renaming is the source of each current operation.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq = df |> @rename(:fruit => :food, :price => :cost, :food => :name) |> DataFrame\n\nprintln(q)\n\n# output\n\n3×4 DataFrame\n│ Row │ name   │ amount │ cost    │ isyellow │\n│     │ String │ Int64  │ Float64 │ Bool     │\n├─────┼────────┼────────┼─────────┼──────────┤\n│ 1   │ Apple  │ 2      │ 1.2     │ false    │\n│ 2   │ Banana │ 6      │ 2.0     │ true     │\n│ 3   │ Cherry │ 1000   │ 0.4     │ false    │"
 },
 
 {
@@ -309,7 +309,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Standalone Query Commands",
     "title": "The @mutate command",
     "category": "section",
-    "text": "The @mutate command has the form source |> @mutate(args...). source can be any source that can be queried. Each argument from args... must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of source. All args... are executed in order, and the result set of the previous mutation is the source of each current mutation.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq = df |> @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == \"Apple\") |> DataFrame\n\nprintln(q)\n\n# output\n\n3×4 DataFrames.DataFrame\n│ Row │ fruit  │ amount │ price   │ isyellow │\n│     │ String │ Int64  │ Float64 │ Bool     │\n├─────┼────────┼────────┼─────────┼──────────┤\n│ 1   │ Apple  │ 2      │ 4.4     │ true     │\n│ 2   │ Banana │ 6      │ 10.0    │ false    │\n│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │"
+    "text": "The @mutate command has the form source |> @mutate(args...). source can be any source that can be queried. Each argument from args... must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of source. All args... are executed in order, and the result set of the previous mutation is the source of each current mutation.using Query, DataFrames\n\ndf = DataFrame(fruit=[\"Apple\",\"Banana\",\"Cherry\"],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])\n\nq = df |> @mutate(price = 2 * _.price + _.amount, isyellow = _.fruit == \"Apple\") |> DataFrame\n\nprintln(q)\n\n# output\n\n3×4 DataFrame\n│ Row │ fruit  │ amount │ price   │ isyellow │\n│     │ String │ Int64  │ Float64 │ Bool     │\n├─────┼────────┼────────┼─────────┼──────────┤\n│ 1   │ Apple  │ 2      │ 4.4     │ true     │\n│ 2   │ Banana │ 6      │ 10.0    │ false    │\n│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │"
 },
 
 {
@@ -341,7 +341,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])\n\nx = @from i in df begin\n    @orderby descending(i.a), i.b\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n6×2 DataFrames.DataFrame\n│ Row │ a     │ b     │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 2     │\n│ 2   │ 2     │ 1     │\n│ 3   │ 2     │ 2     │\n│ 4   │ 1     │ 1     │\n│ 5   │ 1     │ 2     │\n│ 6   │ 1     │ 3     │"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])\n\nx = @from i in df begin\n    @orderby descending(i.a), i.b\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n6×2 DataFrame\n│ Row │ a     │ b     │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 2     │\n│ 2   │ 2     │ 1     │\n│ 3   │ 2     │ 2     │\n│ 4   │ 1     │ 1     │\n│ 5   │ 1     │ 2     │\n│ 6   │ 1     │ 3     │"
 },
 
 {
@@ -357,7 +357,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age > 30. && i.children > 2\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ Sally  │ 42.0    │ 5        │"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @where i.age > 30. && i.children > 2\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ Sally  │ 42.0    │ 5        │"
 },
 
 {
@@ -373,7 +373,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "The following example transforms each element from the source by squaring it.using Query\n\ndata = [1,2,3]\n\nx = @from i in data begin\n    @select i^2\n    @collect\nend\n\nprintln(x)\n\n# output\n\n[1, 4, 9]One of the most common patterns in Query is to transform elements into named tuples with a @select statement. There are two ways to create a named tuples in Query: a) using the standard syntax from julia for named tuples, or b) a special syntax that only works inside Query.jl macros. This special syntax is based on curly brackets {}. An example that highlights all options of this syntax is this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, Age=i.age}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ name   │ Age     │\n│     │ String │ Float64 │\n├─────┼────────┼─────────┤\n│ 1   │ John   │ 23.0    │\n│ 2   │ Sally  │ 42.0    │\n│ 3   │ Kirk   │ 59.0    │The elements of the new named tuple are separated by commas ,. One can specify an explicit name for an individual element of a named tuple using the = syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn\'t have to specify a name explicitly, instead the {} syntax automatically infers the name."
+    "text": "The following example transforms each element from the source by squaring it.using Query\n\ndata = [1,2,3]\n\nx = @from i in data begin\n    @select i^2\n    @collect\nend\n\nprintln(x)\n\n# output\n\n[1, 4, 9]One of the most common patterns in Query is to transform elements into named tuples with a @select statement. There are two ways to create a named tuples in Query: a) using the standard syntax from julia for named tuples, or b) a special syntax that only works inside Query.jl macros. This special syntax is based on curly brackets {}. An example that highlights all options of this syntax is this:using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, Age=i.age}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrame\n│ Row │ name   │ Age     │\n│     │ String │ Float64 │\n├─────┼────────┼─────────┤\n│ 1   │ John   │ 23.0    │\n│ 2   │ Sally  │ 42.0    │\n│ 3   │ Kirk   │ 59.0    │The elements of the new named tuple are separated by commas ,. One can specify an explicit name for an individual element of a named tuple using the = syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn\'t have to specify a name explicitly, instead the {} syntax automatically infers the name."
 },
 
 {
@@ -389,7 +389,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = @from i in source begin\n    @from j in i.second\n    @select {Key=i.first,Value=j}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n5×2 DataFrames.DataFrame\n│ Row │ Key    │ Value │\n│     │ Symbol │ Int64 │\n├─────┼────────┼───────┤\n│ 1   │ a      │ 1     │\n│ 2   │ a      │ 2     │\n│ 3   │ a      │ 3     │\n│ 4   │ b      │ 4     │\n│ 5   │ b      │ 5     │"
+    "text": "using DataFrames, Query\n\nsource = Dict(:a=>[1,2,3], :b=>[4,5])\n\nq = @from i in source begin\n    @from j in i.second\n    @select {Key=i.first,Value=j}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n5×2 DataFrame\n│ Row │ Key    │ Value │\n│     │ Symbol │ Int64 │\n├─────┼────────┼───────┤\n│ 1   │ a      │ 1     │\n│ 2   │ a      │ 2     │\n│ 3   │ a      │ 3     │\n│ 4   │ b      │ 4     │\n│ 5   │ b      │ 5     │"
 },
 
 {
@@ -413,7 +413,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ a     │ b       │ c     │ d      │\n│     │ Int64 │ Float64 │ Int64 │ String │\n├─────┼───────┼─────────┼───────┼────────┤\n│ 1   │ 2     │ 2.0     │ 2     │ John   │\n│ 2   │ 2     │ 2.0     │ 2     │ Sally  │"
+    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrame\n│ Row │ a     │ b       │ c     │ d      │\n│     │ Int64 │ Float64 │ Int64 │ String │\n├─────┼───────┼─────────┼───────┼────────┤\n│ 1   │ 2     │ 2.0     │ 2     │ John   │\n│ 2   │ 2     │ 2.0     │ 2     │ Sally  │"
 },
 
 {
@@ -429,7 +429,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c into k\n    @select {t1=i.a,t2=length(k)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrames.DataFrame\n│ Row │ t1    │ t2    │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 1     │ 0     │\n│ 2   │ 2     │ 2     │\n│ 3   │ 3     │ 0     │"
+    "text": "using DataFrames, Query\n\ndf1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\ndf2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nx = @from i in df1 begin\n    @join j in df2 on i.a equals j.c into k\n    @select {t1=i.a,t2=length(k)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×2 DataFrame\n│ Row │ t1    │ t2    │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 1     │ 0     │\n│ 2   │ 2     │ 2     │\n│ 3   │ 3     │ 0     │"
 },
 
 {
@@ -445,7 +445,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\nsource_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\nsource_df2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nq = @from i in source_df1 begin\n    @left_outer_join j in source_df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n4×4 DataFrames.DataFrame\n│ Row │ a     │ b       │ c       │ d       │\n│     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │\n├─────┼───────┼─────────┼─────────┼─────────┤\n│ 1   │ 1     │ 1.0     │ missing │ missing │\n│ 2   │ 2     │ 2.0     │ 2       │ John    │\n│ 3   │ 2     │ 2.0     │ 2       │ Sally   │\n│ 4   │ 3     │ 3.0     │ missing │ missing │"
+    "text": "using Query, DataFrames\n\nsource_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])\nsource_df2 = DataFrame(c=[2,4,2], d=[\"John\", \"Jim\",\"Sally\"])\n\nq = @from i in source_df1 begin\n    @left_outer_join j in source_df2 on i.a equals j.c\n    @select {i.a,i.b,j.c,j.d}\n    @collect DataFrame\nend\n\nprintln(q)\n\n# output\n\n4×4 DataFrame\n│ Row │ a     │ b       │ c       │ d       │\n│     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │\n├─────┼───────┼─────────┼─────────┼─────────┤\n│ 1   │ 1     │ 1.0     │ missing │ missing │\n│ 2   │ 2     │ 2.0     │ 2       │ John    │\n│ 3   │ 2     │ 2.0     │ 2       │ Sally   │\n│ 4   │ 3     │ 3.0     │ missing │ missing │"
 },
 
 {
@@ -461,7 +461,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nGrouping{Int64,String}[[\"John\"], [\"Sally\", \"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=key(g),Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrames.DataFrame\n│ Row │ Key   │ Count │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 1     │\n│ 2   │ 2     │ 2     │"
+    "text": "This is an example of a @group statement without a into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i.name by i.children\n    @collect\nend\n\nprintln(x)\n\n# output\n\nGrouping{Int64,String}[[\"John\"], [\"Sally\", \"Kirk\"]]This is an example of a @group statement with an into clause:using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @group i by i.children into g\n    @select {Key=key(g),Count=length(g)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×2 DataFrame\n│ Row │ Key   │ Count │\n│     │ Int64 │ Int64 │\n├─────┼───────┼───────┤\n│ 1   │ 3     │ 1     │\n│ 2   │ 2     │ 2     │"
 },
 
 {
@@ -477,7 +477,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames, Statistics\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrames.DataFrame\n│ Row │ group  │ mage    │ oldest  │ youngest │\n│     │ Symbol │ Float64 │ Float64 │ Float64  │\n├─────┼────────┼─────────┼─────────┼──────────┤\n│ 1   │ a      │ 20.0    │ 30.0    │ 10.0     │\n│ 2   │ b      │ 23.0    │ 33.0    │ 13.0     │"
+    "text": "using Query, DataFrames, Statistics\n\ndf = DataFrame(name=repeat([\"John\", \"Sally\", \"Kirk\"],inner=[1],outer=[2]), \n     age=vcat([10., 20., 30.],[10., 20., 30.].+3), \n     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])\n\nx = @from i in df begin\n    @group i by i.state into g\n    @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n2×4 DataFrame\n│ Row │ group  │ mage    │ oldest  │ youngest │\n│     │ Symbol │ Float64 │ Float64 │ Float64  │\n├─────┼────────┼─────────┼─────────┼──────────┤\n│ 1   │ a      │ 20.0    │ 30.0    │ 10.0     │\n│ 2   │ b      │ 23.0    │ 33.0    │ 13.0     │"
 },
 
 {
@@ -493,7 +493,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LINQ Style Query Commands",
     "title": "Example",
     "category": "section",
-    "text": "using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @let count = length(i.name)\n    @let kids_per_year = i.children / i.age\n    @where count > 4\n    @select {Name=i.name, Count=count, KidsPerYear=kids_per_year}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrames.DataFrame\n│ Row │ Name   │ Count │ KidsPerYear │\n│     │ String │ Int64 │ Float64     │\n├─────┼────────┼───────┼─────────────┤\n│ 1   │ Sally  │ 5     │ 0.047619    │"
+    "text": "using DataFrames, Query\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,2,2])\n\nx = @from i in df begin\n    @let count = length(i.name)\n    @let kids_per_year = i.children / i.age\n    @where count > 4\n    @select {Name=i.name, Count=count, KidsPerYear=kids_per_year}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n1×3 DataFrame\n│ Row │ Name   │ Count │ KidsPerYear │\n│     │ String │ Int64 │ Float64     │\n├─────┼────────┼───────┼─────────────┤\n│ 1   │ Sally  │ 5     │ 0.047619    │"
 },
 
 {
@@ -525,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
 },
 
 {
@@ -541,7 +541,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sources",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames, TypedTables\n\ntt = Table(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in tt begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
+    "text": "using Query, DataFrames, TypedTables\n\ntt = Table(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in tt begin\n    @select i\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrame\n│ Row │ name   │ age     │ children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
 },
 
 {
@@ -637,7 +637,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Data Sinks",
     "title": "Example",
     "category": "section",
-    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, i.age, Children=i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrames.DataFrame\n│ Row │ name   │ age     │ Children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
+    "text": "using Query, DataFrames\n\ndf = DataFrame(name=[\"John\", \"Sally\", \"Kirk\"], age=[23., 42., 59.], children=[3,5,2])\n\nx = @from i in df begin\n    @select {i.name, i.age, Children=i.children}\n    @collect DataFrame\nend\n\nprintln(x)\n\n# output\n\n3×3 DataFrame\n│ Row │ name   │ age     │ Children │\n│     │ String │ Float64 │ Int64    │\n├─────┼────────┼─────────┼──────────┤\n│ 1   │ John   │ 23.0    │ 3        │\n│ 2   │ Sally  │ 42.0    │ 5        │\n│ 3   │ Kirk   │ 59.0    │ 2        │"
 },
 
 {
