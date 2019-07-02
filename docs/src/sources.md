@@ -22,7 +22,7 @@ println(x)
 
 # output
 
-3×3 DataFrames.DataFrame
+3×3 DataFrame
 │ Row │ name   │ age     │ children │
 │     │ String │ Float64 │ Int64    │
 ├─────┼────────┼─────────┼──────────┤
@@ -51,7 +51,7 @@ println(x)
 
 # output
 
-3×3 DataFrames.DataFrame
+3×3 DataFrame
 │ Row │ name   │ age     │ children │
 │     │ String │ Float64 │ Int64    │
 ├─────┼────────┼─────────┼──────────┤

@@ -45,7 +45,7 @@ println(x)
 
 # output
 
-3×3 DataFrames.DataFrame
+3×3 DataFrame
 │ Row │ name   │ age     │ Children │
 │     │ String │ Float64 │ Int64    │
 ├─────┼────────┼─────────┼──────────┤
