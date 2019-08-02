@@ -44,4 +44,8 @@ end
     @test DataFrame(df |> @mutate(foo = 1)) == DataFrame(foo=[1,1,1], bar=[3.,2.,1.], bat=["a","b","c"])
     @test DataFrame(df |> @mutate(bar = _.foo - 2 * _.bar, fat = _.bat * _.bat)) == DataFrame(foo=[1,2,3], bar=[-5.,-2.,1.], bat=["a","b","c"], fat=["aa","bb","cc"])
 
+    # test a closure
+
+    closure_val = 1
+    @test DataFrame(df |> @mutate(foo = closure_val)) == DataFrame(foo=[1,1,1], bar=[3.,2.,1.], bat=["a","b","c"])
 end
