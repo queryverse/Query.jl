@@ -260,11 +260,11 @@ end
 
 @test isa(q, DataFrame)
 @test size(q)==(9,5)
-@test q[:Name]==["John","John","John","Sally","Sally","Sally","Kirk","Kirk","Kirk"]
-@test q[:Age]==[23.,23.,23.,42.,42.,42.,59.,59.,59.]
-@test q[:Children]==[3,3,3,5,5,5,2,2,2]
-@test q[:A]==[1,2,3,1,2,3,1,2,3]
-@test q[:B]==[1.,2.,3.,1.,2.,3.,1.,2.,3.]
+@test q.Name==["John","John","John","Sally","Sally","Sally","Kirk","Kirk","Kirk"]
+@test q.Age==[23.,23.,23.,42.,42.,42.,59.,59.,59.]
+@test q.Children==[3,3,3,5,5,5,2,2,2]
+@test q.A==[1,2,3,1,2,3,1,2,3]
+@test q.B==[1.,2.,3.,1.,2.,3.,1.,2.,3.]
 
 source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
 
@@ -291,11 +291,11 @@ end
 
 @test isa(q, DataFrame)
 @test size(q)==(6,5)
-@test q[:Name]==["John","John","Sally","Sally","Kirk","Kirk"]
-@test q[:Age]==[23.,23.,42.,42.,59.,59.]
-@test q[:Children]==[3,3,5,5,2,2]
-@test q[:A]==[2,3,2,3,2,3]
-@test q[:B]==[2.,3.,2.,3.,2.,3.]
+@test q.Name==["John","John","Sally","Sally","Kirk","Kirk"]
+@test q.Age==[23.,23.,42.,42.,59.,59.]
+@test q.Children==[3,3,5,5,2,2]
+@test q.A==[2,3,2,3,2,3]
+@test q.B==[2.,3.,2.,3.,2.,3.]
 
 source_nested_dict = Dict(:a=>[1,2,3], :b=>[4,5])
 
@@ -347,8 +347,8 @@ end
 
 @test isa(q, DataFrame)
 @test size(q)==(2,2)
-@test q[:Children]==[3,2]
-@test q[:Number_of_parents]==[1,2]
+@test q.Children==[3,2]
+@test q.Number_of_parents==[1,2]
 
 
 q = @from i in source_df begin
@@ -417,7 +417,7 @@ end
 @test q[2,:name]=="Sally"
 @test q[3,:name]===missing
 @test q[4,:name]=="Kirk"
-@test q[:age]==[23., 42., 54., 59.]
+@test q.age==[23., 42., 54., 59.]
 @test q[1,:children]==3
 @test q[2,:children]===missing
 @test q[3,:children]==8
@@ -441,8 +441,8 @@ end
 
 @test isa(q, DataFrame)
 @test size(q)==(4,4)
-@test q[:a]==[1,2,2,3]
-@test q[:b]==[1.,2.,2.,3.]
+@test q.a==[1,2,2,3]
+@test q.b==[1.,2.,2.,3.]
 @test q[1,:c]===missing
 @test q[2,:c]==2
 @test q[3,:c]==2
