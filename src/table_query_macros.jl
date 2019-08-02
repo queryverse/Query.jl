@@ -183,9 +183,10 @@ julia> df |> @mutate(bar = _.foo + 2 * _.bar, bat = "com" * _.bat) |> DataFrame
 macro mutate(args...)
     prev = :_
     for arg in args
-        prev = :( merge($prev, ($(esc(arg.args[1])) = $(arg.args[2]),)) )
+        prev = :( Base.merge($prev, ($(arg.args[1]) = $(arg.args[2]),)) )
     end
-    return :( Query.@map( $prev ) )
+
+    return :( Query.@map( $prev ) ) |> esc
 end
 
 macro datatype(str)
