@@ -1,3 +1,7 @@
+# Query.jl v0.12.1 Release Notes
+* Fix escaping bug in @mutate
+* Fix some tests
+
 # Query.jl v0.12.0 Release Notes
 * Drop julia 0.7 support
 * Move to Project.toml
