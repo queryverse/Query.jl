@@ -44,7 +44,7 @@ macro select(args...)
         else
             arg = string(arg)
             # select by element type
-            m_type = match(r":\(:(.+)\)", arg)
+            m_type = match(r"::(.+)", arg)
             # remove by name
             m_rem = match(r"^-:(.+)", arg)
             # remove by predicate functions
@@ -66,7 +66,7 @@ macro select(args...)
 
             # TODO: eltype
             if m_type !== nothing
-                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.oftype(_, parse(DataType, @datatype($m_type[1])))) )
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.oftype(_, Val($(eval(Symbol(m_type[1])))))) )
             elseif m_rem !== nothing
                 prev = ifelse(prev == NamedTuple(), :_, prev)
                 prev = :( QueryOperators.NamedTupleUtilities.remove($prev, Val($(QuoteNode(Symbol(m_rem[1]))))) )
@@ -187,8 +187,4 @@ macro mutate(args...)
     end
 
     return :( Query.@map( $prev ) ) |> esc
-end
-
-macro datatype(str)
-    :($(Symbol(str)))
 end
