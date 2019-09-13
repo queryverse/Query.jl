@@ -1,25 +1,25 @@
 name = "Query"
 uuid = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
-version = "0.12.2-DEV"
+version = "0.12.3-DEV"
 
 [deps]
-DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
 IterableTables = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
-MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-QueryOperators = "2aef5ad7-51ca-5a8f-8e88-e75cf067b44b"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-
-[compat]
-DataValues = "≥ 0.4.4"
-IterableTables = "≥ 0.8.2"
-MacroTools = "≥ 0.4.4"
-QueryOperators = "0.9.1"
-julia = "1"
+QueryOperators = "2aef5ad7-51ca-5a8f-8e88-e75cf067b44b"
+DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
+MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 
 [extras]
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+
+[compat]
+IterableTables = "≥ 0.8.2"
+julia = "1"
+QueryOperators = "0.9.1"
+DataValues = "≥ 0.4.4"
+MacroTools = "≥ 0.4.4"
 
 [targets]
 test = ["Statistics", "Test", "DataFrames"]
