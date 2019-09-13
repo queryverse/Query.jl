@@ -41,6 +41,19 @@ macro select(args...)
         elseif typeof(arg) == QuoteNode
             # select by name
             prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
+        elseif arg isa Expr && arg.head==:call && length(arg.args)==3 && arg.args[1]==Symbol(":")
+            arg = string(arg)
+            # select by range, with multiple syntaxes supported
+            m_range = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
+            m_range_ind = match(r"^([0-9]+) *: *([0-9]+)", arg)
+
+            if m_range_ind !== nothing
+                a = parse(Int, m_range_ind[1])
+                b = parse(Int, m_range_ind[2])
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val(keys(_)[$a]), Val(keys(_)[$b]))) )
+            else
+                prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m_range[1])))), Val($(QuoteNode(Symbol(m_range[2])))))) )
+            end
         else
             arg = string(arg)
             # select by element type
@@ -49,13 +62,6 @@ macro select(args...)
             m_rem = match(r"^-:(.+)", arg)
             # remove by predicate functions
             m_rem_pred = match(r"^-\(*(startswith|endswith|occursin)\(\"(.+)\"\)+", arg)
-            # select by range, with multiple syntaxes supported
-            m_range = match(r"^:([^,:]+) *: *:([^,:]+)", arg)
-            m_range_ind = match(r"^([0-9]+) *: *([0-9]+)", arg)
-            if m_range == nothing && m_range_ind == nothing
-                m_range = match(r"^rangeat\(:([^,]+), *:([^,]+)\)", arg)
-                m_range_ind = match(r"^rangeat\(([0-9]+), *([0-9]+)\)", arg)
-            end
             # select by predicate functions
             m_pred = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
             is_neg_pred = false
@@ -78,14 +84,6 @@ macro select(args...)
                     prev = :( QueryOperators.NamedTupleUtilities.not_endswith($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
                 elseif m_rem_pred[1] == "occursin"
                     prev = :( QueryOperators.NamedTupleUtilities.not_occursin($prev, Val($(QuoteNode(Symbol(m_rem_pred[2]))))) )
-                end
-            elseif m_range !== nothing || m_range_ind !== nothing
-                if m_range_ind !== nothing
-                    a = parse(Int, m_range_ind[1])
-                    b = parse(Int, m_range_ind[2])
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val(keys(_)[$a]), Val(keys(_)[$b]))) )
-                else
-                    prev = :( merge($prev, QueryOperators.NamedTupleUtilities.range(_, Val($(QuoteNode(Symbol(m_range[1])))), Val($(QuoteNode(Symbol(m_range[2])))))) )
                 end
             elseif m_pred !== nothing
                 if is_neg_pred == false
