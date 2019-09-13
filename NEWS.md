@@ -1,3 +1,6 @@
+# Query.jl v0.12.2 Release Notes
+* Fix some bugs in the @select macro
+
 # Query.jl v0.12.1 Release Notes
 * Fix escaping bug in @mutate
 * Fix some tests
