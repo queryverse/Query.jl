@@ -186,3 +186,21 @@ macro mutate(args...)
 
     return :( Query.@map( $prev ) ) |> esc
 end
+
+our_get(x) = x
+our_get(x::DataValue) = get(x)
+
+our_get(x, y) = x
+our_get(x::DataValue, y) = get(x, y)
+
+macro dissallowna()
+    return :( Query.@map(map(our_get, _)) )
+end
+
+macro dropna()
+    return :( i-> i |> Query.@filter(!any(isna, _)) |>  Query.@dissallowna() )
+end
+
+macro replacena(arg)
+    return :( Query.@map(map(i->our_get(i, $arg), _)) )
+end
