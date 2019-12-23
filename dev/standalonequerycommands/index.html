@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Standalone Query Commands · Query.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Query.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../gettingstarted/">Getting Started</a></li><li class="is-active"><a class="tocitem" href>Standalone Query Commands</a><ul class="internal"><li><a class="tocitem" href="#Standalone-query-operators-2"><span>Standalone query operators</span></a></li><li><a class="tocitem" href="#The-@map-command-1"><span>The <code>@map</code> command</span></a></li><li><a class="tocitem" href="#The-@filter-command-1"><span>The <code>@filter</code> command</span></a></li><li><a class="tocitem" href="#The-@groupby-command-1"><span>The <code>@groupby</code> command</span></a></li><li><a class="tocitem" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1"><span>The <code>@orderby</code>, <code>@orderby_descending</code>, <code>@thenby</code> and <code>@thenby_descending</code> command</span></a></li><li><a class="tocitem" href="#The-@groupjoin-command-1"><span>The <code>@groupjoin</code> command</span></a></li><li><a class="tocitem" href="#The-@join-command-1"><span>The <code>@join</code> command</span></a></li><li><a class="tocitem" href="#The-@mapmany-command-1"><span>The <code>@mapmany</code> command</span></a></li><li><a class="tocitem" href="#The-@take-command-1"><span>The <code>@take</code> command</span></a></li><li><a class="tocitem" href="#The-@drop-command-1"><span>The <code>@drop</code> command</span></a></li><li><a class="tocitem" href="#The-@unique-command-1"><span>The <code>@unique</code> command</span></a></li><li><a class="tocitem" href="#The-@select-command-1"><span>The <code>@select</code> command</span></a></li><li><a class="tocitem" href="#The-@rename-command-1"><span>The <code>@rename</code> command</span></a></li><li><a class="tocitem" href="#The-@mutate-command-1"><span>The <code>@mutate</code> command</span></a></li></ul></li><li><a class="tocitem" href="../linqquerycommands/">LINQ Style Query Commands</a></li><li><a class="tocitem" href="../sources/">Data Sources</a></li><li><a class="tocitem" href="../sinks/">Data Sinks</a></li><li><a class="tocitem" href="../experimental/">Experimental Features</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Standalone Query Commands</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Standalone Query Commands</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/standalonequerycommands.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Standalone-query-operators-1"><a class="docs-heading-anchor" href="#Standalone-query-operators-1">Standalone query operators</a><a class="docs-heading-anchor-permalink" href="#Standalone-query-operators-1" title="Permalink"></a></h1><p>The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:</p><pre><code class="language-julia">using Query, DataFrames, Statistics
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Standalone Query Commands · Query.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Query.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../gettingstarted/">Getting Started</a></li><li class="is-active"><a class="tocitem" href>Standalone Query Commands</a><ul class="internal"><li><a class="tocitem" href="#Standalone-query-operators-2"><span>Standalone query operators</span></a></li><li><a class="tocitem" href="#The-@map-command-1"><span>The <code>@map</code> command</span></a></li><li><a class="tocitem" href="#The-@filter-command-1"><span>The <code>@filter</code> command</span></a></li><li><a class="tocitem" href="#The-@groupby-command-1"><span>The <code>@groupby</code> command</span></a></li><li><a class="tocitem" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1"><span>The <code>@orderby</code>, <code>@orderby_descending</code>, <code>@thenby</code> and <code>@thenby_descending</code> command</span></a></li><li><a class="tocitem" href="#The-@groupjoin-command-1"><span>The <code>@groupjoin</code> command</span></a></li><li><a class="tocitem" href="#The-@join-command-1"><span>The <code>@join</code> command</span></a></li><li><a class="tocitem" href="#The-@mapmany-command-1"><span>The <code>@mapmany</code> command</span></a></li><li><a class="tocitem" href="#The-@take-command-1"><span>The <code>@take</code> command</span></a></li><li><a class="tocitem" href="#The-@drop-command-1"><span>The <code>@drop</code> command</span></a></li><li><a class="tocitem" href="#The-@unique-command-1"><span>The <code>@unique</code> command</span></a></li><li><a class="tocitem" href="#The-@select-command-1"><span>The <code>@select</code> command</span></a></li><li><a class="tocitem" href="#The-@rename-command-1"><span>The <code>@rename</code> command</span></a></li><li><a class="tocitem" href="#The-@mutate-command-1"><span>The <code>@mutate</code> command</span></a></li><li><a class="tocitem" href="#The-@dropna-command-1"><span>The <code>@dropna</code> command</span></a></li><li><a class="tocitem" href="#The-@dissallowna-command-1"><span>The <code>@dissallowna</code> command</span></a></li><li><a class="tocitem" href="#The-@replacena-command-1"><span>The <code>@replacena</code> command</span></a></li></ul></li><li><a class="tocitem" href="../linqquerycommands/">LINQ Style Query Commands</a></li><li><a class="tocitem" href="../sources/">Data Sources</a></li><li><a class="tocitem" href="../sinks/">Data Sinks</a></li><li><a class="tocitem" href="../experimental/">Experimental Features</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Standalone Query Commands</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Standalone Query Commands</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/standalonequerycommands.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Standalone-query-operators-1"><a class="docs-heading-anchor" href="#Standalone-query-operators-1">Standalone query operators</a><a class="docs-heading-anchor-permalink" href="#Standalone-query-operators-1" title="Permalink"></a></h1><p>The standalone query operators are typically combined via the pipe operator. Here is an example that demonstrates their use:</p><pre><code class="language-julia">using Query, DataFrames, Statistics
 
 df = DataFrame(a=[1,1,2,3], b=[4,5,6,8])
 
@@ -224,4 +224,111 @@ println(q)
 ├─────┼────────┼────────┼─────────┼──────────┤
 │ 1   │ Apple  │ 2      │ 4.4     │ true     │
 │ 2   │ Banana │ 6      │ 10.0    │ false    │
-│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gettingstarted/">« Getting Started</a><a class="docs-footer-nextpage" href="../linqquerycommands/">LINQ Style Query Commands »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 7 December 2019 00:20">Saturday 7 December 2019</span>. Using Julia version 1.3.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │</code></pre><h2 id="The-@dropna-command-1"><a class="docs-heading-anchor" href="#The-@dropna-command-1">The <code>@dropna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@dropna-command-1" title="Permalink"></a></h2><p>The <code>@dropna</code> command has the form <code>source |&gt; @dropna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@dropna()</code> is called without any arguments, it will drop any row from <code>source</code> that has a missing <code>NA</code> value in <em>any</em> of its columns. Alternatively one can pass a list of column names to <code>@dropna</code>, in which case it will only drop rows that have a <code>NA</code> value in one of those columns.</p><p>Our first example uses the simple version of <code>@dropna()</code> that drops rows that have a missing value in any column:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,2,3], b=[4,missing,5])
+
+q = df |&gt; @dropna() |&gt; DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 5     │</code></pre><p>The next example only drops rows that have a missing value in the <code>b</code> column:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,2,3], b=[4,missing,5])
+
+q = df |&gt; @dropna(:b) |&gt; DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 5     │</code></pre><p>We can specify as many columns as we want:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,2,3], b=[4,missing,5])
+
+q = df |&gt; @dropna(:b, :a) |&gt; DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 5     │</code></pre><h2 id="The-@dissallowna-command-1"><a class="docs-heading-anchor" href="#The-@dissallowna-command-1">The <code>@dissallowna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@dissallowna-command-1" title="Permalink"></a></h2><p>The <code>@dissallowna</code> command has the form <code>source |&gt; @dissallowna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@dissallowna()</code> is called without any arguments, it will check that there are no missing <code>NA</code> values in any column in any row of the input table and convert the element type of each column to one that cannot hold missing values. Alternatively one can pass a list of column names to <code>@dissallowna</code>, in which case it will only check for <code>NA</code> values in those columns, and only convert those columns to a type that cannot hold missing values.</p><p>Our first example uses the simple version of <code>@dissallowna()</code> that makes sure there are no missing values anywhere in the table. Note how the column type for column <code>a</code> is changed to <code>Int64</code> in this example, i.e. an element type that does not support missing values:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,missing,3], b=[4,5,6])
+
+q = df |&gt; @filter(!isna(_.a)) |&gt; @dissallowna() |&gt; DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 6     │</code></pre><p>The next example only checks the <code>b</code> column for missing values:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,2,missing], b=[4,missing,5])
+
+q = df |&gt; @filter(!isna(_.b)) |&gt; @dissallowna(:b) |&gt; DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a       │ b     │
+│     │ Int64⍰  │ Int64 │
+├─────┼─────────┼───────┤
+│ 1   │ 1       │ 4     │
+│ 2   │ missing │ 5     │</code></pre><h2 id="The-@replacena-command-1"><a class="docs-heading-anchor" href="#The-@replacena-command-1">The <code>@replacena</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@replacena-command-1" title="Permalink"></a></h2><p>The <code>@replacena</code> command has a simple and full version.</p><p>The simple form is <code>source |&gt; @replacena(replacement_value)</code>. <code>source</code> can be any source that can be queried and that has a table structure. In this case all missing <code>NA</code> values in the source table will be replaced with <code>replacement_value</code>. Not that this version only works properly, if all columns that contain missing values have the same element type.</p><p>The full version has the form <code>source |&gt; @replacena(replacement_specifier...)</code>. <code>source</code> can again be any source that can be queried that has a table structure. Each <code>replacement_specifier</code> should be a <code>Pair</code> of the form <code>column_name =&gt; replacement_value</code>. For example <code>:b =&gt; 3</code> means that all missing values in column <code>b</code> should be replaced with the value 3. One can specify as many <code>replacement_specifier</code>s as one wishes.</p><p>The first example uses the simple form:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,missing,3], b=[4,5,6])
+
+q = df |&gt; @replacena(0) |&gt; DataFrame
+
+println(q)
+
+# output
+
+3×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 0     │ 5     │
+│ 3   │ 3     │ 6     │</code></pre><p>The next example uses a different replacement value for column <code>a</code> and <code>b</code>:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[1,2,missing], b=[&quot;One&quot;,missing,&quot;Three&quot;])
+
+q = df |&gt; @replacena(:b=&gt;&quot;Unknown&quot;, :a=&gt;0) |&gt; DataFrame
+
+println(q)
+
+# output
+
+3×2 DataFrame
+│ Row │ a     │ b       │
+│     │ Int64 │ String  │
+├─────┼───────┼─────────┤
+│ 1   │ 1     │ One     │
+│ 2   │ 2     │ Unknown │
+│ 3   │ 0     │ Three   │</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gettingstarted/">« Getting Started</a><a class="docs-footer-nextpage" href="../linqquerycommands/">LINQ Style Query Commands »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 23 December 2019 02:36">Monday 23 December 2019</span>. Using Julia version 1.3.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
