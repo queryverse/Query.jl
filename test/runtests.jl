@@ -496,6 +496,8 @@ include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
 include("test_macros.jl")
 
-doctest(Query)
+# Only run doctests on 64, all the output checks get messed up with
+# Int32 otherwise
+Int==Int64 && doctest(Query)
 
 end
