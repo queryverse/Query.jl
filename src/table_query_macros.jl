@@ -198,7 +198,7 @@ macro dissallowna()
 end
 
 macro dissallowna(columns...)
-    return :( Query.@mutate( $( ( :( $(esc(columns[i].value)) = our_get(_.$(columns[i].value))  ) for i=1:length(columns) )... )   ) )
+    return :( Query.@mutate( $( ( :( $(columns[i].value) = our_get(_.$(columns[i].value))  ) for i=1:length(columns) )... )   ) )
 end
 
 macro dropna()
@@ -220,6 +220,6 @@ macro replacena(arg, args...)
         columns = map(i->i.args[2].value, args)
         replacement_values = map(i->i.args[3], args)
 
-        return :( Query.@mutate( $( ( :( $(esc(columns[i])) = our_get(_.$(columns[i]), $(replacement_values[i]))  ) for i=1:length(columns) )... )   ) )
+        return :( Query.@mutate( $( ( :( $(columns[i]) = our_get(_.$(columns[i]), $(replacement_values[i]))  ) for i=1:length(columns) )... )   ) )
     end
 end
