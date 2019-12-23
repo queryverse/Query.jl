@@ -190,9 +190,9 @@ println(q2)
 │ Row │ price   │ isyellow │ fruit  │
 │     │ Float64 │ Bool     │ String │
 ├─────┼─────────┼──────────┼────────┤
-│ 1   │ 1.2     │ false    │ Apple  │
-│ 2   │ 2.0     │ true     │ Banana │
-│ 3   │ 0.4     │ false    │ Cherry │</code></pre><h2 id="The-@rename-command-1"><a class="docs-heading-anchor" href="#The-@rename-command-1">The <code>@rename</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@rename-command-1" title="Permalink"></a></h2><p>The <code>@rename</code> command has the form <code>source |&gt; @rename(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name or index of the element, as well as the new name for the element. All <code>args...</code> are executed in order, and the result set of the previous renaming is the source of each current operation.</p><pre><code class="language-julia">using Query, DataFrames
+│ 1   │ 1.2     │ 0        │ Apple  │
+│ 2   │ 2.0     │ 1        │ Banana │
+│ 3   │ 0.4     │ 0        │ Cherry │</code></pre><h2 id="The-@rename-command-1"><a class="docs-heading-anchor" href="#The-@rename-command-1">The <code>@rename</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@rename-command-1" title="Permalink"></a></h2><p>The <code>@rename</code> command has the form <code>source |&gt; @rename(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name or index of the element, as well as the new name for the element. All <code>args...</code> are executed in order, and the result set of the previous renaming is the source of each current operation.</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
@@ -206,9 +206,9 @@ println(q)
 │ Row │ name   │ amount │ cost    │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 1.2     │ false    │
-│ 2   │ Banana │ 6      │ 2.0     │ true     │
-│ 3   │ Cherry │ 1000   │ 0.4     │ false    │</code></pre><h2 id="The-@mutate-command-1"><a class="docs-heading-anchor" href="#The-@mutate-command-1">The <code>@mutate</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@mutate-command-1" title="Permalink"></a></h2><p>The <code>@mutate</code> command has the form <code>source |&gt; @mutate(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of <code>source</code>. All <code>args...</code> are executed in order, and the result set of the previous mutation is the source of each current mutation.</p><pre><code class="language-julia">using Query, DataFrames
+│ 1   │ Apple  │ 2      │ 1.2     │ 0        │
+│ 2   │ Banana │ 6      │ 2.0     │ 1        │
+│ 3   │ Cherry │ 1000   │ 0.4     │ 0        │</code></pre><h2 id="The-@mutate-command-1"><a class="docs-heading-anchor" href="#The-@mutate-command-1">The <code>@mutate</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@mutate-command-1" title="Permalink"></a></h2><p>The <code>@mutate</code> command has the form <code>source |&gt; @mutate(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of <code>source</code>. All <code>args...</code> are executed in order, and the result set of the previous mutation is the source of each current mutation.</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
@@ -222,9 +222,9 @@ println(q)
 │ Row │ fruit  │ amount │ price   │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 4.4     │ true     │
-│ 2   │ Banana │ 6      │ 10.0    │ false    │
-│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │</code></pre><h2 id="The-@dropna-command-1"><a class="docs-heading-anchor" href="#The-@dropna-command-1">The <code>@dropna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@dropna-command-1" title="Permalink"></a></h2><p>The <code>@dropna</code> command has the form <code>source |&gt; @dropna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@dropna()</code> is called without any arguments, it will drop any row from <code>source</code> that has a missing <code>NA</code> value in <em>any</em> of its columns. Alternatively one can pass a list of column names to <code>@dropna</code>, in which case it will only drop rows that have a <code>NA</code> value in one of those columns.</p><p>Our first example uses the simple version of <code>@dropna()</code> that drops rows that have a missing value in any column:</p><pre><code class="language-julia">using Query, DataFrames
+│ 1   │ Apple  │ 2      │ 4.4     │ 1        │
+│ 2   │ Banana │ 6      │ 10.0    │ 0        │
+│ 3   │ Cherry │ 1000   │ 1000.8  │ 0        │</code></pre><h2 id="The-@dropna-command-1"><a class="docs-heading-anchor" href="#The-@dropna-command-1">The <code>@dropna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@dropna-command-1" title="Permalink"></a></h2><p>The <code>@dropna</code> command has the form <code>source |&gt; @dropna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@dropna()</code> is called without any arguments, it will drop any row from <code>source</code> that has a missing <code>NA</code> value in <em>any</em> of its columns. Alternatively one can pass a list of column names to <code>@dropna</code>, in which case it will only drop rows that have a <code>NA</code> value in one of those columns.</p><p>Our first example uses the simple version of <code>@dropna()</code> that drops rows that have a missing value in any column:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,2,3], b=[4,missing,5])
 
@@ -331,4 +331,4 @@ println(q)
 ├─────┼───────┼─────────┤
 │ 1   │ 1     │ One     │
 │ 2   │ 2     │ Unknown │
-│ 3   │ 0     │ Three   │</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gettingstarted/">« Getting Started</a><a class="docs-footer-nextpage" href="../linqquerycommands/">LINQ Style Query Commands »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 23 December 2019 02:36">Monday 23 December 2019</span>. Using Julia version 1.3.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+│ 3   │ 0     │ Three   │</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gettingstarted/">« Getting Started</a><a class="docs-footer-nextpage" href="../linqquerycommands/">LINQ Style Query Commands »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 23 December 2019 02:46">Monday 23 December 2019</span>. Using Julia version 1.3.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
