@@ -74,7 +74,7 @@ println(x)
 
 # output
 
-Dict("Sally"=>5,"John"=>3,"Kirk"=>2)
+Dict("Sally" => 5,"John" => 3,"Kirk" => 2)
 ````
 
 ## TimeArray

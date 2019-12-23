@@ -315,9 +315,9 @@ println(q2)
 │ Row │ price   │ isyellow │ fruit  │
 │     │ Float64 │ Bool     │ String │
 ├─────┼─────────┼──────────┼────────┤
-│ 1   │ 1.2     │ false    │ Apple  │
-│ 2   │ 2.0     │ true     │ Banana │
-│ 3   │ 0.4     │ false    │ Cherry │
+│ 1   │ 1.2     │ 0        │ Apple  │
+│ 2   │ 2.0     │ 1        │ Banana │
+│ 3   │ 0.4     │ 0        │ Cherry │
 ```
 
 ## The `@rename` command
@@ -339,9 +339,9 @@ println(q)
 │ Row │ name   │ amount │ cost    │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 1.2     │ false    │
-│ 2   │ Banana │ 6      │ 2.0     │ true     │
-│ 3   │ Cherry │ 1000   │ 0.4     │ false    │
+│ 1   │ Apple  │ 2      │ 1.2     │ 0        │
+│ 2   │ Banana │ 6      │ 2.0     │ 1        │
+│ 3   │ Cherry │ 1000   │ 0.4     │ 0        │
 ```
 
 ## The `@mutate` command
@@ -361,9 +361,9 @@ println(q)
 │ Row │ fruit  │ amount │ price   │ isyellow │
 │     │ String │ Int64  │ Float64 │ Bool     │
 ├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 4.4     │ true     │
-│ 2   │ Banana │ 6      │ 10.0    │ false    │
-│ 3   │ Cherry │ 1000   │ 1000.8  │ false    │
+│ 1   │ Apple  │ 2      │ 4.4     │ 1        │
+│ 2   │ Banana │ 6      │ 10.0    │ 0        │
+│ 3   │ Cherry │ 1000   │ 1000.8  │ 0        │
 ``` 
 
 ## The `@dropna` command
