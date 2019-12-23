@@ -49,3 +49,39 @@ end
     closure_val = 1
     @test DataFrame(df |> @mutate(foo = closure_val)) == DataFrame(foo=[1,1,1], bar=[3.,2.,1.], bat=["a","b","c"])
 end
+
+@testset "@dropna" begin
+
+    df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
+
+    @test df |> @dropna() |> collect == [(a=1,b=1.), (a=3, b=3.)]
+    @test df |> @filter(!any(isna, _)) |> @dropna() |> collect == [(a=1,b=1.), (a=3, b=3.)]
+    @test df |> @select(:b) |> @dropna() |> collect == [(b=1.,),(b=2.,),(b=3.,)]
+
+    @test df |> @dropna(:a) |> collect == [(a=1,b=1.), (a=3, b=3.)]
+    @test df |> @dropna(:b) |> collect == [(a=DataValue(1),b=1.), (a=DataValue{Int}(),b=2.),(a=DataValue(3), b=3.)]
+    @test df |> @dropna(:a, :b) |> collect == [(a=1,b=1.), (a=3, b=3.)]
+end
+
+@testset "@replacena" begin
+
+    df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
+
+    @test df |> @replacena(2) |> collect == [(a=1,b=1.), (a=2, b=2.), (a=3, b=3.)]
+    @test df |> @dropna() |> @replacena(2) |> collect == [(a=1,b=1.), (a=3, b=3.)]
+    @test df |> @select(:b) |> @replacena(2) |> collect == [(b=1.,),(b=2.,),(b=3.,)]
+
+    @test df |> @replacena(:a=>2) |> collect == [(a=1,b=1.), (a=2, b=2.), (a=3, b=3.)]
+    @test df |> @replacena(:b=>2) |> collect == [(a=DataValue(1),b=1.), (a=DataValue{Int}(),b=2.),(a=DataValue(3), b=3.)]
+    @test df |> @replacena(:a=>2, :b=>8) |> collect == [(a=1,b=1.), (a=2, b=2.), (a=3, b=3.)]
+end
+
+@testset "@dissallowna" begin
+
+    df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
+
+    @test_throws DataValueException df |> @dissallowna() |> collect
+    @test df |> @filter(!any(isna, _)) |> @dissallowna() |> collect == [(a=1,b=1.), (a=3, b=3.)]
+    @test_throws DataValueException df |> @dissallowna(:a) |> collect
+    @test df |> @dissallowna(:b) |> collect == [(a=DataValue(1),b=1.), (a=DataValue{Int}(),b=2.),(a=DataValue(3), b=3.)]
+end

@@ -365,3 +365,168 @@ println(q)
 │ 2   │ Banana │ 6      │ 10.0    │ false    │
 │ 3   │ Cherry │ 1000   │ 1000.8  │ false    │
 ``` 
+
+## The `@dropna` command
+
+The `@dropna` command has the form `source |> @dropna(columns...)`. `source` can be any source that can be queried and that has a table structure. If `@dropna()` is called without any arguments, it will drop any row from `source` that has a missing `NA` value in _any_ of its columns. Alternatively one can pass a list of column names to `@dropna`, in which case it will only drop rows that have a `NA` value in one of those columns.
+
+Our first example uses the simple version of `@dropna()` that drops rows that have a missing value in any column:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,2,3], b=[4,missing,5])
+
+q = df |> @dropna() |> DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 5     │
+```
+
+The next example only drops rows that have a missing value in the `b` column:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,2,3], b=[4,missing,5])
+
+q = df |> @dropna(:b) |> DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 5     │
+```
+
+We can specify as many columns as we want:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,2,3], b=[4,missing,5])
+
+q = df |> @dropna(:b, :a) |> DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 5     │
+```
+
+## The `@dissallowna` command
+
+The `@dissallowna` command has the form `source |> @dissallowna(columns...)`. `source` can be any source that can be queried and that has a table structure. If `@dissallowna()` is called without any arguments, it will check that there are no missing `NA` values in any column in any row of the input table and convert the element type of each column to one that cannot hold missing values. Alternatively one can pass a list of column names to `@dissallowna`, in which case it will only check for `NA` values in those columns, and only convert those columns to a type that cannot hold missing values.
+
+Our first example uses the simple version of `@dissallowna()` that makes sure there are no missing values anywhere in the table. Note how the column type for column `a` is changed to `Int64` in this example, i.e. an element type that does not support missing values:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,missing,3], b=[4,5,6])
+
+q = df |> @filter(!isna(_.a)) |> @dissallowna() |> DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 3     │ 6     │
+```
+
+The next example only checks the `b` column for missing values:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,2,missing], b=[4,missing,5])
+
+q = df |> @filter(!isna(_.b)) |> @dissallowna(:b) |> DataFrame
+
+println(q)
+
+# output
+
+2×2 DataFrame
+│ Row │ a       │ b     │
+│     │ Int64⍰  │ Int64 │
+├─────┼─────────┼───────┤
+│ 1   │ 1       │ 4     │
+│ 2   │ missing │ 5     │
+```
+
+## The `@replacena` command
+
+The `@replacena` command has a simple and full version.
+
+The simple form is `source |> @replacena(replacement_value)`. `source` can be any source that can be queried and that has a table structure. In this case all missing `NA` values in the source table will be replaced with `replacement_value`. Not that this version only works properly, if all columns that contain missing values have the same element type.
+
+The full version has the form `source |> @replacena(replacement_specifier...)`. `source` can again be any source that can be queried that has a table structure. Each `replacement_specifier` should be a `Pair` of the form `column_name => replacement_value`. For example `:b => 3` means that all missing values in column `b` should be replaced with the value 3. One can specify as many `replacement_specifier`s as one wishes.
+
+The first example uses the simple form:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,missing,3], b=[4,5,6])
+
+q = df |> @replacena(0) |> DataFrame
+
+println(q)
+
+# output
+
+3×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 4     │
+│ 2   │ 0     │ 5     │
+│ 3   │ 3     │ 6     │
+```
+
+The next example uses a different replacement value for column `a` and `b`:
+
+```jldoctest
+using Query, DataFrames
+
+df = DataFrame(a=[1,2,missing], b=["One",missing,"Three"])
+
+q = df |> @replacena(:b=>"Unknown", :a=>0) |> DataFrame
+
+println(q)
+
+# output
+
+3×2 DataFrame
+│ Row │ a     │ b       │
+│     │ Int64 │ String  │
+├─────┼───────┼─────────┤
+│ 1   │ 1     │ One     │
+│ 2   │ 2     │ Unknown │
+│ 3   │ 0     │ Three   │
+```

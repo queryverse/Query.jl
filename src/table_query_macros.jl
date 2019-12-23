@@ -186,3 +186,40 @@ macro mutate(args...)
 
     return :( Query.@map( $prev ) ) |> esc
 end
+
+our_get(x) = x
+our_get(x::DataValue) = get(x)
+
+our_get(x, y) = x
+our_get(x::DataValue, y) = get(x, y)
+
+macro dissallowna()
+    return :( Query.@map(map(our_get, _)) )
+end
+
+macro dissallowna(columns...)
+    return :( Query.@mutate( $( ( :( $(columns[i].value) = our_get(_.$(columns[i].value))  ) for i=1:length(columns) )... )   ) )
+end
+
+macro dropna()
+    return :( i-> i |> Query.@filter(!any(isna, _)) |>  Query.@dissallowna() )
+end
+
+macro dropna(columns...)
+    return :( i-> i |> Query.@filter(!any(($((:(isna(_.$(columns[i].value))) for i in 1:length(columns)  )...),))) |> Query.@dissallowna($(columns...)) )
+end
+
+macro replacena(arg, args...)
+    if length(args)==0 && !(arg isa Expr && arg.head==:call && length(arg.args)==3 && arg.args[1]==:(=>))
+        return :( Query.@map(map(i->our_get(i, $arg), _)) )
+    else
+        args = [arg; args...]
+
+        all(i isa Expr && i.head==:call && length(i.args)==3 && i.args[1]==:(=>)  for i in args) || error("Invalid syntax.")
+
+        columns = map(i->i.args[2].value, args)
+        replacement_values = map(i->i.args[3], args)
+
+        return :( Query.@mutate( $( ( :( $(columns[i]) = our_get(_.$(columns[i]), $(replacement_values[i]))  ) for i=1:length(columns) )... )   ) )
+    end
+end
