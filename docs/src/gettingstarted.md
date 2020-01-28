@@ -27,6 +27,9 @@ println(x)
 │ 1   │ Kirk   │ 2        │
 ```
 
+Note the shorthand syntax `_.age>50` for the anonymous function `i->i.age>50`.
+See [Experimental features](experimental.md) for more information.
+
 ## LINQ style queries
 
 The basic structure of a LINQ style query statement is
