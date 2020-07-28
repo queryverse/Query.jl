@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>LINQ Style Query Commands · Query.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Query.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../gettingstarted/">Getting Started</a></li><li><a class="tocitem" href="../standalonequerycommands/">Standalone Query Commands</a></li><li class="is-active"><a class="tocitem" href>LINQ Style Query Commands</a><ul class="internal"><li><a class="tocitem" href="#Sorting-1"><span>Sorting</span></a></li><li><a class="tocitem" href="#Filtering-1"><span>Filtering</span></a></li><li><a class="tocitem" href="#Projecting-1"><span>Projecting</span></a></li><li><a class="tocitem" href="#Flattening-1"><span>Flattening</span></a></li><li><a class="tocitem" href="#Joining-1"><span>Joining</span></a></li><li><a class="tocitem" href="#Grouping-1"><span>Grouping</span></a></li><li><a class="tocitem" href="#Split-Apply-Combine-(a.k.a.-dplyr)-1"><span>Split-Apply-Combine (a.k.a. <code>dplyr</code>)</span></a></li><li><a class="tocitem" href="#Range-variables-1"><span>Range variables</span></a></li></ul></li><li><a class="tocitem" href="../sources/">Data Sources</a></li><li><a class="tocitem" href="../sinks/">Data Sinks</a></li><li><a class="tocitem" href="../experimental/">Experimental Features</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>LINQ Style Query Commands</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>LINQ Style Query Commands</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/linqquerycommands.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="LINQ-Style-Query-Commands-1"><a class="docs-heading-anchor" href="#LINQ-Style-Query-Commands-1">LINQ Style Query Commands</a><a class="docs-heading-anchor-permalink" href="#LINQ-Style-Query-Commands-1" title="Permalink"></a></h1><h2 id="Sorting-1"><a class="docs-heading-anchor" href="#Sorting-1">Sorting</a><a class="docs-heading-anchor-permalink" href="#Sorting-1" title="Permalink"></a></h2><p>The <code>@orderby</code> statement sorts the elements from a source by one or more element attributes. The syntax for the <code>@orderby</code> statement is <code>@orderby &lt;attribute&gt;[, &lt;attribute&gt;]</code>. <code>&lt;attribute&gt;</code> can be any julia expression that returns an attribute by which the source elements should be sorted. The default sort order is ascending. By wrapping an <code>&lt;attribute&gt;</code> in a call to <code>descending(&lt;attribute)</code> one can reverse the sort order. The <code>@orderby</code> statement accepts multiple <code>&lt;attribute&gt;</code>s separated by <code>,</code>s. With multiple sorting attributes, the elements are first sorted by the first attribute. Elements that can&#39;t be ranked by the first attribute are then sorted by the second attribute etc.</p><h4 id="Example-1"><a class="docs-heading-anchor" href="#Example-1">Example</a><a class="docs-heading-anchor-permalink" href="#Example-1" title="Permalink"></a></h4><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])
+
+x = @from i in df begin
+    @orderby descending(i.a), i.b
+    @select i
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+6×2 DataFrame
+│ Row │ a     │ b     │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 3     │ 2     │
+│ 2   │ 2     │ 1     │
+│ 3   │ 2     │ 2     │
+│ 4   │ 1     │ 1     │
+│ 5   │ 1     │ 2     │
+│ 6   │ 1     │ 3     │</code></pre><h2 id="Filtering-1"><a class="docs-heading-anchor" href="#Filtering-1">Filtering</a><a class="docs-heading-anchor-permalink" href="#Filtering-1" title="Permalink"></a></h2><p>The <code>@where</code> statement filters a source so that only those elements are returned that satisfy a filter condition. The syntax for the <code>@where</code> statement is <code>@where &lt;condition&gt;</code>. <code>&lt;condition&gt;</code> can be any arbitrary julia expression that evaluates to <code>true</code> or <code>false</code>.</p><h4 id="Example-2"><a class="docs-heading-anchor" href="#Example-2">Example</a><a class="docs-heading-anchor-permalink" href="#Example-2" title="Permalink"></a></h4><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @where i.age &gt; 30. &amp;&amp; i.children &gt; 2
+    @select i
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+1×3 DataFrame
+│ Row │ name   │ age     │ children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ Sally  │ 42.0    │ 5        │</code></pre><h2 id="Projecting-1"><a class="docs-heading-anchor" href="#Projecting-1">Projecting</a><a class="docs-heading-anchor-permalink" href="#Projecting-1" title="Permalink"></a></h2><p>The <code>@select</code> statement applies a transformation to each element of the source. The syntax for the <code>@select</code> statement is <code>@select &lt;condition&gt;</code>. <code>&lt;condition&gt;</code> can be any arbitrary julia expression that transforms an element from the source into the desired target format.</p><h4 id="Example-3"><a class="docs-heading-anchor" href="#Example-3">Example</a><a class="docs-heading-anchor-permalink" href="#Example-3" title="Permalink"></a></h4><p>The following example transforms each element from the source by squaring it.</p><pre><code class="language-julia">using Query
+
+data = [1,2,3]
+
+x = @from i in data begin
+    @select i^2
+    @collect
+end
+
+println(x)
+
+# output
+
+[1, 4, 9]</code></pre><p>One of the most common patterns in Query is to transform elements into named tuples with a <code>@select</code> statement. There are two ways to create a named tuples in Query: a) using the standard syntax from julia for named tuples, or b) a special syntax that <em>only</em> works inside Query.jl macros. This special syntax is based on curly brackets <code>{}</code>. An example that highlights all options of this syntax is this:</p><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select {i.name, Age=i.age}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+3×2 DataFrame
+│ Row │ name   │ Age     │
+│     │ String │ Float64 │
+├─────┼────────┼─────────┤
+│ 1   │ John   │ 23.0    │
+│ 2   │ Sally  │ 42.0    │
+│ 3   │ Kirk   │ 59.0    │</code></pre><p>The elements of the new named tuple are separated by commas <code>,</code>. One can specify an explicit name for an individual element of a named tuple using the <code>=</code> syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn&#39;t have to specify a name explicitly, instead the <code>{}</code> syntax automatically infers the name.</p><h2 id="Flattening-1"><a class="docs-heading-anchor" href="#Flattening-1">Flattening</a><a class="docs-heading-anchor-permalink" href="#Flattening-1" title="Permalink"></a></h2><p>One can project child elements from the elements of a source by using multiple <code>@from</code> statements. The nested child elements are flattened into one stream of results when multiple <code>@from</code> statements are used. The syntax for any additional <code>@from</code> statement (apart from the initial one that starts a query) is <code>@from &lt;range variable&gt; in &lt;selector&gt;</code>. <code>&lt;range variable&gt;</code> is the name of the range variable to be used for the child elements, and <code>&lt;selector&gt;</code> is a julia expression that returns the child elements.</p><h4 id="Example-4"><a class="docs-heading-anchor" href="#Example-4">Example</a><a class="docs-heading-anchor-permalink" href="#Example-4" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+
+source = Dict(:a=&gt;[1,2,3], :b=&gt;[4,5])
+
+q = @from i in source begin
+    @from j in i.second
+    @select {Key=i.first,Value=j}
+    @collect DataFrame
+end
+
+println(q)
+
+# output
+
+5×2 DataFrame
+│ Row │ Key    │ Value │
+│     │ Symbol │ Int64 │
+├─────┼────────┼───────┤
+│ 1   │ a      │ 1     │
+│ 2   │ a      │ 2     │
+│ 3   │ a      │ 3     │
+│ 4   │ b      │ 4     │
+│ 5   │ b      │ 5     │</code></pre><h2 id="Joining-1"><a class="docs-heading-anchor" href="#Joining-1">Joining</a><a class="docs-heading-anchor-permalink" href="#Joining-1" title="Permalink"></a></h2><p>The <code>@join</code> statement combines data from two different sources. There are two variants of the statement: an inner join and a group join. The <code>@left_outer_join</code> statement provides a traditional left outer join option.</p><h3 id="Inner-join-1"><a class="docs-heading-anchor" href="#Inner-join-1">Inner join</a><a class="docs-heading-anchor-permalink" href="#Inner-join-1" title="Permalink"></a></h3><p>The syntax for an inner join is <code>@join &lt;range variable&gt; in &lt;source&gt; on &lt;left key&gt; equals &lt;right key&gt;</code>. <code>&lt;range variable&gt;</code> is the name of the variable that should reference elements from the right source in the join. <code>&lt;source&gt;</code> is the name of the right source in the join operation. <code>&lt;left key&gt;</code> and <code>&lt;right key&gt;</code> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values.</p><h4 id="Example-5"><a class="docs-heading-anchor" href="#Example-5">Example</a><a class="docs-heading-anchor-permalink" href="#Example-5" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+
+df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+df2 = DataFrame(c=[2,4,2], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
+
+x = @from i in df1 begin
+    @join j in df2 on i.a equals j.c
+    @select {i.a,i.b,j.c,j.d}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+2×4 DataFrame
+│ Row │ a     │ b       │ c     │ d      │
+│     │ Int64 │ Float64 │ Int64 │ String │
+├─────┼───────┼─────────┼───────┼────────┤
+│ 1   │ 2     │ 2.0     │ 2     │ John   │
+│ 2   │ 2     │ 2.0     │ 2     │ Sally  │</code></pre><h3 id="Group-join-1"><a class="docs-heading-anchor" href="#Group-join-1">Group join</a><a class="docs-heading-anchor-permalink" href="#Group-join-1" title="Permalink"></a></h3><p>The syntax for a group join is <code>@join &lt;range variable&gt; in &lt;source&gt; on &lt;left key&gt; equals &lt;right key&gt; into &lt;group variable&gt;</code>. <code>&lt;range variable&gt;</code> is the name of the variable that should reference elements from the right source in the join. <code>&lt;source&gt;</code> is the name of the right source in the join operation. <code>&lt;left key&gt;</code> and <code>&lt;right key&gt;</code> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. <code>&lt;group variable&gt;</code> is the name of the variable that will hold all the elements from the right source that are joined to a given element from the left source.</p><h4 id="Example-6"><a class="docs-heading-anchor" href="#Example-6">Example</a><a class="docs-heading-anchor-permalink" href="#Example-6" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+
+df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+df2 = DataFrame(c=[2,4,2], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
+
+x = @from i in df1 begin
+    @join j in df2 on i.a equals j.c into k
+    @select {t1=i.a,t2=length(k)}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+3×2 DataFrame
+│ Row │ t1    │ t2    │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 1     │ 0     │
+│ 2   │ 2     │ 2     │
+│ 3   │ 3     │ 0     │</code></pre><h3 id="Left-outer-join-1"><a class="docs-heading-anchor" href="#Left-outer-join-1">Left outer join</a><a class="docs-heading-anchor-permalink" href="#Left-outer-join-1" title="Permalink"></a></h3><p>They syntax for a left outer join is <code>@left_outer_join &lt;range variable&gt; in &lt;source&gt; on &lt;left key&gt; equals &lt;right key&gt;</code>. <code>&lt;range variable&gt;</code> is the name of the variable that should reference elements from the right source in the join. <code>&lt;source&gt;</code> is the name of the right source in the join operation. <code>&lt;left key&gt;</code> and <code>&lt;right key&gt;</code> are julia expressions that extract a value from the elements of the left and right source; the statement will then join on equality of these extracted values. For elements in the left source that don&#39;t have any corresponding element in the right source, <code>&lt;range variable&gt;</code> is assigned the default value returned by the <code>default_if_empty</code> function based on the element types of <code>&lt;source&gt;</code>. If the right source has elements of type <code>NamedTuple</code>, and the fields of that named tuple are all of type <code>DataValue</code>, then an instance of that named tuple with all fields having NA values will be used.</p><h4 id="Example-7"><a class="docs-heading-anchor" href="#Example-7">Example</a><a class="docs-heading-anchor-permalink" href="#Example-7" title="Permalink"></a></h4><pre><code class="language-julia">using Query, DataFrames
+
+source_df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
+source_df2 = DataFrame(c=[2,4,2], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
+
+q = @from i in source_df1 begin
+    @left_outer_join j in source_df2 on i.a equals j.c
+    @select {i.a,i.b,j.c,j.d}
+    @collect DataFrame
+end
+
+println(q)
+
+# output
+
+4×4 DataFrame
+│ Row │ a     │ b       │ c       │ d       │
+│     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │
+├─────┼───────┼─────────┼─────────┼─────────┤
+│ 1   │ 1     │ 1.0     │ missing │ missing │
+│ 2   │ 2     │ 2.0     │ 2       │ John    │
+│ 3   │ 2     │ 2.0     │ 2       │ Sally   │
+│ 4   │ 3     │ 3.0     │ missing │ missing │</code></pre><h2 id="Grouping-1"><a class="docs-heading-anchor" href="#Grouping-1">Grouping</a><a class="docs-heading-anchor-permalink" href="#Grouping-1" title="Permalink"></a></h2><p>The <code>@group</code> statement groups elements from the source by some attribute. The syntax for the group statement is <code>@group &lt;element selector&gt; by &lt;key selector&gt; [into &lt;range variable&gt;]</code>. <code>&lt;element selector&gt;</code> is an arbitrary julia expression that determines the content of the group elements. <code>&lt;key selector&gt;</code> is an arbitrary julia expression that returns the values by which the elements are grouped. A <code>@group</code> statement without an <code>into</code> clause ends a query statement, i.e. no further <code>@select</code> statement is needed. When a <code>@group</code> statement has an <code>into</code> clause, the <code>&lt;range variable&gt;</code> sets the name of the range variable for the groups, and further query statements can operate on these groups by referencing that range variable.</p><h4 id="Example-8"><a class="docs-heading-anchor" href="#Example-8">Example</a><a class="docs-heading-anchor-permalink" href="#Example-8" title="Permalink"></a></h4><p>This is an example of a <code>@group</code> statement without a <code>into</code> clause:</p><pre><code class="language-julia">using DataFrames, Query
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,2,2])
+
+x = @from i in df begin
+    @group i.name by i.children
+    @collect
+end
+
+println(x)
+
+# output
+
+Grouping{Int64,String}[[&quot;John&quot;], [&quot;Sally&quot;, &quot;Kirk&quot;]]</code></pre><p>This is an example of a <code>@group</code> statement with an <code>into</code> clause:</p><pre><code class="language-julia">using DataFrames, Query
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,2,2])
+
+x = @from i in df begin
+    @group i by i.children into g
+    @select {Key=key(g),Count=length(g)}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+2×2 DataFrame
+│ Row │ Key   │ Count │
+│     │ Int64 │ Int64 │
+├─────┼───────┼───────┤
+│ 1   │ 3     │ 1     │
+│ 2   │ 2     │ 2     │</code></pre><h2 id="Split-Apply-Combine-(a.k.a.-dplyr)-1"><a class="docs-heading-anchor" href="#Split-Apply-Combine-(a.k.a.-dplyr)-1">Split-Apply-Combine (a.k.a. <code>dplyr</code>)</a><a class="docs-heading-anchor-permalink" href="#Split-Apply-Combine-(a.k.a.-dplyr)-1" title="Permalink"></a></h2><p>Query.jl provides special syntax to summarize data in a <code>Query.Grouping</code> as above. <em>Summarizing</em> here is synonymous to <em>aggregating</em> or <em>collapsing</em> the dataset over a certain grouping variable. Summarizing thus requires an aggregating function like <code>mean</code>, <code>maximum</code>, or any other function that takes a vector and returns a scalar. The special syntax is <code>@select new_var = agg_fun(g.var)</code>, where <code>agg_fun</code> is your aggregation function (e.g. <code>mean</code>), <code>g</code> is your grouping, and <code>var</code> is the relevant column that you want to summarize.</p><h4 id="Example-9"><a class="docs-heading-anchor" href="#Example-9">Example</a><a class="docs-heading-anchor-permalink" href="#Example-9" title="Permalink"></a></h4><pre><code class="language-julia">using Query, DataFrames, Statistics
+
+df = DataFrame(name=repeat([&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;],inner=[1],outer=[2]), 
+     age=vcat([10., 20., 30.],[10., 20., 30.].+3), 
+     children=repeat([3,2,2],inner=[1],outer=[2]),state=[:a,:a,:a,:b,:b,:b])
+
+x = @from i in df begin
+    @group i by i.state into g
+    @select {group=key(g),mage=mean(g.age), oldest=maximum(g.age), youngest=minimum(g.age)}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+2×4 DataFrame
+│ Row │ group  │ mage    │ oldest  │ youngest │
+│     │ Symbol │ Float64 │ Float64 │ Float64  │
+├─────┼────────┼─────────┼─────────┼──────────┤
+│ 1   │ a      │ 20.0    │ 30.0    │ 10.0     │
+│ 2   │ b      │ 23.0    │ 33.0    │ 13.0     │</code></pre><h2 id="Range-variables-1"><a class="docs-heading-anchor" href="#Range-variables-1">Range variables</a><a class="docs-heading-anchor-permalink" href="#Range-variables-1" title="Permalink"></a></h2><p>The <code>@let</code> statement introduces new range variables in a query expression. The syntax for the range statement is <code>@let &lt;range variable&gt; = &lt;value selector&gt;</code>. <code>&lt;range variable&gt;</code> specifies the name of the new range variable and <code>&lt;value selector&gt;</code> is any julia expression that returns the value that should be assigned to the new range variable.</p><h4 id="Example-10"><a class="docs-heading-anchor" href="#Example-10">Example</a><a class="docs-heading-anchor-permalink" href="#Example-10" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,2,2])
+
+x = @from i in df begin
+    @let count = length(i.name)
+    @let kids_per_year = i.children / i.age
+    @where count &gt; 4
+    @select {Name=i.name, Count=count, KidsPerYear=kids_per_year}
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+1×3 DataFrame
+│ Row │ Name   │ Count │ KidsPerYear │
+│     │ String │ Int64 │ Float64     │
+├─────┼────────┼───────┼─────────────┤
+│ 1   │ Sally  │ 5     │ 0.047619    │</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../standalonequerycommands/">« Standalone Query Commands</a><a class="docs-footer-nextpage" href="../sources/">Data Sources »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 28 July 2020 19:11">Tuesday 28 July 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

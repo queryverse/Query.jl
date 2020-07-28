@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Data Sources · Query.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Query.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../gettingstarted/">Getting Started</a></li><li><a class="tocitem" href="../standalonequerycommands/">Standalone Query Commands</a></li><li><a class="tocitem" href="../linqquerycommands/">LINQ Style Query Commands</a></li><li class="is-active"><a class="tocitem" href>Data Sources</a><ul class="internal"><li><a class="tocitem" href="#DataFrame-1"><span>DataFrame</span></a></li><li><a class="tocitem" href="#TypedTable-1"><span>TypedTable</span></a></li><li><a class="tocitem" href="#Arrays-1"><span>Arrays</span></a></li><li><a class="tocitem" href="#IndexedTables-1"><span>IndexedTables</span></a></li><li><a class="tocitem" href="#Any-iterable-type-1"><span>Any iterable type</span></a></li></ul></li><li><a class="tocitem" href="../sinks/">Data Sinks</a></li><li><a class="tocitem" href="../experimental/">Experimental Features</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Data Sources</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Data Sources</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/queryverse/Query.jl/blob/master/docs/src/sources.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Data-Sources-1"><a class="docs-heading-anchor" href="#Data-Sources-1">Data Sources</a><a class="docs-heading-anchor-permalink" href="#Data-Sources-1" title="Permalink"></a></h1><p>Query supports many different types of data sources, and you can often mix and match different source types in one query. This section describes all the currently supported data source types.</p><h2 id="DataFrame-1"><a class="docs-heading-anchor" href="#DataFrame-1">DataFrame</a><a class="docs-heading-anchor-permalink" href="#DataFrame-1" title="Permalink"></a></h2><p><code>DataFrame</code>s are probably the most common data source in Query. They are implemented as an <code>Enumerable</code> data source type, and can therefore be combined with any other <code>Enumerable</code> data source type within one query. The range variable in a query that has a <code>DataFrame</code> as its source is a <code>NamedTuple</code> that has fields for each column of the <code>DataFrame</code>. The implementation of <code>DataFrame</code> sources gets around all problems of type stability that are sometimes associated with the <code>DataFrames</code> package.</p><h3 id="Example-1"><a class="docs-heading-anchor" href="#Example-1">Example</a><a class="docs-heading-anchor-permalink" href="#Example-1" title="Permalink"></a></h3><pre><code class="language-julia">using Query, DataFrames
+
+df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in df begin
+    @select i
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+3×3 DataFrame
+│ Row │ name   │ age     │ children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │</code></pre><h2 id="TypedTable-1"><a class="docs-heading-anchor" href="#TypedTable-1">TypedTable</a><a class="docs-heading-anchor-permalink" href="#TypedTable-1" title="Permalink"></a></h2><p>The <code>TypedTables</code> package provides an alternative implementation of a DataFrame-like data structure. Support for <code>TypedTable</code> data sources works in the same way as normal <code>DataFrame</code> sources, i.e. columns are represented as fields of <code>NamedTuples</code>. <code>TypedTable</code> sources are implemented as  <code>Enumerable</code> data source and can therefore be combined with any other <code>Enumerable</code> data source in a single query.</p><h3 id="Example-2"><a class="docs-heading-anchor" href="#Example-2">Example</a><a class="docs-heading-anchor-permalink" href="#Example-2" title="Permalink"></a></h3><pre><code class="language-julia">using Query, DataFrames, TypedTables
+
+tt = Table(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,5,2])
+
+x = @from i in tt begin
+    @select i
+    @collect DataFrame
+end
+
+println(x)
+
+# output
+
+3×3 DataFrame
+│ Row │ name   │ age     │ children │
+│     │ String │ Float64 │ Int64    │
+├─────┼────────┼─────────┼──────────┤
+│ 1   │ John   │ 23.0    │ 3        │
+│ 2   │ Sally  │ 42.0    │ 5        │
+│ 3   │ Kirk   │ 59.0    │ 2        │</code></pre><h2 id="Arrays-1"><a class="docs-heading-anchor" href="#Arrays-1">Arrays</a><a class="docs-heading-anchor-permalink" href="#Arrays-1" title="Permalink"></a></h2><p>Any array can be a data source for a query. The range variables are of the element type of the array and the elements are iterated in the order of the standard iterator of the array. Array sources are implemented as <code>Enumerable</code> data sources and can therefore be combined with any other <code>Enumerable</code> data source in a single query.</p><h3 id="Example-3"><a class="docs-heading-anchor" href="#Example-3">Example</a><a class="docs-heading-anchor-permalink" href="#Example-3" title="Permalink"></a></h3><pre><code class="language-julia">using Query, DataFrames
+
+struct Person
+    Name::String
+    Friends::Vector{String}
+end
+
+source = [
+    Person(&quot;John&quot;, [&quot;Sally&quot;, &quot;Miles&quot;, &quot;Frank&quot;]),
+    Person(&quot;Sally&quot;, [&quot;Don&quot;, &quot;Martin&quot;])]
+
+result = @from i in source begin
+         @where length(i.Friends) &gt; 2
+         @select {i.Name, Friendcount=length(i.Friends)}
+         @collect
+end
+
+println(result)
+
+# output
+
+NamedTuple{(:Name, :Friendcount),Tuple{String,Int64}}[(Name = &quot;John&quot;, Friendcount = 3)]</code></pre><h2 id="IndexedTables-1"><a class="docs-heading-anchor" href="#IndexedTables-1">IndexedTables</a><a class="docs-heading-anchor-permalink" href="#IndexedTables-1" title="Permalink"></a></h2><p><code>IndexedTable</code> data sources can be a source in a query. Individual rows are represented as a <code>NamedTuple</code> with two fields. The <code>index</code> field holds the index data for this row. If the source has named columns, the type of the <code>index</code> field is a <code>NamedTuple</code>, where the fieldnames correspond to the names of the index columns. If the source doesn&#39;t use named columns, the type of the <code>index</code> field is a regular tuple. The second field is named <code>value</code> and holds the value of the row in the original source. <code>IndexedTable</code> sources are implemented as <code>Enumerable</code> data sources and can therefore be combined with any other <code>Enumerable</code> data source in a single query.</p><h3 id="Example-4"><a class="docs-heading-anchor" href="#Example-4">Example</a><a class="docs-heading-anchor-permalink" href="#Example-4" title="Permalink"></a></h3><pre><code class="language-julia">using Query, IndexedTables, Dates
+
+source_indexedtable = table((city=[fill(&quot;New York&quot;,3); fill(&quot;Boston&quot;,3)], date=repeat(Date(2016,7,6):Day(1):Date(2016,7,8), 2), value=[91,89,91,95,83,76]))
+q = @from i in source_indexedtable begin
+    @where i.city==&quot;New York&quot;
+    @select i.value
+    @collect
+end
+
+println(q)
+
+# output
+
+[91, 89, 91]</code></pre><h2 id="Any-iterable-type-1"><a class="docs-heading-anchor" href="#Any-iterable-type-1">Any iterable type</a><a class="docs-heading-anchor-permalink" href="#Any-iterable-type-1" title="Permalink"></a></h2><p>Any data source type that implements the standard julia iterator protocoll (i.e. a <code>start</code>, <code>next</code> and <code>done</code> method) can be a query data source. Iterable data sources are implemented as <code>Enumerable</code> data sources and can therefore be combined with any other <code>Enumerable</code> data source in a single query.</p><h3 id="Example-5"><a class="docs-heading-anchor" href="#Example-5">Example</a><a class="docs-heading-anchor-permalink" href="#Example-5" title="Permalink"></a></h3><p>[TODO]</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../linqquerycommands/">« LINQ Style Query Commands</a><a class="docs-footer-nextpage" href="../sinks/">Data Sinks »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 28 July 2020 19:11">Tuesday 28 July 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
