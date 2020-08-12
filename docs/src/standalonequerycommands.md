@@ -345,7 +345,7 @@ println(q)
 ```
 
 ## The `@mutate` command
-The `@mutate` command has the form `source |> @mutate(args...)`. `source` can be any source that can be queried. Each argument from `args...` must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of `source`. All `args...` are executed in order, and the result set of the previous mutation is the source of each current mutation.
+The `@mutate` command has the form `source |> @mutate(args...)`. `source` can be any source that can be queried. Each argument from `args...` must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of `source`.
 ```jldoctest
 using Query, DataFrames
 
