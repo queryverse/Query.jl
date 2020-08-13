@@ -32,15 +32,24 @@ macro select(args...)
         elseif typeof(arg) == Int
             # select by position
             if arg > 0
+                temp = prev
                 prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val(keys(_)[$arg]))) )
+                if temp == prev
+                    print("Nothing at position: " + arg)
             # remove by position
             elseif arg < 0
+                temp = prev
                 sel = ifelse(prev == NamedTuple(), :_, prev)
                 prev = :( QueryOperators.NamedTupleUtilities.remove($sel, Val(keys($sel)[-$arg])) )
+                if temp == prev
+                    print("Nothing at position: " + arg)
             end
         elseif typeof(arg) == QuoteNode
             # select by name
+            temp = prev
             prev = :( merge($prev, QueryOperators.NamedTupleUtilities.select(_, Val($(arg)))) )
+            if temp == prev
+                print("Column could not be found: " + arg)
         elseif arg isa Expr && arg.head==:call && length(arg.args)==3 && arg.args[1]==Symbol(":")
             arg = string(arg)
             # select by range, with multiple syntaxes supported
