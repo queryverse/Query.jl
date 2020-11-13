@@ -10,7 +10,7 @@ export @from, @query, @count, Grouping, key
 export @map, @filter, @groupby, @orderby, @orderby_descending, @unique,
 	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop
 
-export @select, @rename, @mutate, @dissallowna, @dropna, @replacena
+export @select, @rename, @mutate, @disallowna, @dropna, @replacena
 
 export isna, NA
 

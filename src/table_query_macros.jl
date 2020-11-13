@@ -193,20 +193,20 @@ our_get(x::DataValue) = get(x)
 our_get(x, y) = x
 our_get(x::DataValue, y) = get(x, y)
 
-macro dissallowna()
+macro disallowna()
     return :( Query.@map(map(our_get, _)) )
 end
 
-macro dissallowna(columns...)
+macro disallowna(columns...)
     return :( Query.@mutate( $( ( :( $(columns[i].value) = our_get(_.$(columns[i].value))  ) for i=1:length(columns) )... )   ) )
 end
 
 macro dropna()
-    return :( i-> i |> Query.@filter(!any(isna, _)) |>  Query.@dissallowna() )
+    return :( i-> i |> Query.@filter(!any(isna, _)) |>  Query.@disallowna() )
 end
 
 macro dropna(columns...)
-    return :( i-> i |> Query.@filter(!any(($((:(isna(_.$(columns[i].value))) for i in 1:length(columns)  )...),))) |> Query.@dissallowna($(columns...)) )
+    return :( i-> i |> Query.@filter(!any(($((:(isna(_.$(columns[i].value))) for i in 1:length(columns)  )...),))) |> Query.@disallowna($(columns...)) )
 end
 
 macro replacena(arg, args...)
