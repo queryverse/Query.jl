@@ -433,18 +433,18 @@ println(q)
 │ 2   │ 3     │ 5     │
 ```
 
-## The `@dissallowna` command
+## The `@disallowna` command
 
-The `@dissallowna` command has the form `source |> @dissallowna(columns...)`. `source` can be any source that can be queried and that has a table structure. If `@dissallowna()` is called without any arguments, it will check that there are no missing `NA` values in any column in any row of the input table and convert the element type of each column to one that cannot hold missing values. Alternatively one can pass a list of column names to `@dissallowna`, in which case it will only check for `NA` values in those columns, and only convert those columns to a type that cannot hold missing values.
+The `@disallowna` command has the form `source |> @disallowna(columns...)`. `source` can be any source that can be queried and that has a table structure. If `@disallowna()` is called without any arguments, it will check that there are no missing `NA` values in any column in any row of the input table and convert the element type of each column to one that cannot hold missing values. Alternatively one can pass a list of column names to `@disallowna`, in which case it will only check for `NA` values in those columns, and only convert those columns to a type that cannot hold missing values.
 
-Our first example uses the simple version of `@dissallowna()` that makes sure there are no missing values anywhere in the table. Note how the column type for column `a` is changed to `Int64` in this example, i.e. an element type that does not support missing values:
+Our first example uses the simple version of `@disallowna()` that makes sure there are no missing values anywhere in the table. Note how the column type for column `a` is changed to `Int64` in this example, i.e. an element type that does not support missing values:
 
 ```jldoctest
 using Query, DataFrames
 
 df = DataFrame(a=[1,missing,3], b=[4,5,6])
 
-q = df |> @filter(!isna(_.a)) |> @dissallowna() |> DataFrame
+q = df |> @filter(!isna(_.a)) |> @disallowna() |> DataFrame
 
 println(q)
 
@@ -465,7 +465,7 @@ using Query, DataFrames
 
 df = DataFrame(a=[1,2,missing], b=[4,missing,5])
 
-q = df |> @filter(!isna(_.b)) |> @dissallowna(:b) |> DataFrame
+q = df |> @filter(!isna(_.b)) |> @disallowna(:b) |> DataFrame
 
 println(q)
 

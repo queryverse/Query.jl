@@ -76,12 +76,12 @@ end
     @test df |> @replacena(:a=>2, :b=>8) |> collect == [(a=1,b=1.), (a=2, b=2.), (a=3, b=3.)]
 end
 
-@testset "@dissallowna" begin
+@testset "@disallowna" begin
 
     df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
 
-    @test_throws DataValueException df |> @dissallowna() |> collect
-    @test df |> @filter(!any(isna, _)) |> @dissallowna() |> collect == [(a=1,b=1.), (a=3, b=3.)]
-    @test_throws DataValueException df |> @dissallowna(:a) |> collect
-    @test df |> @dissallowna(:b) |> collect == [(a=DataValue(1),b=1.), (a=DataValue{Int}(),b=2.),(a=DataValue(3), b=3.)]
+    @test_throws DataValueException df |> @disallowna() |> collect
+    @test df |> @filter(!any(isna, _)) |> @disallowna() |> collect == [(a=1,b=1.), (a=3, b=3.)]
+    @test_throws DataValueException df |> @disallowna(:a) |> collect
+    @test df |> @disallowna(:b) |> collect == [(a=DataValue(1),b=1.), (a=DataValue{Int}(),b=2.),(a=DataValue(3), b=3.)]
 end
