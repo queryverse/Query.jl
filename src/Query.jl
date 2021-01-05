@@ -12,6 +12,9 @@ export @map, @filter, @groupby, @orderby, @orderby_descending, @unique,
 
 export @select, @rename, @mutate, @disallowna, @dropna, @replacena
 
+# The following is a backwards compat fix
+export @dissallowna
+
 export isna, NA
 
 include("query_utils.jl")

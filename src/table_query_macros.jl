@@ -201,6 +201,14 @@ macro disallowna(columns...)
     return :( Query.@mutate( $( ( :( $(columns[i].value) = our_get(_.$(columns[i].value))  ) for i=1:length(columns) )... )   ) )
 end
 
+# The following is a backwards compat fix
+macro dissallowna()
+    return :( Query.@map(map(our_get, _)) )
+end
+macro dissallowna(columns...)
+    return :( Query.@mutate( $( ( :( $(columns[i].value) = our_get(_.$(columns[i].value))  ) for i=1:length(columns) )... )   ) )
+end
+
 macro dropna()
     return :( i-> i |> Query.@filter(!any(isna, _)) |>  Query.@disallowna() )
 end
