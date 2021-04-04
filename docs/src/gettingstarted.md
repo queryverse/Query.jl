@@ -21,10 +21,10 @@ println(x)
 # output
 
 1×2 DataFrame
-│ Row │ name   │ children │
-│     │ String │ Int64    │
-├─────┼────────┼──────────┤
-│ 1   │ Kirk   │ 2        │
+ Row │ name    children
+     │ String  Int64
+─────┼──────────────────
+   1 │ Kirk           2
 ```
 
 Note the shorthand syntax `_.age>50` for the anonymous function `i->i.age>50`.
@@ -58,10 +58,10 @@ println(x)
 # output
 
 1×2 DataFrame
-│ Row │ name   │ children │
-│     │ String │ Int64    │
-├─────┼────────┼──────────┤
-│ 1   │ Kirk   │ 2        │
+ Row │ name    children
+     │ String  Int64
+─────┼──────────────────
+   1 │ Kirk           2
 ```
 
 

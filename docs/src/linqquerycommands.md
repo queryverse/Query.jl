@@ -22,15 +22,15 @@ println(x)
 # output
 
 6×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 3     │ 2     │
-│ 2   │ 2     │ 1     │
-│ 3   │ 2     │ 2     │
-│ 4   │ 1     │ 1     │
-│ 5   │ 1     │ 2     │
-│ 6   │ 1     │ 3     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     3      2
+   2 │     2      1
+   3 │     2      2
+   4 │     1      1
+   5 │     1      2
+   6 │     1      3
 ```
 
 ## Filtering
@@ -55,10 +55,10 @@ println(x)
 # output
 
 1×3 DataFrame
-│ Row │ name   │ age     │ children │
-│     │ String │ Float64 │ Int64    │
-├─────┼────────┼─────────┼──────────┤
-│ 1   │ Sally  │ 42.0    │ 5        │
+ Row │ name    age      children
+     │ String  Float64  Int64
+─────┼───────────────────────────
+   1 │ Sally      42.0         5
 ```
 
 ## Projecting
@@ -102,12 +102,12 @@ println(x)
 # output
 
 3×2 DataFrame
-│ Row │ name   │ Age     │
-│     │ String │ Float64 │
-├─────┼────────┼─────────┤
-│ 1   │ John   │ 23.0    │
-│ 2   │ Sally  │ 42.0    │
-│ 3   │ Kirk   │ 59.0    │
+ Row │ name    Age
+     │ String  Float64
+─────┼─────────────────
+   1 │ John       23.0
+   2 │ Sally      42.0
+   3 │ Kirk       59.0
 ```
 
 The elements of the new named tuple are separated by commas `,`. One can specify an explicit name for an individual element of a named tuple using the `=` syntax, where the name of the element is specified as the left argument and the value as the right argument. If the name of the element should be the same as the variable that is passed for the value, one doesn't have to specify a name explicitly, instead the `{}` syntax automatically infers the name.
@@ -134,14 +134,14 @@ println(q)
 # output
 
 5×2 DataFrame
-│ Row │ Key    │ Value │
-│     │ Symbol │ Int64 │
-├─────┼────────┼───────┤
-│ 1   │ a      │ 1     │
-│ 2   │ a      │ 2     │
-│ 3   │ a      │ 3     │
-│ 4   │ b      │ 4     │
-│ 5   │ b      │ 5     │
+ Row │ Key     Value
+     │ Symbol  Int64
+─────┼───────────────
+   1 │ a           1
+   2 │ a           2
+   3 │ a           3
+   4 │ b           4
+   5 │ b           5
 ```
 
 ## Joining
@@ -171,11 +171,11 @@ println(x)
 # output
 
 2×4 DataFrame
-│ Row │ a     │ b       │ c     │ d      │
-│     │ Int64 │ Float64 │ Int64 │ String │
-├─────┼───────┼─────────┼───────┼────────┤
-│ 1   │ 2     │ 2.0     │ 2     │ John   │
-│ 2   │ 2     │ 2.0     │ 2     │ Sally  │
+ Row │ a      b        c      d
+     │ Int64  Float64  Int64  String
+─────┼───────────────────────────────
+   1 │     2      2.0      2  John
+   2 │     2      2.0      2  Sally
 ```
 
 ### Group join
@@ -201,12 +201,12 @@ println(x)
 # output
 
 3×2 DataFrame
-│ Row │ t1    │ t2    │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 0     │
-│ 2   │ 2     │ 2     │
-│ 3   │ 3     │ 0     │
+ Row │ t1     t2
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      0
+   2 │     2      2
+   3 │     3      0
 ```
 
 ### Left outer join
@@ -232,13 +232,13 @@ println(q)
 # output
 
 4×4 DataFrame
-│ Row │ a     │ b       │ c       │ d       │
-│     │ Int64 │ Float64 │ Int64⍰  │ String⍰ │
-├─────┼───────┼─────────┼─────────┼─────────┤
-│ 1   │ 1     │ 1.0     │ missing │ missing │
-│ 2   │ 2     │ 2.0     │ 2       │ John    │
-│ 3   │ 2     │ 2.0     │ 2       │ Sally   │
-│ 4   │ 3     │ 3.0     │ missing │ missing │
+ Row │ a      b        c        d
+     │ Int64  Float64  Int64?   String?
+─────┼──────────────────────────────────
+   1 │     1      1.0  missing  missing
+   2 │     2      2.0        2  John
+   3 │     2      2.0        2  Sally
+   4 │     3      3.0  missing  missing
 ```
 
 ## Grouping
@@ -263,7 +263,7 @@ println(x)
 
 # output
 
-Grouping{Int64,String}[["John"], ["Sally", "Kirk"]]
+Grouping{Int64, String}[["John"], ["Sally", "Kirk"]]
 ```
 
 This is an example of a `@group` statement with an `into` clause:
@@ -284,11 +284,11 @@ println(x)
 # output
 
 2×2 DataFrame
-│ Row │ Key   │ Count │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 3     │ 1     │
-│ 2   │ 2     │ 2     │
+ Row │ Key    Count
+     │ Int64  Int64
+─────┼──────────────
+   1 │     3      1
+   2 │     2      2
 ```
 
 ## Split-Apply-Combine (a.k.a. `dplyr`)
@@ -315,11 +315,11 @@ println(x)
 # output
 
 2×4 DataFrame
-│ Row │ group  │ mage    │ oldest  │ youngest │
-│     │ Symbol │ Float64 │ Float64 │ Float64  │
-├─────┼────────┼─────────┼─────────┼──────────┤
-│ 1   │ a      │ 20.0    │ 30.0    │ 10.0     │
-│ 2   │ b      │ 23.0    │ 33.0    │ 13.0     │
+ Row │ group   mage     oldest   youngest
+     │ Symbol  Float64  Float64  Float64
+─────┼────────────────────────────────────
+   1 │ a          20.0     30.0      10.0
+   2 │ b          23.0     33.0      13.0
 ```
 
 ## Range variables
@@ -346,8 +346,8 @@ println(x)
 # output
 
 1×3 DataFrame
-│ Row │ Name   │ Count │ KidsPerYear │
-│     │ String │ Int64 │ Float64     │
-├─────┼────────┼───────┼─────────────┤
-│ 1   │ Sally  │ 5     │ 0.047619    │
+ Row │ Name    Count  KidsPerYear
+     │ String  Int64  Float64
+─────┼────────────────────────────
+   1 │ Sally       5     0.047619
 ```

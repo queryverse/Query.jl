@@ -18,11 +18,11 @@ df2 = df |>
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b       │
-│     │ Int64 │ Float64 │
-├─────┼───────┼─────────┤
-│ 1   │ 3     │ 8.0     │
-│ 2   │ 2     │ 6.0     │
+ Row │ a      b
+     │ Int64  Float64
+─────┼────────────────
+   1 │     3      8.0
+   2 │     2      6.0
 ```
 
 ## Standalone query operators
@@ -66,10 +66,10 @@ println(x)
 # output
 
 1×3 DataFrame
-│ Row │ name   │ age     │ children │
-│     │ String │ Float64 │ Int64    │
-├─────┼────────┼─────────┼──────────┤
-│ 1   │ Sally  │ 42.0    │ 5        │
+ Row │ name    age      children
+     │ String  Float64  Int64
+─────┼───────────────────────────
+   1 │ Sally      42.0         5
 ```
 
 ## The `@groupby` command
@@ -97,11 +97,11 @@ println(x)
 # output
 
 2×2 DataFrame
-│ Row │ Key   │ Count │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 3     │ 1     │
-│ 2   │ 2     │ 2     │
+ Row │ Key    Count
+     │ Int64  Int64
+─────┼──────────────
+   1 │     3      1
+   2 │     2      2
 ```
 
 ## The `@orderby`, `@orderby_descending`, `@thenby` and `@thenby_descending` command
@@ -124,15 +124,15 @@ println(x)
 # output
 
 6×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 3     │ 2     │
-│ 2   │ 2     │ 1     │
-│ 3   │ 2     │ 2     │
-│ 4   │ 1     │ 1     │
-│ 5   │ 1     │ 2     │
-│ 6   │ 1     │ 3     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     3      2
+   2 │     2      1
+   3 │     2      2
+   4 │     1      1
+   5 │     1      2
+   6 │     1      3
 ```
 
 ## The `@groupjoin` command
@@ -154,12 +154,12 @@ println(x)
 # output
 
 3×2 DataFrame
-│ Row │ t1    │ t2    │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 0     │
-│ 2   │ 2     │ 2     │
-│ 3   │ 3     │ 0     │
+ Row │ t1     t2
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      0
+   2 │     2      2
+   3 │     3      0
 ```
 
 ## The `@join` command
@@ -181,11 +181,11 @@ println(x)
 # output
 
 2×4 DataFrame
-│ Row │ a     │ b       │ c     │ d      │
-│     │ Int64 │ Float64 │ Int64 │ String │
-├─────┼───────┼─────────┼───────┼────────┤
-│ 1   │ 2     │ 2.0     │ 2     │ John   │
-│ 2   │ 2     │ 2.0     │ 2     │ Sally  │
+ Row │ a      b        c      d
+     │ Int64  Float64  Int64  String
+─────┼───────────────────────────────
+   1 │     2      2.0      2  John
+   2 │     2      2.0      2  Sally
 ```
 
 ## The `@mapmany` command
@@ -206,14 +206,14 @@ println(q)
 # output
 
 5×2 DataFrame
-│ Row │ Key    │ Value │
-│     │ Symbol │ Int64 │
-├─────┼────────┼───────┤
-│ 1   │ a      │ 1     │
-│ 2   │ a      │ 2     │
-│ 3   │ a      │ 3     │
-│ 4   │ b      │ 4     │
-│ 5   │ b      │ 5     │
+ Row │ Key     Value
+     │ Symbol  Int64
+─────┼───────────────
+   1 │ a           1
+   2 │ a           2
+   3 │ a           3
+   4 │ b           4
+   5 │ b           5
 ```
 
 ## The `@take` command
@@ -292,12 +292,12 @@ println(q1)
 # output
 
 3×2 DataFrame
-│ Row │ price   │ fruit  │
-│     │ Float64 │ String │
-├─────┼─────────┼────────┤
-│ 1   │ 1.2     │ Apple  │
-│ 2   │ 2.0     │ Banana │
-│ 3   │ 0.4     │ Cherry │
+ Row │ price    fruit
+     │ Float64  String
+─────┼─────────────────
+   1 │     1.2  Apple
+   2 │     2.0  Banana
+   3 │     0.4  Cherry
 ```
 
 ```jldoctest
@@ -312,12 +312,12 @@ println(q2)
 # output
 
 3×3 DataFrame
-│ Row │ price   │ isyellow │ fruit  │
-│     │ Float64 │ Bool     │ String │
-├─────┼─────────┼──────────┼────────┤
-│ 1   │ 1.2     │ 0        │ Apple  │
-│ 2   │ 2.0     │ 1        │ Banana │
-│ 3   │ 0.4     │ 0        │ Cherry │
+ Row │ price    isyellow  fruit
+     │ Float64  Bool      String
+─────┼───────────────────────────
+   1 │     1.2     false  Apple
+   2 │     2.0      true  Banana
+   3 │     0.4     false  Cherry
 ```
 
 ## The `@rename` command
@@ -336,12 +336,12 @@ println(q)
 # output
 
 3×4 DataFrame
-│ Row │ name   │ amount │ cost    │ isyellow │
-│     │ String │ Int64  │ Float64 │ Bool     │
-├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 1.2     │ 0        │
-│ 2   │ Banana │ 6      │ 2.0     │ 1        │
-│ 3   │ Cherry │ 1000   │ 0.4     │ 0        │
+ Row │ name    amount  cost     isyellow
+     │ String  Int64   Float64  Bool
+─────┼───────────────────────────────────
+   1 │ Apple        2      1.2     false
+   2 │ Banana       6      2.0      true
+   3 │ Cherry    1000      0.4     false
 ```
 
 ## The `@mutate` command
@@ -358,12 +358,12 @@ println(q)
 # output
 
 3×4 DataFrame
-│ Row │ fruit  │ amount │ price   │ isyellow │
-│     │ String │ Int64  │ Float64 │ Bool     │
-├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 4.4     │ 1        │
-│ 2   │ Banana │ 6      │ 10.0    │ 0        │
-│ 3   │ Cherry │ 1000   │ 1000.8  │ 0        │
+ Row │ fruit   amount  price    isyellow
+     │ String  Int64   Float64  Bool
+─────┼───────────────────────────────────
+   1 │ Apple        2      4.4      true
+   2 │ Banana       6     10.0     false
+   3 │ Cherry    1000   1000.8     false
 ``` 
 
 ## The `@dropna` command
@@ -384,11 +384,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 5     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      5
 ```
 
 The next example only drops rows that have a missing value in the `b` column:
@@ -405,11 +405,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 5     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      5
 ```
 
 We can specify as many columns as we want:
@@ -426,11 +426,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 5     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      5
 ```
 
 ## The `@disallowna` command
@@ -451,11 +451,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 6     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      6
 ```
 
 The next example only checks the `b` column for missing values:
@@ -472,11 +472,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a       │ b     │
-│     │ Int64⍰  │ Int64 │
-├─────┼─────────┼───────┤
-│ 1   │ 1       │ 4     │
-│ 2   │ missing │ 5     │
+ Row │ a        b
+     │ Int64?   Int64
+─────┼────────────────
+   1 │       1      4
+   2 │ missing      5
 ```
 
 ## The `@replacena` command
@@ -501,12 +501,12 @@ println(q)
 # output
 
 3×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 0     │ 5     │
-│ 3   │ 3     │ 6     │
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     0      5
+   3 │     3      6
 ```
 
 The next example uses a different replacement value for column `a` and `b`:
@@ -523,10 +523,10 @@ println(q)
 # output
 
 3×2 DataFrame
-│ Row │ a     │ b       │
-│     │ Int64 │ String  │
-├─────┼───────┼─────────┤
-│ 1   │ 1     │ One     │
-│ 2   │ 2     │ Unknown │
-│ 3   │ 0     │ Three   │
+ Row │ a      b
+     │ Int64  String
+─────┼────────────────
+   1 │     1  One
+   2 │     2  Unknown
+   3 │     0  Three
 ```

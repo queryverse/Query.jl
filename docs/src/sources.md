@@ -23,12 +23,12 @@ println(x)
 # output
 
 3×3 DataFrame
-│ Row │ name   │ age     │ children │
-│     │ String │ Float64 │ Int64    │
-├─────┼────────┼─────────┼──────────┤
-│ 1   │ John   │ 23.0    │ 3        │
-│ 2   │ Sally  │ 42.0    │ 5        │
-│ 3   │ Kirk   │ 59.0    │ 2        │
+ Row │ name    age      children
+     │ String  Float64  Int64
+─────┼───────────────────────────
+   1 │ John       23.0         3
+   2 │ Sally      42.0         5
+   3 │ Kirk       59.0         2
 ```
 
 ## TypedTable
@@ -52,12 +52,12 @@ println(x)
 # output
 
 3×3 DataFrame
-│ Row │ name   │ age     │ children │
-│     │ String │ Float64 │ Int64    │
-├─────┼────────┼─────────┼──────────┤
-│ 1   │ John   │ 23.0    │ 3        │
-│ 2   │ Sally  │ 42.0    │ 5        │
-│ 3   │ Kirk   │ 59.0    │ 2        │
+ Row │ name    age      children
+     │ String  Float64  Int64
+─────┼───────────────────────────
+   1 │ John       23.0         3
+   2 │ Sally      42.0         5
+   3 │ Kirk       59.0         2
 ```
 
 ## Arrays
@@ -88,7 +88,7 @@ println(result)
 
 # output
 
-NamedTuple{(:Name, :Friendcount),Tuple{String,Int64}}[(Name = "John", Friendcount = 3)]
+NamedTuple{(:Name, :Friendcount), Tuple{String, Int64}}[(Name = "John", Friendcount = 3)]
 ```
 
 ## IndexedTables
