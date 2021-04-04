@@ -13,11 +13,11 @@ df2 = df |&gt;
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b       │
-│     │ Int64 │ Float64 │
-├─────┼───────┼─────────┤
-│ 1   │ 3     │ 8.0     │
-│ 2   │ 2     │ 6.0     │</code></pre><h2 id="Standalone-query-operators-2"><a class="docs-heading-anchor" href="#Standalone-query-operators-2">Standalone query operators</a><a class="docs-heading-anchor-permalink" href="#Standalone-query-operators-2" title="Permalink"></a></h2><h2 id="The-@map-command-1"><a class="docs-heading-anchor" href="#The-@map-command-1">The <code>@map</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@map-command-1" title="Permalink"></a></h2><p>The <code>@map</code> command has the form <code>source |&gt; @map(element_selector)</code>. <code>source</code> can be any source that can be queried. <code>element_selector</code> must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element.</p><h4 id="Example-1"><a class="docs-heading-anchor" href="#Example-1">Example</a><a class="docs-heading-anchor-permalink" href="#Example-1" title="Permalink"></a></h4><pre><code class="language-julia">using Query
+ Row │ a      b
+     │ Int64  Float64
+─────┼────────────────
+   1 │     3      8.0
+   2 │     2      6.0</code></pre><h2 id="Standalone-query-operators-2"><a class="docs-heading-anchor" href="#Standalone-query-operators-2">Standalone query operators</a><a class="docs-heading-anchor-permalink" href="#Standalone-query-operators-2" title="Permalink"></a></h2><h2 id="The-@map-command-1"><a class="docs-heading-anchor" href="#The-@map-command-1">The <code>@map</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@map-command-1" title="Permalink"></a></h2><p>The <code>@map</code> command has the form <code>source |&gt; @map(element_selector)</code>. <code>source</code> can be any source that can be queried. <code>element_selector</code> must be an anonymous function that accepts one element of the element type of the source and applies some transformation to this single element.</p><h4 id="Example-1"><a class="docs-heading-anchor" href="#Example-1">Example</a><a class="docs-heading-anchor-permalink" href="#Example-1" title="Permalink"></a></h4><pre><code class="language-julia">using Query
 
 data = [1,2,3]
 
@@ -39,10 +39,10 @@ println(x)
 # output
 
 1×3 DataFrame
-│ Row │ name   │ age     │ children │
-│     │ String │ Float64 │ Int64    │
-├─────┼────────┼─────────┼──────────┤
-│ 1   │ Sally  │ 42.0    │ 5        │</code></pre><h2 id="The-@groupby-command-1"><a class="docs-heading-anchor" href="#The-@groupby-command-1">The <code>@groupby</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@groupby-command-1" title="Permalink"></a></h2><p>There are two versions of the <code>@groupby</code> command. The simple version has the form <code>source |&gt; @groupby(key_selector)</code>. <code>source</code> can be any source that can be queried. <code>key_selector</code> must be an anonymous function that returns a value for each element of <code>source</code> by which the source elements should be grouped.</p><p>The second variant has the form <code>source |&gt; @groupby(source, key_selector, element_selector)</code>. The definition of <code>source</code> and <code>key_selector</code> is the same as in the simple variant. <code>element_selector</code> must be an anonymous function that is applied to each element of the <code>source</code> before that element is placed into a group, i.e. this is a projection function.</p><p>The return value of <code>@groupby</code> is an iterable of groups. Each group is itself a collection of data rows, and has a <code>key</code> field that is equal to the value the rows were grouped by. Often the next step in the pipeline will be to use <code>@map</code> with a function that acts on each group, summarizing it in a new data row.</p><h4 id="Example-3"><a class="docs-heading-anchor" href="#Example-3">Example</a><a class="docs-heading-anchor-permalink" href="#Example-3" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+ Row │ name    age      children
+     │ String  Float64  Int64
+─────┼───────────────────────────
+   1 │ Sally      42.0         5</code></pre><h2 id="The-@groupby-command-1"><a class="docs-heading-anchor" href="#The-@groupby-command-1">The <code>@groupby</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@groupby-command-1" title="Permalink"></a></h2><p>There are two versions of the <code>@groupby</code> command. The simple version has the form <code>source |&gt; @groupby(key_selector)</code>. <code>source</code> can be any source that can be queried. <code>key_selector</code> must be an anonymous function that returns a value for each element of <code>source</code> by which the source elements should be grouped.</p><p>The second variant has the form <code>source |&gt; @groupby(source, key_selector, element_selector)</code>. The definition of <code>source</code> and <code>key_selector</code> is the same as in the simple variant. <code>element_selector</code> must be an anonymous function that is applied to each element of the <code>source</code> before that element is placed into a group, i.e. this is a projection function.</p><p>The return value of <code>@groupby</code> is an iterable of groups. Each group is itself a collection of data rows, and has a <code>key</code> field that is equal to the value the rows were grouped by. Often the next step in the pipeline will be to use <code>@map</code> with a function that acts on each group, summarizing it in a new data row.</p><h4 id="Example-3"><a class="docs-heading-anchor" href="#Example-3">Example</a><a class="docs-heading-anchor-permalink" href="#Example-3" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
 
 df = DataFrame(name=[&quot;John&quot;, &quot;Sally&quot;, &quot;Kirk&quot;], age=[23., 42., 59.], children=[3,2,2])
 
@@ -56,11 +56,11 @@ println(x)
 # output
 
 2×2 DataFrame
-│ Row │ Key   │ Count │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 3     │ 1     │
-│ 2   │ 2     │ 2     │</code></pre><h2 id="The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1"><a class="docs-heading-anchor" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1">The <code>@orderby</code>, <code>@orderby_descending</code>, <code>@thenby</code> and <code>@thenby_descending</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1" title="Permalink"></a></h2><p>There are four commands that are used to sort data. Any sorting has to start with either a <code>@orderby</code> or <code>@orderby_descending</code> command. <code>@thenby</code> and <code>@thenby_descending</code> commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.</p><p>The general sorting command form is <code>source |&gt; @orderby(key_selector)</code>. <code>source</code> can be any source than can be queried. <code>key_selector</code> must be an anonymous function that returns a value for each element of <code>source</code>. The elements of the source are then sorted is in ascending order by the value returned from the <code>key_selector</code> function. The <code>@orderby_descending</code> command works in the same way, but sorts things in descending order. The <code>@thenby</code> and <code>@thenby_descending</code> command only accept the return value of any of the four sorting commands as their <code>source</code>, otherwise they have the same syntax as the <code>@orderby</code> and <code>@orderby_descending</code> commands.</p><h4 id="Example-4"><a class="docs-heading-anchor" href="#Example-4">Example</a><a class="docs-heading-anchor-permalink" href="#Example-4" title="Permalink"></a></h4><pre><code class="language-julia">using Query, DataFrames
+ Row │ Key    Count
+     │ Int64  Int64
+─────┼──────────────
+   1 │     3      1
+   2 │     2      2</code></pre><h2 id="The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1"><a class="docs-heading-anchor" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1">The <code>@orderby</code>, <code>@orderby_descending</code>, <code>@thenby</code> and <code>@thenby_descending</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@orderby,-@orderby_descending,-@thenby-and-@thenby_descending-command-1" title="Permalink"></a></h2><p>There are four commands that are used to sort data. Any sorting has to start with either a <code>@orderby</code> or <code>@orderby_descending</code> command. <code>@thenby</code> and <code>@thenby_descending</code> commands can only directly follow a previous sorting command. They specify how ties in the previous sorting condition are to be resolved.</p><p>The general sorting command form is <code>source |&gt; @orderby(key_selector)</code>. <code>source</code> can be any source than can be queried. <code>key_selector</code> must be an anonymous function that returns a value for each element of <code>source</code>. The elements of the source are then sorted is in ascending order by the value returned from the <code>key_selector</code> function. The <code>@orderby_descending</code> command works in the same way, but sorts things in descending order. The <code>@thenby</code> and <code>@thenby_descending</code> command only accept the return value of any of the four sorting commands as their <code>source</code>, otherwise they have the same syntax as the <code>@orderby</code> and <code>@orderby_descending</code> commands.</p><h4 id="Example-4"><a class="docs-heading-anchor" href="#Example-4">Example</a><a class="docs-heading-anchor-permalink" href="#Example-4" title="Permalink"></a></h4><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[2,1,1,2,1,3],b=[2,2,1,1,3,2])
 
@@ -71,15 +71,15 @@ println(x)
 # output
 
 6×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 3     │ 2     │
-│ 2   │ 2     │ 1     │
-│ 3   │ 2     │ 2     │
-│ 4   │ 1     │ 1     │
-│ 5   │ 1     │ 2     │
-│ 6   │ 1     │ 3     │</code></pre><h2 id="The-@groupjoin-command-1"><a class="docs-heading-anchor" href="#The-@groupjoin-command-1">The <code>@groupjoin</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@groupjoin-command-1" title="Permalink"></a></h2><p>The <code>@groupjoin</code> command has the form <code>outer |&gt; @groupjoin(inner, outer_selector, inner_selector, result_selector)</code>. <code>outer</code> and <code>inner</code> can be any source that can be queried. <code>outer_selector</code> and <code>inner_selector</code> must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The <code>result_selector</code> must be an anonymous function that takes two arguments, first the element from the <code>outer</code> source, and second an array of those elements from the second source that are grouped together.</p><h4 id="Example-5"><a class="docs-heading-anchor" href="#Example-5">Example</a><a class="docs-heading-anchor-permalink" href="#Example-5" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     3      2
+   2 │     2      1
+   3 │     2      2
+   4 │     1      1
+   5 │     1      2
+   6 │     1      3</code></pre><h2 id="The-@groupjoin-command-1"><a class="docs-heading-anchor" href="#The-@groupjoin-command-1">The <code>@groupjoin</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@groupjoin-command-1" title="Permalink"></a></h2><p>The <code>@groupjoin</code> command has the form <code>outer |&gt; @groupjoin(inner, outer_selector, inner_selector, result_selector)</code>. <code>outer</code> and <code>inner</code> can be any source that can be queried. <code>outer_selector</code> and <code>inner_selector</code> must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The <code>result_selector</code> must be an anonymous function that takes two arguments, first the element from the <code>outer</code> source, and second an array of those elements from the second source that are grouped together.</p><h4 id="Example-5"><a class="docs-heading-anchor" href="#Example-5">Example</a><a class="docs-heading-anchor-permalink" href="#Example-5" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 df2 = DataFrame(c=[2,4,2], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
@@ -91,12 +91,12 @@ println(x)
 # output
 
 3×2 DataFrame
-│ Row │ t1    │ t2    │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 0     │
-│ 2   │ 2     │ 2     │
-│ 3   │ 3     │ 0     │</code></pre><h2 id="The-@join-command-1"><a class="docs-heading-anchor" href="#The-@join-command-1">The <code>@join</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@join-command-1" title="Permalink"></a></h2><p>The <code>@join</code> command has the form <code>outer |&gt; @join(inner, outer_selector, inner_selector, result_selector)</code>. <code>outer</code> and <code>inner</code> can be any source that can be queried. <code>outer_selector</code> and <code>inner_selector</code> must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The <code>result_selector</code> must be an anonymous function that takes two arguments. It will be called for each element in the result set, and the first argument will hold the element from the outer source and the second argument will hold the element from the inner source.</p><h4 id="Example-6"><a class="docs-heading-anchor" href="#Example-6">Example</a><a class="docs-heading-anchor-permalink" href="#Example-6" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+ Row │ t1     t2
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      0
+   2 │     2      2
+   3 │     3      0</code></pre><h2 id="The-@join-command-1"><a class="docs-heading-anchor" href="#The-@join-command-1">The <code>@join</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@join-command-1" title="Permalink"></a></h2><p>The <code>@join</code> command has the form <code>outer |&gt; @join(inner, outer_selector, inner_selector, result_selector)</code>. <code>outer</code> and <code>inner</code> can be any source that can be queried. <code>outer_selector</code> and <code>inner_selector</code> must be an anonymous function that extracts the value from the outer and inner source respectively on which the join should be run. The <code>result_selector</code> must be an anonymous function that takes two arguments. It will be called for each element in the result set, and the first argument will hold the element from the outer source and the second argument will hold the element from the inner source.</p><h4 id="Example-6"><a class="docs-heading-anchor" href="#Example-6">Example</a><a class="docs-heading-anchor-permalink" href="#Example-6" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
 
 df1 = DataFrame(a=[1,2,3], b=[1.,2.,3.])
 df2 = DataFrame(c=[2,4,2], d=[&quot;John&quot;, &quot;Jim&quot;,&quot;Sally&quot;])
@@ -108,11 +108,11 @@ println(x)
 # output
 
 2×4 DataFrame
-│ Row │ a     │ b       │ c     │ d      │
-│     │ Int64 │ Float64 │ Int64 │ String │
-├─────┼───────┼─────────┼───────┼────────┤
-│ 1   │ 2     │ 2.0     │ 2     │ John   │
-│ 2   │ 2     │ 2.0     │ 2     │ Sally  │</code></pre><h2 id="The-@mapmany-command-1"><a class="docs-heading-anchor" href="#The-@mapmany-command-1">The <code>@mapmany</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@mapmany-command-1" title="Permalink"></a></h2><p>The <code>@mapmany</code> command has the form <code>source |&gt; @mapmany(collection_selector, result_selector)</code>. <code>source</code> can be any source that can be queried. <code>collection_selector</code> must be an anonymous function that takes one argument and returns a collection. <code>result_selector</code> must be an anonymous function that takes two arguments. It will be applied to each element of the intermediate collection.</p><h4 id="Example-7"><a class="docs-heading-anchor" href="#Example-7">Example</a><a class="docs-heading-anchor-permalink" href="#Example-7" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
+ Row │ a      b        c      d
+     │ Int64  Float64  Int64  String
+─────┼───────────────────────────────
+   1 │     2      2.0      2  John
+   2 │     2      2.0      2  Sally</code></pre><h2 id="The-@mapmany-command-1"><a class="docs-heading-anchor" href="#The-@mapmany-command-1">The <code>@mapmany</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@mapmany-command-1" title="Permalink"></a></h2><p>The <code>@mapmany</code> command has the form <code>source |&gt; @mapmany(collection_selector, result_selector)</code>. <code>source</code> can be any source that can be queried. <code>collection_selector</code> must be an anonymous function that takes one argument and returns a collection. <code>result_selector</code> must be an anonymous function that takes two arguments. It will be applied to each element of the intermediate collection.</p><h4 id="Example-7"><a class="docs-heading-anchor" href="#Example-7">Example</a><a class="docs-heading-anchor-permalink" href="#Example-7" title="Permalink"></a></h4><pre><code class="language-julia">using DataFrames, Query
 
 source = Dict(:a=&gt;[1,2,3], :b=&gt;[4,5])
 
@@ -123,14 +123,14 @@ println(q)
 # output
 
 5×2 DataFrame
-│ Row │ Key    │ Value │
-│     │ Symbol │ Int64 │
-├─────┼────────┼───────┤
-│ 1   │ a      │ 1     │
-│ 2   │ a      │ 2     │
-│ 3   │ a      │ 3     │
-│ 4   │ b      │ 4     │
-│ 5   │ b      │ 5     │</code></pre><h2 id="The-@take-command-1"><a class="docs-heading-anchor" href="#The-@take-command-1">The <code>@take</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@take-command-1" title="Permalink"></a></h2><p>The <code>@take</code> command has the form <code>source |&gt; @take(n)</code>. <code>source</code> can be any source that can be queried. <code>n</code> must be an integer, and it specifies how many elements from the beginning of the source should be kept.</p><h4 id="Example-8"><a class="docs-heading-anchor" href="#Example-8">Example</a><a class="docs-heading-anchor-permalink" href="#Example-8" title="Permalink"></a></h4><pre><code class="language-julia">using Query
+ Row │ Key     Value
+     │ Symbol  Int64
+─────┼───────────────
+   1 │ a           1
+   2 │ a           2
+   3 │ a           3
+   4 │ b           4
+   5 │ b           5</code></pre><h2 id="The-@take-command-1"><a class="docs-heading-anchor" href="#The-@take-command-1">The <code>@take</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@take-command-1" title="Permalink"></a></h2><p>The <code>@take</code> command has the form <code>source |&gt; @take(n)</code>. <code>source</code> can be any source that can be queried. <code>n</code> must be an integer, and it specifies how many elements from the beginning of the source should be kept.</p><h4 id="Example-8"><a class="docs-heading-anchor" href="#Example-8">Example</a><a class="docs-heading-anchor-permalink" href="#Example-8" title="Permalink"></a></h4><pre><code class="language-julia">using Query
 
 source = [1,2,3,4,5]
 
@@ -171,12 +171,12 @@ println(q1)
 # output
 
 3×2 DataFrame
-│ Row │ price   │ fruit  │
-│     │ Float64 │ String │
-├─────┼─────────┼────────┤
-│ 1   │ 1.2     │ Apple  │
-│ 2   │ 2.0     │ Banana │
-│ 3   │ 0.4     │ Cherry │</code></pre><pre><code class="language-julia">using Query, DataFrames
+ Row │ price    fruit
+     │ Float64  String
+─────┼─────────────────
+   1 │     1.2  Apple
+   2 │     2.0  Banana
+   3 │     0.4  Cherry</code></pre><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
@@ -187,12 +187,12 @@ println(q2)
 # output
 
 3×3 DataFrame
-│ Row │ price   │ isyellow │ fruit  │
-│     │ Float64 │ Bool     │ String │
-├─────┼─────────┼──────────┼────────┤
-│ 1   │ 1.2     │ 0        │ Apple  │
-│ 2   │ 2.0     │ 1        │ Banana │
-│ 3   │ 0.4     │ 0        │ Cherry │</code></pre><h2 id="The-@rename-command-1"><a class="docs-heading-anchor" href="#The-@rename-command-1">The <code>@rename</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@rename-command-1" title="Permalink"></a></h2><p>The <code>@rename</code> command has the form <code>source |&gt; @rename(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name or index of the element, as well as the new name for the element. All <code>args...</code> are executed in order, and the result set of the previous renaming is the source of each current operation.</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ price    isyellow  fruit
+     │ Float64  Bool      String
+─────┼───────────────────────────
+   1 │     1.2     false  Apple
+   2 │     2.0      true  Banana
+   3 │     0.4     false  Cherry</code></pre><h2 id="The-@rename-command-1"><a class="docs-heading-anchor" href="#The-@rename-command-1">The <code>@rename</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@rename-command-1" title="Permalink"></a></h2><p>The <code>@rename</code> command has the form <code>source |&gt; @rename(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name or index of the element, as well as the new name for the element. All <code>args...</code> are executed in order, and the result set of the previous renaming is the source of each current operation.</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
@@ -203,12 +203,12 @@ println(q)
 # output
 
 3×4 DataFrame
-│ Row │ name   │ amount │ cost    │ isyellow │
-│     │ String │ Int64  │ Float64 │ Bool     │
-├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 1.2     │ 0        │
-│ 2   │ Banana │ 6      │ 2.0     │ 1        │
-│ 3   │ Cherry │ 1000   │ 0.4     │ 0        │</code></pre><h2 id="The-@mutate-command-1"><a class="docs-heading-anchor" href="#The-@mutate-command-1">The <code>@mutate</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@mutate-command-1" title="Permalink"></a></h2><p>The <code>@mutate</code> command has the form <code>source |&gt; @mutate(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of <code>source</code>.</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ name    amount  cost     isyellow
+     │ String  Int64   Float64  Bool
+─────┼───────────────────────────────────
+   1 │ Apple        2      1.2     false
+   2 │ Banana       6      2.0      true
+   3 │ Cherry    1000      0.4     false</code></pre><h2 id="The-@mutate-command-1"><a class="docs-heading-anchor" href="#The-@mutate-command-1">The <code>@mutate</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@mutate-command-1" title="Permalink"></a></h2><p>The <code>@mutate</code> command has the form <code>source |&gt; @mutate(args...)</code>. <code>source</code> can be any source that can be queried. Each argument from <code>args...</code> must specify the name of the element and the formula to which its values are transformed. The formula can contain elements of <code>source</code>.</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(fruit=[&quot;Apple&quot;,&quot;Banana&quot;,&quot;Cherry&quot;],amount=[2,6,1000],price=[1.2,2.0,0.4],isyellow=[false,true,false])
 
@@ -219,12 +219,12 @@ println(q)
 # output
 
 3×4 DataFrame
-│ Row │ fruit  │ amount │ price   │ isyellow │
-│     │ String │ Int64  │ Float64 │ Bool     │
-├─────┼────────┼────────┼─────────┼──────────┤
-│ 1   │ Apple  │ 2      │ 4.4     │ 1        │
-│ 2   │ Banana │ 6      │ 10.0    │ 0        │
-│ 3   │ Cherry │ 1000   │ 1000.8  │ 0        │</code></pre><h2 id="The-@dropna-command-1"><a class="docs-heading-anchor" href="#The-@dropna-command-1">The <code>@dropna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@dropna-command-1" title="Permalink"></a></h2><p>The <code>@dropna</code> command has the form <code>source |&gt; @dropna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@dropna()</code> is called without any arguments, it will drop any row from <code>source</code> that has a missing <code>NA</code> value in <em>any</em> of its columns. Alternatively one can pass a list of column names to <code>@dropna</code>, in which case it will only drop rows that have a <code>NA</code> value in one of those columns.</p><p>Our first example uses the simple version of <code>@dropna()</code> that drops rows that have a missing value in any column:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ fruit   amount  price    isyellow
+     │ String  Int64   Float64  Bool
+─────┼───────────────────────────────────
+   1 │ Apple        2      4.4      true
+   2 │ Banana       6     10.0     false
+   3 │ Cherry    1000   1000.8     false</code></pre><h2 id="The-@dropna-command-1"><a class="docs-heading-anchor" href="#The-@dropna-command-1">The <code>@dropna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@dropna-command-1" title="Permalink"></a></h2><p>The <code>@dropna</code> command has the form <code>source |&gt; @dropna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@dropna()</code> is called without any arguments, it will drop any row from <code>source</code> that has a missing <code>NA</code> value in <em>any</em> of its columns. Alternatively one can pass a list of column names to <code>@dropna</code>, in which case it will only drop rows that have a <code>NA</code> value in one of those columns.</p><p>Our first example uses the simple version of <code>@dropna()</code> that drops rows that have a missing value in any column:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,2,3], b=[4,missing,5])
 
@@ -235,11 +235,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 5     │</code></pre><p>The next example only drops rows that have a missing value in the <code>b</code> column:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      5</code></pre><p>The next example only drops rows that have a missing value in the <code>b</code> column:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,2,3], b=[4,missing,5])
 
@@ -250,11 +250,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 5     │</code></pre><p>We can specify as many columns as we want:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      5</code></pre><p>We can specify as many columns as we want:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,2,3], b=[4,missing,5])
 
@@ -265,11 +265,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 5     │</code></pre><h2 id="The-@disallowna-command-1"><a class="docs-heading-anchor" href="#The-@disallowna-command-1">The <code>@disallowna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@disallowna-command-1" title="Permalink"></a></h2><p>The <code>@disallowna</code> command has the form <code>source |&gt; @disallowna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@disallowna()</code> is called without any arguments, it will check that there are no missing <code>NA</code> values in any column in any row of the input table and convert the element type of each column to one that cannot hold missing values. Alternatively one can pass a list of column names to <code>@disallowna</code>, in which case it will only check for <code>NA</code> values in those columns, and only convert those columns to a type that cannot hold missing values.</p><p>Our first example uses the simple version of <code>@disallowna()</code> that makes sure there are no missing values anywhere in the table. Note how the column type for column <code>a</code> is changed to <code>Int64</code> in this example, i.e. an element type that does not support missing values:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      5</code></pre><h2 id="The-@disallowna-command-1"><a class="docs-heading-anchor" href="#The-@disallowna-command-1">The <code>@disallowna</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@disallowna-command-1" title="Permalink"></a></h2><p>The <code>@disallowna</code> command has the form <code>source |&gt; @disallowna(columns...)</code>. <code>source</code> can be any source that can be queried and that has a table structure. If <code>@disallowna()</code> is called without any arguments, it will check that there are no missing <code>NA</code> values in any column in any row of the input table and convert the element type of each column to one that cannot hold missing values. Alternatively one can pass a list of column names to <code>@disallowna</code>, in which case it will only check for <code>NA</code> values in those columns, and only convert those columns to a type that cannot hold missing values.</p><p>Our first example uses the simple version of <code>@disallowna()</code> that makes sure there are no missing values anywhere in the table. Note how the column type for column <code>a</code> is changed to <code>Int64</code> in this example, i.e. an element type that does not support missing values:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,missing,3], b=[4,5,6])
 
@@ -280,11 +280,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 3     │ 6     │</code></pre><p>The next example only checks the <code>b</code> column for missing values:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     3      6</code></pre><p>The next example only checks the <code>b</code> column for missing values:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,2,missing], b=[4,missing,5])
 
@@ -295,11 +295,11 @@ println(q)
 # output
 
 2×2 DataFrame
-│ Row │ a       │ b     │
-│     │ Int64⍰  │ Int64 │
-├─────┼─────────┼───────┤
-│ 1   │ 1       │ 4     │
-│ 2   │ missing │ 5     │</code></pre><h2 id="The-@replacena-command-1"><a class="docs-heading-anchor" href="#The-@replacena-command-1">The <code>@replacena</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@replacena-command-1" title="Permalink"></a></h2><p>The <code>@replacena</code> command has a simple and full version.</p><p>The simple form is <code>source |&gt; @replacena(replacement_value)</code>. <code>source</code> can be any source that can be queried and that has a table structure. In this case all missing <code>NA</code> values in the source table will be replaced with <code>replacement_value</code>. Not that this version only works properly, if all columns that contain missing values have the same element type.</p><p>The full version has the form <code>source |&gt; @replacena(replacement_specifier...)</code>. <code>source</code> can again be any source that can be queried that has a table structure. Each <code>replacement_specifier</code> should be a <code>Pair</code> of the form <code>column_name =&gt; replacement_value</code>. For example <code>:b =&gt; 3</code> means that all missing values in column <code>b</code> should be replaced with the value 3. One can specify as many <code>replacement_specifier</code>s as one wishes.</p><p>The first example uses the simple form:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ a        b
+     │ Int64?   Int64
+─────┼────────────────
+   1 │       1      4
+   2 │ missing      5</code></pre><h2 id="The-@replacena-command-1"><a class="docs-heading-anchor" href="#The-@replacena-command-1">The <code>@replacena</code> command</a><a class="docs-heading-anchor-permalink" href="#The-@replacena-command-1" title="Permalink"></a></h2><p>The <code>@replacena</code> command has a simple and full version.</p><p>The simple form is <code>source |&gt; @replacena(replacement_value)</code>. <code>source</code> can be any source that can be queried and that has a table structure. In this case all missing <code>NA</code> values in the source table will be replaced with <code>replacement_value</code>. Not that this version only works properly, if all columns that contain missing values have the same element type.</p><p>The full version has the form <code>source |&gt; @replacena(replacement_specifier...)</code>. <code>source</code> can again be any source that can be queried that has a table structure. Each <code>replacement_specifier</code> should be a <code>Pair</code> of the form <code>column_name =&gt; replacement_value</code>. For example <code>:b =&gt; 3</code> means that all missing values in column <code>b</code> should be replaced with the value 3. One can specify as many <code>replacement_specifier</code>s as one wishes.</p><p>The first example uses the simple form:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,missing,3], b=[4,5,6])
 
@@ -310,12 +310,12 @@ println(q)
 # output
 
 3×2 DataFrame
-│ Row │ a     │ b     │
-│     │ Int64 │ Int64 │
-├─────┼───────┼───────┤
-│ 1   │ 1     │ 4     │
-│ 2   │ 0     │ 5     │
-│ 3   │ 3     │ 6     │</code></pre><p>The next example uses a different replacement value for column <code>a</code> and <code>b</code>:</p><pre><code class="language-julia">using Query, DataFrames
+ Row │ a      b
+     │ Int64  Int64
+─────┼──────────────
+   1 │     1      4
+   2 │     0      5
+   3 │     3      6</code></pre><p>The next example uses a different replacement value for column <code>a</code> and <code>b</code>:</p><pre><code class="language-julia">using Query, DataFrames
 
 df = DataFrame(a=[1,2,missing], b=[&quot;One&quot;,missing,&quot;Three&quot;])
 
@@ -326,9 +326,9 @@ println(q)
 # output
 
 3×2 DataFrame
-│ Row │ a     │ b       │
-│     │ Int64 │ String  │
-├─────┼───────┼─────────┤
-│ 1   │ 1     │ One     │
-│ 2   │ 2     │ Unknown │
-│ 3   │ 0     │ Three   │</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gettingstarted/">« Getting Started</a><a class="docs-footer-nextpage" href="../linqquerycommands/">LINQ Style Query Commands »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 6 January 2021 00:05">Wednesday 6 January 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ Row │ a      b
+     │ Int64  String
+─────┼────────────────
+   1 │     1  One
+   2 │     2  Unknown
+   3 │     0  Three</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../gettingstarted/">« Getting Started</a><a class="docs-footer-nextpage" href="../linqquerycommands/">LINQ Style Query Commands »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 4 April 2021 03:20">Sunday 4 April 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
