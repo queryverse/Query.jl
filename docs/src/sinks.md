@@ -105,7 +105,7 @@ the `TS` type.
 
 ## IndexedTable
 
-The statement `@collect IndexedTable` will materialize the query results
+The statement `@collect table` will materialize the query results
 into a new `IndexedTables.IndexedTable` instance. This statement only
 works if the last projection statement transformed the results into a
 `NamedTuple`, for example by using the `{}` syntax. The last column of
