@@ -116,7 +116,7 @@ println(q)
 
 ## Any iterable type
 
-Any data source type that implements the [standard julia iterator protocoll](http://docs.julialang.org/en/v1/manual/interfaces/#man-interface-iteration) (i.e. the `iterate` methods) can be a query data source. Iterable data sources are implemented as `Enumerable` data sources and can therefore be combined with any other `Enumerable` data source in a single query.
+Any data source type that implements the [standard julia iterator protocol](http://docs.julialang.org/en/v1/manual/interfaces/#man-interface-iteration) (i.e. the `iterate` methods) can be a query data source. Iterable data sources are implemented as `Enumerable` data sources and can therefore be combined with any other `Enumerable` data source in a single query.
 
 ### Example
 
