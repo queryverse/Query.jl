@@ -59,7 +59,7 @@ end
     # Pipe form
     result = df |> @pivot_longer(:US, :EU) |> collect
     @test length(result) == 4
-    @test eltype(result) == NamedTuple{(:year, :variable, :value), Tuple{Int64, Symbol, Int64}}
+    @test eltype(result) == NamedTuple{(:year, :variable, :value), Tuple{Int, Symbol, Int}}
     @test result[1] == (year=2017, variable=:US, value=1)
     @test result[2] == (year=2017, variable=:EU, value=2)
     @test result[3] == (year=2018, variable=:US, value=3)
