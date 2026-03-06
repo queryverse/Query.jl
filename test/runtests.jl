@@ -495,6 +495,7 @@ q = collect(@map(source_df, i->i.children))
 include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
 include("test_macros.jl")
+include("test_standalone.jl")
 
 # Only run doctests on 64, all the output checks get messed up with
 # Int32 otherwise. Also only run on Julia 1.6 and newer, because
