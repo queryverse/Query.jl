@@ -1,11 +1,5 @@
-using Query
-using DataFrames
-using Statistics
-using Test
-
-
-
-@testset "a.b Syntax (dplyr API)" begin
+@testitem "a.b Syntax (dplyr API)" begin
+    using DataFrames, Statistics
 
     df = DataFrame(name=repeat(["John", "Sally", "Kirk"],inner=[1],outer=[2]), 
                    age=vcat([10., 20., 30.],[10., 20., 30.].+3), 

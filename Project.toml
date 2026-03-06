@@ -17,6 +17,7 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 IndexedTables = "6deec6e2-d858-57c5-ab9b-e6ca5bd20e43"
+TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 
 [compat]
 IterableTables = "0.8.2, 0.9, 0.10, 0.11, 1"
@@ -26,4 +27,4 @@ DataValues = "0.4.4"
 MacroTools = "0.4.4, 0.5"
 
 [targets]
-test = ["Statistics", "Test", "DataFrames", "TypedTables", "Documenter", "IndexedTables", "Dates"]
+test = ["Statistics", "Test", "DataFrames", "TypedTables", "Documenter", "IndexedTables", "Dates", "TestItemRunner"]

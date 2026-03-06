@@ -1,11 +1,6 @@
-using Query
-using DataFrames
-using DataValues
-using Test
+@testitem "@take operator" begin
+    using DataFrames
 
-@testset "Standalone Syntax" begin
-
-@testset "@take operator" begin
     df = DataFrame(a=[1,2,3], b=[3.,2.,1.], c=["a", "b", "c"])
 
     df2 = df |> @take(2) |> DataFrame
@@ -25,7 +20,9 @@ using Test
     @test df2[!, :c] == ["a", "b"]
 end
 
-@testset "@drop operator" begin
+@testitem "@drop operator" begin
+    using DataFrames
+
     df = DataFrame(a=[1,2,3], b=[3.,2.,1.], c=["a", "b", "c"])
 
     df2 = df |> @drop(1) |> DataFrame
@@ -45,14 +42,16 @@ end
     @test df2[!, :c] == ["b","c"]
 end
 
-@testset "@unique operator" begin
+@testitem "@unique operator" begin
+    using DataFrames
+
     df = DataFrame(a=[1,2,1], b=[3.,3.,3.])
 
     @test df |> @unique() |> collect == [(a=1,b=3.), (a=2,b=3.)]
     @test df |> @unique(_.b) |> collect == [(a=1,b=3.)]
 end
 
-@testset "@pivot_longer operator" begin
+@testitem "@pivot_longer operator" begin
     df = DataFrame(year=[2017,2018], US=[1,3], EU=[2,4])
 
     # Pipe form
@@ -94,7 +93,7 @@ end
     @test fieldnames(eltype(result6)) == (:year, :variable, :amount)
 end
 
-@testset "@pivot_longer selector syntax" begin
+@testitem "@pivot_longer selector syntax" begin
     # startswith selector
     df = DataFrame(year=[2017,2018], wk1=[1,3], wk2=[2,4], total=[10,20])
 
@@ -162,6 +161,4 @@ end
     @test df2 isa DataFrame
     @test size(df2) == (2, 3)
     @test names(df2) == ["year", "US", "EU"]
-end
-
 end

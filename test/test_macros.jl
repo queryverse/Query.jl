@@ -1,8 +1,5 @@
-using Query
-using DataFrames
-using Test
-
-@testset "Select Macro" begin
+@testitem "Select Macro" begin
+    using DataFrames
     
     df = DataFrame(foo=[1,2,3], bar=[3.,2.,1.], bat=["a","b","c"])
 
@@ -23,7 +20,8 @@ using Test
 
 end
 
-@testset "Rename Macro" begin
+@testitem "Rename Macro" begin
+    using DataFrames
 
     df = DataFrame(foo=[1,2,3], bar=[3.,2.,1.], bat=["a","b","c"])
 
@@ -37,7 +35,8 @@ end
 
 end
 
-@testset "Mutate Macro" begin
+@testitem "Mutate Macro" begin
+    using DataFrames
 
     df = DataFrame(foo=[1,2,3], bar=[3.,2.,1.], bat=["a", "b", "c"])
 
@@ -46,11 +45,12 @@ end
 
     # test a closure
 
-    closure_val = 1
+    const closure_val = 1
     @test DataFrame(df |> @mutate(foo = closure_val)) == DataFrame(foo=[1,1,1], bar=[3.,2.,1.], bat=["a","b","c"])
 end
 
-@testset "@dropna" begin
+@testitem "@dropna" begin
+    using DataFrames, Query.DataValues
 
     df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
 
@@ -63,7 +63,8 @@ end
     @test df |> @dropna(:a, :b) |> collect == [(a=1,b=1.), (a=3, b=3.)]
 end
 
-@testset "@replacena" begin
+@testitem "@replacena" begin
+    using DataFrames, Query.DataValues
 
     df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
 
@@ -76,7 +77,8 @@ end
     @test df |> @replacena(:a=>2, :b=>8) |> collect == [(a=1,b=1.), (a=2, b=2.), (a=3, b=3.)]
 end
 
-@testset "@disallowna" begin
+@testitem "@disallowna" begin
+    using DataFrames, Query.DataValues
 
     df = DataFrame(a=[1,missing,3], b=[1.,2.,3.])
 

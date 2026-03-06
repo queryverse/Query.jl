@@ -1,8 +1,5 @@
-using Query
-using DataFrames
-using Test
-
-@testset "Pipe Syntax" begin
+@testitem "Pipe Syntax" begin
+    using DataFrames
 
     df = DataFrame(a=[1,2,3], b=[3.,2.,1.], c=["a", "b", "c"])
 
