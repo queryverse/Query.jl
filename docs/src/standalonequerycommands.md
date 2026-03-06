@@ -552,7 +552,7 @@ Columns to pivot are selected with the same rich selector syntax as `@select`:
 
 When only exclusion selectors are given (all starting with `-` or `!`), the starting set is all columns and the exclusions are removed.
 
-To customise the names of the output columns, call `QueryOperators.pivot_longer` directly with the `names_to` and `values_to` keyword arguments.
+The names of the output columns can be customised with the `names_to` and `values_to` keyword arguments. Both accept a `Symbol` and default to `:variable` and `:value` respectively.
 
 #### Examples
 
@@ -564,6 +564,10 @@ df = DataFrame(year=[2017,2018], US=[1,3], EU=[2,4])
 # Explicit column names
 result = df |> @pivot_longer(:US, :EU) |> DataFrame
 # 4×3 DataFrame: year | variable | value
+
+# Custom output column names
+result = df |> @pivot_longer(:US, :EU, names_to=:country, values_to=:sales) |> DataFrame
+# 4×3 DataFrame: year | country | sales
 
 # Predicate — pivot all columns starting with "U"
 result = df |> @pivot_longer(startswith("U")) |> DataFrame

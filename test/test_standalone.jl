@@ -73,6 +73,25 @@ end
     @test df2 isa DataFrame
     @test size(df2) == (4, 3)
     @test names(df2) == ["year", "variable", "value"]
+
+    # Custom output column names (pipe form)
+    result3 = df |> @pivot_longer(:US, :EU, names_to=:country, values_to=:sales) |> collect
+    @test length(result3) == 4
+    @test fieldnames(eltype(result3)) == (:year, :country, :sales)
+    @test result3[1] == (year=2017, country=:US, sales=1)
+    @test result3[4] == (year=2018, country=:EU, sales=4)
+
+    # Custom output column names (direct form)
+    result4 = @pivot_longer(df, :US, :EU, names_to=:country, values_to=:sales) |> collect
+    @test result4 == result3
+
+    # Only names_to (values_to defaults to :value)
+    result5 = df |> @pivot_longer(:US, :EU, names_to=:country) |> collect
+    @test fieldnames(eltype(result5)) == (:year, :country, :value)
+
+    # Only values_to (names_to defaults to :variable)
+    result6 = df |> @pivot_longer(:US, :EU, values_to=:amount) |> collect
+    @test fieldnames(eltype(result6)) == (:year, :variable, :amount)
 end
 
 @testset "@pivot_longer selector syntax" begin

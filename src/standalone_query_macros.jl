@@ -254,6 +254,10 @@ end
 function _is_pivot_selector(arg)
     arg isa QuoteNode && return true
     arg isa Int && return true
+    # Keyword argument (names_to=:x, values_to=:x) — not a selector
+    if arg isa Expr && (arg.head == :(=) || arg.head == :kw)
+        return false
+    end
     # Negative selector: -:col or -(pred(...))
     if arg isa Expr && arg.head == :call && length(arg.args) == 2 && arg.args[1] == :-
         return true
@@ -338,6 +342,12 @@ function _pivot_selector_to_instruction(arg)
     error("@pivot_longer: unrecognised selector argument: $arg")
 end
 
+# Returns true when a macro argument is a keyword argument (name=value).
+function _is_pivot_kwarg(arg)
+    arg isa Expr && (arg.head == :(=) || arg.head == :kw) &&
+        length(arg.args) == 2 && arg.args[1] ∈ (:names_to, :values_to)
+end
+
 macro pivot_longer(args...)
     isempty(args) && error("@pivot_longer requires at least one column selector argument")
 
@@ -354,15 +364,33 @@ macro pivot_longer(args...)
         isempty(selector_args) && error("@pivot_longer requires at least one column selector")
     end
 
+    # Separate keyword arguments (names_to=, values_to=) from column selectors
+    col_selectors = filter(a -> !_is_pivot_kwarg(a), selector_args)
+    kw_args = filter(_is_pivot_kwarg, selector_args)
+    isempty(col_selectors) && error("@pivot_longer requires at least one column selector")
+
+    # Extract keyword values
+    kwargs_exprs = Expr[]
+    for kw in kw_args
+        name = kw.args[1]
+        val  = kw.args[2]
+        push!(kwargs_exprs, Expr(:kw, name, esc(val)))
+    end
+
     # Build instruction tuple (evaluated at macro-expansion time)
-    instructions = Tuple(_pivot_selector_to_instruction(a) for a in selector_args)
+    instructions = Tuple(_pivot_selector_to_instruction(a) for a in col_selectors)
 
     # Generate the call expression
     function make_call(src_expr)
-        :(QueryOperators.pivot_longer(
+        call_expr = :(QueryOperators.pivot_longer(
             $src_expr,
             QueryOperators._resolve_pivot_cols(eltype($src_expr), Val($instructions))
         ))
+        if !isempty(kwargs_exprs)
+            # Insert keyword arguments into the function call
+            call_expr.args = [call_expr.args[1]; Expr(:parameters, kwargs_exprs...); call_expr.args[2:end]...]
+        end
+        call_expr
     end
 
     if source_expr === nothing
