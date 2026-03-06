@@ -1,3 +1,6 @@
+# Query.jl v1.1.0 Release Notes
+* Add @pivot_wider and @pivot_longer
+
 # Query.jl v0.12.2 Release Notes
 * Fix some bugs in the @select macro
 

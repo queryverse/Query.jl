@@ -530,3 +530,78 @@ println(q)
    2 │     2  Unknown
    3 │     0  Three
 ```
+
+## The `@pivot_longer` command
+
+The `@pivot_longer` command reshapes data from wide format to long format. Each row in the source is expanded into one output row per pivot column. Non-pivot columns are retained as-is, and two new columns are added: `:variable` (holding the original column name as a `Symbol`) and `:value` (holding the cell value).
+
+Columns to pivot are selected with the same rich selector syntax as `@select`:
+
+| Syntax                    | Meaning                                             |
+|---------------------------|-----------------------------------------------------|
+| `:col`                    | Include column by name                              |
+| `startswith("prefix")`    | Include columns whose name starts with `"prefix"`  |
+| `endswith("suffix")`      | Include columns whose name ends with `"suffix"`    |
+| `occursin("sub")`         | Include columns whose name contains `"sub"`        |
+| `!(startswith("prefix"))` | Exclude columns whose name starts with `"prefix"`  |
+| `-(startswith("prefix"))` | Same as above                                       |
+| `-:col`                   | Exclude column by name                              |
+| `n` (integer)             | Include column at position `n`                      |
+| `:from::to`               | Include a name range (inclusive)                    |
+| `a:b` (integers)          | Include a positional range (inclusive)              |
+
+When only exclusion selectors are given (all starting with `-` or `!`), the starting set is all columns and the exclusions are removed.
+
+The names of the output columns can be customised with the `names_to` and `values_to` keyword arguments. Both accept a `Symbol` and default to `:variable` and `:value` respectively.
+
+#### Examples
+
+```julia
+using Query, DataFrames
+
+df = DataFrame(year=[2017,2018], US=[1,3], EU=[2,4])
+
+# Explicit column names
+result = df |> @pivot_longer(:US, :EU) |> DataFrame
+# 4×3 DataFrame: year | variable | value
+
+# Custom output column names
+result = df |> @pivot_longer(:US, :EU, names_to=:country, values_to=:sales) |> DataFrame
+# 4×3 DataFrame: year | country | sales
+
+# Predicate — pivot all columns starting with "U"
+result = df |> @pivot_longer(startswith("U")) |> DataFrame
+
+# Predicate with exclusion — pivot wk* columns except wk_total
+df2 = DataFrame(id=[1,2], wk1=[10,20], wk2=[30,40], wk_total=[40,60])
+result = df2 |> @pivot_longer(startswith("wk"), -:wk_total) |> DataFrame
+# pivots :wk1 and :wk2 only
+
+# Negated predicate — pivot everything except id columns
+result = df2 |> @pivot_longer(!(startswith("id"))) |> DataFrame
+```
+
+## The `@pivot_wider` command
+
+The `@pivot_wider` command reshapes data from long format to wide format. It has the form `source |> @pivot_wider(names_from, values_from)`, where `names_from` is the quoted name of the column whose values become new column names, and `values_from` is the quoted name of the column whose values populate those new columns. All other columns are used as identifier columns. Absent combinations are represented as `DataValues.DataValue{T}()` (NA).
+
+#### Example
+
+```julia
+using Query, DataFrames
+
+long = DataFrame(
+    year    = [2017, 2017, 2018, 2018],
+    country = [:US, :EU, :US, :EU],
+    value   = [1, 2, 3, 4]
+)
+
+result = long |> @pivot_wider(:country, :value) |> DataFrame
+
+# 2×3 DataFrame
+#  Row │ year   US                   EU
+#      │ Int64  Union{Missing, Int64} Union{Missing, Int64}
+# ─────┼──────────────────────────────────────────────────
+#    1 │  2017  1                    2
+#    2 │  2018  3                    4
+```

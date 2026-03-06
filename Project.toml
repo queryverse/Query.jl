@@ -22,7 +22,7 @@ TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 [compat]
 IterableTables = "0.8.2, 0.9, 0.10, 0.11, 1"
 julia = "1.10"
-QueryOperators = "0.9.1"
+QueryOperators = "1"
 DataValues = "0.4.4"
 MacroTools = "0.4.4, 0.5"
 
