@@ -52,6 +52,8 @@ end
 end
 
 @testitem "@pivot_longer operator" begin
+    using DataFrames
+    
     df = DataFrame(year=[2017,2018], US=[1,3], EU=[2,4])
 
     # Pipe form
@@ -94,6 +96,8 @@ end
 end
 
 @testitem "@pivot_longer selector syntax" begin
+    using DataFrames
+
     # startswith selector
     df = DataFrame(year=[2017,2018], wk1=[1,3], wk2=[2,4], total=[10,20])
 
