@@ -65,7 +65,7 @@ macro select(args...)
             # select by predicate functions
             m_pred = match(r"^(startswith|endswith|occursin)\(\"(.+)\"\)", arg)
             is_neg_pred = false
-            if m_pred == nothing
+            if m_pred === nothing
                 m_pred = match(r"^!\(*(startswith|endswith|occursin)\(\"(.+)\"\)+", arg)
                 is_neg_pred = true
             end
