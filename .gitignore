@@ -6,3 +6,4 @@ docs/site/
 docs/Manifest.toml
 test-output*.*
 .vscode
+Manifest.toml
