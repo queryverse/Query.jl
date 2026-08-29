@@ -6,4 +6,4 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 IndexedTables = "6deec6e2-d858-57c5-ab9b-e6ca5bd20e43"
 
 [compat]
-Documenter = "~0.24"
+Documenter = "1"

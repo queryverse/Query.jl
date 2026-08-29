@@ -1,5 +1,6 @@
 using TestItemRunner
 using Documenter
+using Query
 
 include("test_core.jl")
 include("test_dplyr-syntax.jl")
