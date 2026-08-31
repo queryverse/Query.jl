@@ -88,7 +88,7 @@ println(result)
 
 # output
 
-@NamedTuple{Name::String, Friendcount::Int64}[(Name = "John", Friendcount = 3)]
+[(Name = "John", Friendcount = 3)]
 ```
 
 ## IndexedTables
