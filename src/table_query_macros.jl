@@ -232,55 +232,6 @@ macro replacena(arg, args...)
     end
 end
 
-# Internal marker used as the key of the keyless Grouping that the ungrouped
-# @summarize path wraps its source in.
-struct _SummarizeUngroupedKey end
-
-_grouping_key(g::QueryOperators.Grouping) = QueryOperators.key(g)
-
-_key_namedtuple(k::NamedTuple) = k                        # multi-column grouping key: splat fields in
-_key_namedtuple(::_SummarizeUngroupedKey) = NamedTuple()  # ungrouped: no key columns
-_key_namedtuple(k) = (key = k,)                           # scalar key: column named `key`
-
-# Lazy one-element enumerable used by the ungrouped @summarize path: on first
-# iterate it collects the source rows, wraps them in a keyless Grouping (so
-# that `_.x` column access works exactly as in the grouped path) and yields
-# the single aggregated row.
-struct EnumerableSummarizeAll{T,S,Q<:Function} <: QueryOperators.Enumerable
-    source::S
-    f::Q
-end
-
-Base.eltype(::Type{EnumerableSummarizeAll{T,S,Q}}) where {T,S,Q} = T
-Base.IteratorSize(::Type{<:EnumerableSummarizeAll}) = Base.HasLength()
-Base.length(::EnumerableSummarizeAll) = 1
-
-function Base.iterate(iter::EnumerableSummarizeAll{T,S,Q}) where {T,S,Q}
-    TS = eltype(iter.source)
-    elements = Base.collect(TS, iter.source)
-    g = QueryOperators.Grouping{_SummarizeUngroupedKey,TS}(_SummarizeUngroupedKey(), elements)
-    return iter.f(g), nothing
-end
-
-Base.iterate(::EnumerableSummarizeAll, state) = nothing
-
-function summarize(source, f::Function, f_expr::Expr)
-    q = QueryOperators.query(source)
-    return _summarize(q, eltype(q), f, f_expr)
-end
-
-# Grouped input: one output row per group, as a lazy map over the groups.
-_summarize(q, ::Type{<:QueryOperators.Grouping}, f::Function, f_expr::Expr) =
-    QueryOperators.map(q, f, f_expr)
-
-# Ungrouped input: the whole source is treated as a single keyless group,
-# producing a stream of exactly one row (with no key columns).
-function _summarize(q, ::Type{TS}, f::Function, f_expr::Expr) where {TS}
-    TG = QueryOperators.Grouping{_SummarizeUngroupedKey,TS}
-    T = Base._return_type(f, Tuple{TG})
-    return EnumerableSummarizeAll{T,typeof(q),typeof(f)}(q, f)
-end
-
 function _summarize_macro_impl(macro_name, args)
     source = nothing
     agg_args = args
@@ -299,15 +250,15 @@ function _summarize_macro_impl(macro_name, args)
     agg_nt = Expr(:tuple, Expr(:parameters,
         (Expr(:kw, arg.args[1], arg.args[2]) for arg in agg_args)...))
 
-    body = :( Base.merge(Query._key_namedtuple(Query._grouping_key(_)), $agg_nt) )
+    body = :( Base.merge(Query.QueryOperators._key_namedtuple(Query.QueryOperators.key(_)), $agg_nt) )
     f = helper_replace_anon_func_syntax(body)
     q_f = Expr(:quote, f)
 
     if source === nothing
         i_var = gensym(:source)
-        return :( $i_var -> Query.summarize($i_var, $f, $q_f) ) |> esc
+        return :( $i_var -> Query.QueryOperators.summarize(Query.QueryOperators.query($i_var), $f, $q_f) ) |> esc
     else
-        return :( Query.summarize($source, $f, $q_f) ) |> esc
+        return :( Query.QueryOperators.summarize(Query.QueryOperators.query($source), $f, $q_f) ) |> esc
     end
 end
 
