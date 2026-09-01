@@ -368,7 +368,7 @@ println(q)
 
 ## The `@summarize` command
 
-The `@summarize` command has the form `source |> @summarize(args...)`. `source` can be any source that can be queried. Each argument from `args...` must have the form `name = expression`. Inside each expression, `_` refers to the collection of rows that is being aggregated, so functions that operate on a whole column or group like `mean(_.age)`, `length(_)` or `key(_)` can be used. `@summarise` is an alias for `@summarize`.
+The `@summarize` command has the form `source |> @summarize(args...)`. `source` can be any source that can be queried. Each argument from `args...` must have the form `name = expression`. Inside each expression, `_` refers to the collection of rows that is being aggregated, so functions that operate on a whole column or group like `mean(_.age)`, `length(_)` or `key(_)` can be used.
 
 When `source` is the output of a `@groupby` command, `@summarize` returns one row per group. The grouping key columns are automatically prepended to the aggregate columns: a scalar grouping key becomes a column named `key`, and a grouping key that is a named tuple contributes one column per field. If an aggregate has the same name as a key column, the aggregate replaces that key column.
 

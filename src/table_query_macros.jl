@@ -328,8 +328,6 @@ If an aggregate has the same name as a key column, the aggregate wins.
 Applied to an ungrouped source, `@summarize` treats the whole table as a single
 group and produces a stream with exactly one row and no key columns.
 
-`@summarise` is an alias.
-
 ```
 julia> df = DataFrame(k=[1,1,2], x=[3.0,2.0,1.0])
 
@@ -344,13 +342,4 @@ julia> df |> @groupby(_.k) |> @summarize(m = mean(_.x), n = length(_)) |> DataFr
 """
 macro summarize(args...)
     return _summarize_macro_impl("@summarize", args)
-end
-
-"""
-    @summarise(args...)
-
-Alias for [`@summarize`](@ref).
-"""
-macro summarise(args...)
-    return _summarize_macro_impl("@summarise", args)
 end

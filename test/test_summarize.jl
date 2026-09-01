@@ -41,10 +41,6 @@
     # collect into a DataFrame
     @test DataFrame(df |> @groupby(_.k) |> @summarize(m = mean(_.x))) ==
         DataFrame(key=[1,2], m=[1.5,4.0])
-
-    # @summarise alias
-    @test df |> @groupby(_.k) |> @summarise(m = mean(_.x)) |> collect ==
-        [(key=1, m=1.5), (key=2, m=4.0)]
 end
 
 @testitem "Summarize Macro ungrouped" begin
@@ -84,9 +80,6 @@ end
     # grouped source-first form
     g = df |> @groupby(_.k)
     @test @summarize(g, m = mean(_.x)) |> collect == [(key=1, m=1.5), (key=2, m=4.0)]
-
-    # source-first form of the alias
-    @test @summarise(df, n = length(_)) |> collect == [(n=3,)]
 end
 
 @testitem "Summarize Macro error cases" begin
