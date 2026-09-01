@@ -1,3 +1,6 @@
+# Query.jl v1.2.0 Release Notes
+* Add @summarize (alias @summarise) for grouped and whole-table aggregation
+
 # Query.jl v1.1.0 Release Notes
 * Add @pivot_wider and @pivot_longer
 

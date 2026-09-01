@@ -366,6 +366,58 @@ println(q)
    3 │ Cherry    1000   1000.8     false
 ``` 
 
+## The `@summarize` command
+
+The `@summarize` command has the form `source |> @summarize(args...)`. `source` can be any source that can be queried. Each argument from `args...` must have the form `name = expression`. Inside each expression, `_` refers to the collection of rows that is being aggregated, so functions that operate on a whole column or group like `mean(_.age)`, `length(_)` or `key(_)` can be used. `@summarise` is an alias for `@summarize`.
+
+When `source` is the output of a `@groupby` command, `@summarize` returns one row per group. The grouping key columns are automatically prepended to the aggregate columns: a scalar grouping key becomes a column named `key`, and a grouping key that is a named tuple contributes one column per field. If an aggregate has the same name as a key column, the aggregate replaces that key column.
+
+When `source` is not grouped, the whole table is treated as a single group and `@summarize` returns a stream with exactly one row and no key columns.
+
+#### Example
+
+```jldoctest
+using Query, DataFrames, Statistics
+
+df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,2,2])
+
+x = df |>
+    @groupby(_.children) |>
+    @summarize(n = length(_), mean_age = mean(_.age)) |>
+    DataFrame
+
+println(x)
+
+# output
+
+2×3 DataFrame
+ Row │ key    n      mean_age
+     │ Int64  Int64  Float64
+─────┼────────────────────────
+   1 │     3      1      23.0
+   2 │     2      2      50.5
+```
+
+The next example applies `@summarize` to an ungrouped source, which aggregates the whole table into a single row:
+
+```jldoctest
+using Query, DataFrames, Statistics
+
+df = DataFrame(name=["John", "Sally", "Kirk"], age=[23., 42., 59.], children=[3,2,2])
+
+x = df |> @summarize(n = length(_), mean_age = mean(_.age)) |> DataFrame
+
+println(x)
+
+# output
+
+1×2 DataFrame
+ Row │ n      mean_age
+     │ Int64  Float64
+─────┼─────────────────
+   1 │     3   41.3333
+```
+
 ## The `@dropna` command
 
 The `@dropna` command has the form `source |> @dropna(columns...)`. `source` can be any source that can be queried and that has a table structure. If `@dropna()` is called without any arguments, it will drop any row from `source` that has a missing `NA` value in _any_ of its columns. Alternatively one can pass a list of column names to `@dropna`, in which case it will only drop rows that have a `NA` value in one of those columns.
