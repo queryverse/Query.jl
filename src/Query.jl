@@ -11,7 +11,7 @@ export @map, @filter, @groupby, @orderby, @orderby_descending, @unique,
 	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop,
 	@pivot_longer, @pivot_wider
 
-export @select, @rename, @mutate, @disallowna, @dropna, @replacena
+export @select, @rename, @mutate, @summarize, @disallowna, @dropna, @replacena
 
 # The following is a backwards compat fix
 export @dissallowna
