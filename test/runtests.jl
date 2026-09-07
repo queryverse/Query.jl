@@ -7,6 +7,7 @@ include("test_dplyr-syntax.jl")
 include("test_pipesyntax.jl")
 include("test_macros.jl")
 include("test_standalone.jl")
+include("test_summarize.jl")
 
 @run_package_tests
 
