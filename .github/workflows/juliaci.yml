@@ -2,7 +2,7 @@ name: Julia CI
 
 on:
   push: {branches: [main,master]}
-  pull_request: {types: [opened,synchronize,reopened,ready_for_review,converted_to_draft]}
+  pull_request: {types: [opened,synchronize,reopened,ready_for_review,converted_to_draft,closed]}
   issue_comment: {types: [created]}
   workflow_dispatch: {inputs: {feature: {type: choice, description: What to run, options: [DocDeploy,LintAndTest,TagBot]}}}
 
