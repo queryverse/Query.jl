@@ -657,3 +657,444 @@ result = long |> @pivot_wider(:country, :value) |> DataFrame
 #    1 │  2017  1                    2
 #    2 │  2018  3                    4
 ```
+
+## The `@left_join`, `@right_join` and `@full_join` commands
+
+These commands have the form `source |> @left_join(inner, outerKeySelector, innerKeySelector, resultSelector)`, and correspond to `Enumerable.LeftJoin`, `RightJoin` and `FullJoin` in .NET. They take the same arguments as the `@join` command, but keep rows that have no match on the other side.
+
+`@left_join` keeps every row of `source`, `@right_join` keeps every row of `inner`, and `@full_join` keeps every row of both. Where there is no match, the missing side is filled with a `DataValue` that has no value — never with `missing`. `@full_join` emits the rows of `source` first, in source order, followed by the rows of `inner` whose key never appeared in `source`.
+
+#### Example
+
+```jldoctest
+using Query
+
+people = [(id=1, name="John"), (id=2, name="Sally"), (id=3, name="Kirk")]
+pets = [(owner=1, pet="Judy"), (owner=3, pet="Ruff")]
+
+q = people |> @left_join(pets, _.id, _.owner, {_.name, __.pet}) |> collect
+
+for row in q
+    println(row.name, ": ", row.pet)
+end
+
+# output
+
+John: DataValue{String}("Judy")
+Sally: DataValue{String}()
+Kirk: DataValue{String}("Ruff")
+```
+
+## The `@concat`, `@union`, `@except` and `@intersect` commands
+
+These commands have the form `source |> @union(other)`, and correspond to `Enumerable.Concat`, `Union`, `Except` and `Intersect`. Both sequences must have the same element type.
+
+`@concat` appends `other` to `source`, keeping duplicates. The other three return distinct results, as they do in .NET: `@union` yields every element of either sequence, `@except` the elements of `source` that do not occur in `other`, and `@intersect` the elements that occur in both. Elements are compared with `isequal`, so two `DataValue`s that hold no value count as equal.
+
+#### Example
+
+```jldoctest
+using Query
+
+a = [1,2,2,3]
+b = [3,4]
+
+println(a |> @concat(b) |> collect)
+println(a |> @union(b) |> collect)
+println(a |> @except(b) |> collect)
+println(a |> @intersect(b) |> collect)
+
+# output
+
+[1, 2, 2, 3, 3, 4]
+[1, 2, 3, 4]
+[1, 2]
+[3]
+```
+
+## The `@union_by`, `@except_by` and `@intersect_by` commands
+
+These commands have the form `source |> @union_by(other, keySelector)`, and are the key-based versions of `@union`, `@except` and `@intersect`: two elements count as the same when their keys are equal.
+
+Note that this deviates from .NET. `Enumerable.ExceptBy` and `IntersectBy` take a sequence of *keys* as their second argument, while `UnionBy` takes a sequence of elements. Here all three take a sequence of elements and apply the key selector to both sequences, which keeps them consistent with each other and matches the equivalent SQL.
+
+`@union_by` keeps the first element seen for each key.
+
+#### Example
+
+```jldoctest
+using Query
+
+a = [(k=1, v="a"), (k=2, v="b"), (k=3, v="c")]
+b = [(k=2, v="B")]
+
+println(a |> @except_by(b, _.k) |> collect)
+println(a |> @intersect_by(b, _.k) |> collect)
+
+# output
+
+[(k = 1, v = "a"), (k = 3, v = "c")]
+[(k = 2, v = "b")]
+```
+
+## The `@take_while` and `@drop_while` commands
+
+These commands have the form `source |> @take_while(condition)`, and correspond to `Enumerable.TakeWhile` and `SkipWhile`.
+
+`@take_while` yields elements until `condition` first fails and then stops, so later elements are not returned even if they would satisfy it. `@drop_while` discards that same leading run and yields everything after it.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3,4,1,2]
+
+println(source |> @take_while(_ < 3) |> collect)
+println(source |> @drop_while(_ < 3) |> collect)
+
+# output
+
+[1, 2]
+[3, 4, 1, 2]
+```
+
+## The `@take_last` and `@drop_last` commands
+
+These commands have the form `source |> @take_last(n)`, and correspond to `Enumerable.TakeLast` and `SkipLast`. `@take_last` keeps the last `n` elements and `@drop_last` discards them.
+
+A count of zero or less yields nothing for `@take_last` and leaves the source unchanged for `@drop_last`, as in .NET.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3,4,5]
+
+println(source |> @take_last(2) |> collect)
+println(source |> @drop_last(2) |> collect)
+
+# output
+
+[4, 5]
+[1, 2, 3]
+```
+
+## The `@order` and `@order_descending` commands
+
+These commands have the form `source |> @order()`, and correspond to `Enumerable.Order` and `OrderDescending`. They sort by the elements themselves rather than by a key, so unlike `@orderby` they take no selector. `@thenby` and `@thenby_descending` can still follow them.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [3,1,2]
+
+println(source |> @order() |> collect)
+println(source |> @order_descending() |> collect)
+
+# output
+
+[1, 2, 3]
+[3, 2, 1]
+```
+
+## The `@reverse` command
+
+The `@reverse` command has the form `source |> @reverse()`, and corresponds to `Enumerable.Reverse`. It yields the elements of the source in the opposite order. The whole source has to be read before the first element can be returned.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3]
+
+println(source |> @reverse() |> collect)
+
+# output
+
+[3, 2, 1]
+```
+
+## The `@shuffle` command
+
+The `@shuffle` command has the form `source |> @shuffle()`, and corresponds to `Enumerable.Shuffle`. It yields the elements of the source in a random order, using a random number generator that is not cryptographically secure.
+
+An explicit generator can be passed as the keyword argument `rng`, which makes a shuffle reproducible: `source |> @shuffle(rng=MersenneTwister(42))`. It is a keyword rather than a positional argument so that a single positional argument is unambiguously the source.
+
+#### Example
+
+```jldoctest
+using Query
+using Random
+
+source = [1,2,3,4,5]
+
+q = source |> @shuffle(rng=MersenneTwister(42)) |> collect
+
+println(sort(q))
+
+# output
+
+[1, 2, 3, 4, 5]
+```
+
+## The `@index` command
+
+The `@index` command has the form `source |> @index()`, and corresponds to `Enumerable.Index`. It pairs each element with its position, yielding named tuples of the form `(index=..., item=...)`. Indices start at 1, matching the rest of Julia rather than .NET's zero-based `Index()`.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = ["a","b","c"]
+
+println(source |> @index() |> collect)
+
+# output
+
+[(index = 1, item = "a"), (index = 2, item = "b"), (index = 3, item = "c")]
+```
+
+## The `@append` and `@prepend` commands
+
+These commands have the form `source |> @append(element)`, and correspond to `Enumerable.Append` and `Prepend`. They add a single element after or before the elements of the source. The element is converted to the source's element type, so appending an `Int` to a sequence of `Float64` works.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [2,3]
+
+println(source |> @append(4) |> collect)
+println(source |> @prepend(1) |> collect)
+
+# output
+
+[2, 3, 4]
+[1, 2, 3]
+```
+
+## The `@zip` command
+
+The `@zip` command has the form `source |> @zip(other)`, and corresponds to `Enumerable.Zip`. It pairs elements of the two sequences by position, yielding tuples, and stops at the shorter of the two — nothing is padded.
+
+A result selector can be given in the direct form, `@zip(source, other, resultSelector)`, where `_` refers to the element of `source` and `__` to the element of `other`. There is deliberately no piped form with a result selector, because it would be indistinguishable from the direct form without one; `source |> @zip(other) |> @map(...)` expresses the same thing.
+
+#### Example
+
+```jldoctest
+using Query
+
+a = [1,2,3]
+b = ["a","b"]
+
+println(a |> @zip(b) |> collect)
+
+# output
+
+[(1, "a"), (2, "b")]
+```
+
+## The `@count_by` command
+
+The `@count_by` command has the form `source |> @count_by(keySelector)`, and corresponds to `Enumerable.CountBy`. It counts how often each key occurs, without building the intermediate groups that `@groupby` would.
+
+The key columns are named as `@summarize` names them: a scalar key becomes a column called `key`, and a named tuple key contributes one column per field. The count is added as a column called `count`.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [(k="a", v=1), (k="b", v=2), (k="a", v=3)]
+
+println(source |> @count_by(_.k) |> collect)
+
+# output
+
+[(key = "a", count = 2), (key = "b", count = 1)]
+```
+
+## The `@aggregate_by` command
+
+The `@aggregate_by` command has the form `source |> @aggregate_by(keySelector, seed, accumulator)`, and corresponds to `Enumerable.AggregateBy`. It folds the elements of each key into a single value, starting from `seed`. The accumulator is called as `accumulator(accumulated, element)`, matching .NET's argument order.
+
+Key columns are named as for `@count_by`, and the folded value is added as a column called `value`. For anything beyond a simple fold, `@summarize` is the more general and more idiomatic command.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [(id="0", score=42), (id="1", score=5), (id="0", score=25)]
+
+println(source |> @aggregate_by(_.id, 0, (total, cur) -> total + cur.score) |> collect)
+
+# output
+
+[(key = "0", value = 67), (key = "1", value = 5)]
+```
+
+## The `@chunk` command
+
+The `@chunk` command has the form `source |> @chunk(n)`, and corresponds to `Enumerable.Chunk`. It splits the source into batches of at most `n` elements; the final batch is shorter when the source does not divide evenly. `n` must be at least 1.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3,4,5]
+
+println(source |> @chunk(2) |> collect)
+
+# output
+
+[[1, 2], [3, 4], [5]]
+```
+
+## The `@of_type` and `@cast` commands
+
+These commands have the form `source |> @of_type(T)`, and correspond to `Enumerable.OfType` and `Cast`.
+
+`@of_type` keeps only the elements that are instances of `T` and narrows the element type to `T`, which is useful when the source's element type is `Any` or a `Union`. `@cast` converts every element to `T`; .NET's `Cast` is a type assertion, but the Julia counterpart is a conversion, so it fails the way `convert` would on an element that cannot be represented as `T`.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = Any[1, "a", 2]
+
+println(source |> @of_type(Int) |> collect)
+println(source |> @of_type(Int) |> @cast(Float64) |> collect)
+
+# output
+
+[1, 2]
+[1.0, 2.0]
+```
+
+## The `@any`, `@all` and `@contains` commands
+
+These commands return a `Bool` rather than another query, and correspond to `Enumerable.Any`, `All` and `Contains`.
+
+`@any()` reports whether the source has any elements, and `@any(source, condition)` whether any element satisfies the condition. `@all(condition)` reports whether every element does, and is vacuously true for an empty source. `@contains(value)` reports whether the source contains `value`, comparing with `isequal`.
+
+As with `@count`, `@any` has no piped form taking a condition; write `source |> @filter(condition) |> @any()` instead.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3]
+
+println(source |> @any())
+println(@any(source, _ > 2))
+println(source |> @all(_ > 0))
+println(source |> @contains(2))
+
+# output
+
+true
+true
+true
+true
+```
+
+## The `@first`, `@last`, `@single` and `@element_at` commands
+
+These commands return a single element rather than another query, and correspond to `Enumerable.First`, `Last`, `Single` and `ElementAt`.
+
+`@first()` and `@last()` return the first and last element, and error if the source is empty. `@single()` returns the only element and errors unless there is exactly one. Each also has a direct form taking a condition, such as `@first(source, condition)`. `@element_at(n)` returns the element at position `n`, counting from 1 as the rest of Julia does rather than from 0 as .NET's `ElementAt` does.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3,4]
+
+println(source |> @first())
+println(source |> @last())
+println(source |> @element_at(2))
+println(@single(source, _ == 3))
+
+# output
+
+1
+4
+2
+3
+```
+
+## The `@min_by` and `@max_by` commands
+
+These commands have the form `source |> @min_by(keySelector)`, and correspond to `Enumerable.MinBy` and `MaxBy`. They return the *element* whose key is smallest or largest, not the key itself. Ties keep the first such element, as in .NET, and an empty source is an error.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [(a=2, x="b"), (a=1, x="a"), (a=3, x="c")]
+
+println(source |> @min_by(_.a))
+println(source |> @max_by(_.a))
+
+# output
+
+(a = 1, x = "a")
+(a = 3, x = "c")
+```
+
+## The `@aggregate` command
+
+The `@aggregate` command has the form `source |> @aggregate(accumulator)`, and corresponds to `Enumerable.Aggregate`. It folds the source into a single value, calling `accumulator(accumulated, element)`.
+
+Without a seed the fold starts from the first element and an empty source is an error. A seed can be given as the keyword argument `seed`, as in `source |> @aggregate(accumulator, seed=0)`, in which case an empty source yields the seed. It is a keyword rather than a positional argument so that the piped and direct forms can be told apart.
+
+For aggregating a table, `@summarize` is the more idiomatic command.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3,4]
+
+println(source |> @aggregate((acc, cur) -> acc + cur))
+println(source |> @aggregate((acc, cur) -> acc + cur, seed=100))
+
+# output
+
+10
+110
+```
+
+## The `@sequence_equal` command
+
+The `@sequence_equal` command has the form `source |> @sequence_equal(other)`, and corresponds to `Enumerable.SequenceEqual`. It reports whether the two sequences have the same elements in the same order, comparing with `isequal`.
+
+#### Example
+
+```jldoctest
+using Query
+
+source = [1,2,3]
+
+println(source |> @sequence_equal([1,2,3]))
+println(source |> @sequence_equal([1,2]))
+
+# output
+
+true
+false
+```
