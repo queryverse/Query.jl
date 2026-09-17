@@ -231,3 +231,66 @@ macro replacena(arg, args...)
         return :( Query.@mutate( $( ( :( $(columns[i]) = our_get(_.$(columns[i]), $(replacement_values[i]))  ) for i=1:length(columns) )... )   ) )
     end
 end
+
+function _summarize_macro_impl(macro_name, args)
+    source = nothing
+    agg_args = args
+    if !isempty(args) && !(args[1] isa Expr && args[1].head == :(=))
+        source = args[1]
+        agg_args = args[2:end]
+    end
+
+    isempty(agg_args) && error("$macro_name requires at least one name = expression argument.")
+
+    for arg in agg_args
+        (arg isa Expr && arg.head == :(=) && length(arg.args) == 2 && arg.args[1] isa Symbol) ||
+            error("Invalid argument `$arg` to $macro_name: every argument must have the form `name = expression`.")
+    end
+
+    agg_nt = Expr(:tuple, Expr(:parameters,
+        (Expr(:kw, arg.args[1], arg.args[2]) for arg in agg_args)...))
+
+    body = :( Base.merge(Query.QueryOperators._key_namedtuple(Query.QueryOperators.key(_)), $agg_nt) )
+    f = helper_replace_anon_func_syntax(body)
+    q_f = Expr(:quote, f)
+
+    if source === nothing
+        i_var = gensym(:source)
+        return :( $i_var -> Query.QueryOperators.summarize(Query.QueryOperators.query($i_var), $f, $q_f) ) |> esc
+    else
+        return :( Query.QueryOperators.summarize(Query.QueryOperators.query($source), $f, $q_f) ) |> esc
+    end
+end
+
+"""
+    @summarize(args...)
+
+Aggregate a table into summary rows, dplyr-style. It has the form
+`source |> @summarize(args...)`. Each argument from `args...` must have the
+form `name = expression`. Inside each expression, `_` refers to the collection
+of rows being aggregated, so for example `mean(_.x)`, `length(_)` and `key(_)`
+all work.
+
+Applied to the output of `@groupby`, `@summarize` produces one row per group,
+with the grouping key columns prepended: a scalar grouping key becomes a column
+named `key`, and a named-tuple grouping key contributes one column per field.
+If an aggregate has the same name as a key column, the aggregate wins.
+
+Applied to an ungrouped source, `@summarize` treats the whole table as a single
+group and produces a stream with exactly one row and no key columns.
+
+```
+julia> df = DataFrame(k=[1,1,2], x=[3.0,2.0,1.0])
+
+julia> df |> @groupby(_.k) |> @summarize(m = mean(_.x), n = length(_)) |> DataFrame
+2×3 DataFrame
+ Row │ key    m        n
+     │ Int64  Float64  Int64
+─────┼───────────────────────
+   1 │     1      2.5      2
+   2 │     2      1.0      1
+```
+"""
+macro summarize(args...)
+    return _summarize_macro_impl("@summarize", args)
+end
