@@ -8,6 +8,7 @@ include("test_pipesyntax.jl")
 include("test_macros.jl")
 include("test_standalone.jl")
 include("test_summarize.jl")
+include("test_new_operators.jl")
 
 @run_package_tests
 

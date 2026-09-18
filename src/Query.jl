@@ -11,6 +11,23 @@ export @map, @filter, @groupby, @orderby, @orderby_descending, @unique,
 	@thenby, @thenby_descending, @groupjoin, @join, @mapmany, @take, @drop,
 	@pivot_longer, @pivot_wider
 
+export @left_join, @right_join, @full_join
+
+export @concat, @union, @union_by, @except, @except_by, @intersect, @intersect_by
+
+export @take_while, @drop_while, @take_last, @drop_last
+
+export @order, @order_descending, @reverse, @shuffle, @index
+
+export @append, @prepend, @zip
+
+export @count_by, @aggregate_by, @chunk
+
+export @of_type, @cast
+
+export @min_by, @max_by, @any, @all, @contains, @sequence_equal, @aggregate,
+	@first, @last, @single, @element_at
+
 export @select, @rename, @mutate, @summarize, @disallowna, @dropna, @replacena
 
 # The following is a backwards compat fix

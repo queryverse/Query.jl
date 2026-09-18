@@ -1,5 +1,13 @@
 # Query.jl v1.2.0 Release Notes
 * Add @summarize for grouped and whole-table aggregation
+* Add @left_join, @right_join and @full_join
+* Add @concat, @union, @union_by, @except, @except_by, @intersect and @intersect_by
+* Add @take_while, @drop_while, @take_last and @drop_last
+* Add @order, @order_descending, @reverse, @shuffle and @index
+* Add @append, @prepend and @zip
+* Add @count_by, @aggregate_by and @chunk
+* Add @of_type and @cast
+* Add @min_by, @max_by, @any, @all, @contains, @sequence_equal, @aggregate, @first, @last, @single and @element_at
 
 # Query.jl v1.1.0 Release Notes
 * Add @pivot_wider and @pivot_longer
