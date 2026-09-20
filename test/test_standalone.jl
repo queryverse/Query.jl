@@ -138,7 +138,10 @@ end
     @test result7 == result
 end
 
-@testset "@pivot_wider operator" begin
+@testitem "@pivot_wider operator" begin
+    using DataFrames
+    using DataValues
+
     long = DataFrame(
         year = [2017, 2017, 2018, 2018],
         country = [:US, :EU, :US, :EU],
